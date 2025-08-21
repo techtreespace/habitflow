@@ -2270,5 +2270,28 @@
         console.log('🚀 HabitFlow 랜딩페이지 로드 완료!');
         console.log('🎯 CTO가 개발한 마케팅 최적화 랜딩페이지');
     </script>
-</body>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCZVYENK7H96qe2Jrt1Wtf6AS2QaPcy4rg",
+    authDomain: "habitflow-e1e56.firebaseapp.com",
+    projectId: "habitflow-e1e56",
+    storageBucket: "habitflow-e1e56.firebasestorage.app",
+    messagingSenderId: "480767149947",
+    appId: "1:480767149947:web:13ee354d310963dd82dfde",
+    measurementId: "G-FHQPMRBX50"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+        </body>
 </html>
