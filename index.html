@@ -944,46 +944,32 @@
         }
         
         /* 회사 소개 섹션 */
-        .about-section {
-            padding: 5rem 0;
-            background: white;
-        }
-        
-        .about-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 3rem;
-            margin-top: 4rem;
-        }
-        
-        .about-item {
-            text-align: center;
-        }
-        
-        .about-icon {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            margin: 0 auto 2rem;
-            color: white;
-        }
-        
-        .about-item h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #1a202c;
-        }
-        
-        .about-item p {
-            color: #718096;
-            line-height: 1.6;
-        }
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2 class="section-title fade-in">HabitFlow를 만든 이유</h2>
+            <p class="section-subtitle fade-in">우리의 미션은 AI 기술로 모든 사람이 쉽게 습관을 만들 수 있도록 돕는 것입니다</p>
+            
+            <div class="about-grid">
+                <div class="about-item fade-in">
+                    <div class="about-icon">🎯</div>
+                    <h3>우리의 미션</h3>
+                    <p>습관 형성이 어려운 이유를 AI로 분석하고, 개인에게 최적화된 솔루션을 제공하여 누구나 성공할 수 있도록 돕습니다.</p>
+                </div>
+                
+                <div class="about-item fade-in">
+                    <div class="about-icon">📊</div>
+                    <h3>데이터 기반 접근</h3>
+                    <p>15,000명의 실제 사용자 데이터를 분석하여 89%의 정확도로 성공률을 예측하는 AI 시스템을 개발했습니다.</p>
+                </div>
+                
+                <div class="about-item fade-in">
+                    <div class="about-icon">🚀</div>
+                    <h3>지속적인 혁신</h3>
+                    <p>사용자 피드백을 바탕으로 매주 새로운 기능을 추가하고, AI 알고리즘을 지속적으로 개선하고 있습니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
         
         /* CTA 섹션 */
         .cta-section {
