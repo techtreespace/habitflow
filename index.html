@@ -2605,53 +2605,208 @@
     </script>
 
 <!-- Firebase SDK 및 인증 구현 -->
-    <script type="module">
-        // Firebase 모듈 임포트
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+<script type="module">
+    // Firebase 모듈 임포트
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
 
-        // Firebase 구성
-        const firebaseConfig = {
-            apiKey: "AIzaSyCZVYENK7H96qe2Jrt1Wtf6AS2QaPcy4rg",
-            authDomain: "habitflow-e1e56.firebaseapp.com",
-            projectId: "habitflow-e1e56",
-            storageBucket: "habitflow-e1e56.firebasestorage.app",
-            messagingSenderId: "480767149947",
-            appId: "1:480767149947:web:13ee354d310963dd82dfde",
-            measurementId: "G-FHQPMRBX50"
+    // Firebase 구성
+    const firebaseConfig = {
+        apiKey: "AIzaSyCZVYENK7H96qe2Jrt1Wtf6AS2QaPcy4rg",
+        authDomain: "habitflow-e1e56.firebaseapp.com",
+        projectId: "habitflow-e1e56",
+        storageBucket: "habitflow-e1e56.firebasestorage.app",
+        messagingSenderId: "480767149947",
+        appId: "1:480767149947:web:13ee354d310963dd82dfde",
+        measurementId: "G-FHQPMRBX50"
+    };
+
+    // Firebase 초기화
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const analytics = getAnalytics(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    console.log('🔥 Firebase 초기화 완료!');
+
+    // 전역 함수로 내보내기
+    window.firebaseAuth = {
+        auth,
+        googleProvider,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signInWithPopup,
+        updateProfile
+    };
+
+    // 인증 상태 변화 감지
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            console.log('✅ 사용자 로그인:', user.email);
+            // 로그인 성공 시 대시보드로 이동
+            setTimeout(() => {
+                window.location.href = './app.html';
+            }, 1000);
+        } else {
+            console.log('❌ 사용자 로그아웃');
+        }
+    });
+</script>
+
+<script>
+    // Firebase 에러 메시지 한국어 변환
+    function getKoreanErrorMessage(errorCode) {
+        const errorMessages = {
+            'auth/email-already-in-use': '이미 사용 중인 이메일입니다.',
+            'auth/weak-password': '비밀번호가 너무 약합니다. 6자 이상 입력해주세요.',
+            'auth/invalid-email': '올바르지 않은 이메일 형식입니다.',
+            'auth/user-not-found': '등록되지 않은 이메일입니다.',
+            'auth/wrong-password': '비밀번호가 올바르지 않습니다.',
+            'auth/too-many-requests': '너무 많은 요청입니다. 잠시 후 다시 시도해주세요.',
+            'auth/network-request-failed': '네트워크 연결을 확인해주세요.',
+            'auth/popup-closed-by-user': 'Google 로그인이 취소되었습니다.',
+            'auth/cancelled-popup-request': 'Google 로그인이 취소되었습니다.',
+            'auth/popup-blocked': '팝업이 차단되었습니다. 팝업을 허용해주세요.'
         };
+        return errorMessages[errorCode] || '로그인 중 오류가 발생했습니다. 다시 시도해주세요.';
+    }
 
-        // Firebase 초기화
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const analytics = getAnalytics(app);
-        const googleProvider = new GoogleAuthProvider();
+    // 에러 메시지 표시
+    function showError(message) {
+        const notification = document.createElement('div');
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            z-index: 10002;
+            animation: slideInRight 0.3s ease-out;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+            max-width: 300px;
+            word-wrap: break-word;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease-in';
+            setTimeout(() => notification.remove(), 300);
+        }, 4000);
+    }
 
-        console.log('🔥 Firebase 초기화 완료!');
-
-        // 전역 함수로 내보내기
-        window.firebaseAuth = {
-            auth,
-            googleProvider,
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword,
-            signInWithPopup,
-            updateProfile
-        };
-
-        // 인증 상태 변화 감지
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                console.log('✅ 사용자 로그인:', user.email);
-                // 로그인 성공 시 대시보드로 이동
-                setTimeout(() => {
-                    window.location.href = './app.html';
-                }, 1000);
-            } else {
-                console.log('❌ 사용자 로그아웃');
+    // 실제 Firebase 회원가입 함수로 교체
+    async function signUpWithEmail(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('signupName').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value;
+        
+        if (!name || !email || !password) {
+            showError('모든 필드를 입력해주세요.');
+            return;
+        }
+        
+        if (password.length < 6) {
+            showError('비밀번호는 6자 이상 입력해주세요.');
+            return;
+        }
+        
+        showLoading('🚀 계정을 생성하고 있습니다...');
+        
+        try {
+            if (!window.firebaseAuth) {
+                throw new Error('Firebase가 아직 로드되지 않았습니다.');
             }
-        });
-    </script>
+            
+            const { auth, createUserWithEmailAndPassword, updateProfile } = window.firebaseAuth;
+            
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            
+            await updateProfile(user, {
+                displayName: name
+            });
+            
+            hideLoading();
+            showSuccessMessage(`🎉 ${name}님, 환영합니다! HabitFlow와 함께 새로운 습관을 시작하세요.`);
+            closeAuthModal();
+            
+        } catch (error) {
+            hideLoading();
+            console.error('회원가입 오류:', error);
+            showError(getKoreanErrorMessage(error.code));
+        }
+    }
+
+    // 실제 Firebase 로그인 함수로 교체
+    async function signInWithEmail(event) {
+        event.preventDefault();
+        
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        
+        if (!email || !password) {
+            showError('이메일과 비밀번호를 입력해주세요.');
+            return;
+        }
+        
+        showLoading('🔐 로그인 중입니다...');
+        
+        try {
+            if (!window.firebaseAuth) {
+                throw new Error('Firebase가 아직 로드되지 않았습니다.');
+            }
+            
+            const { auth, signInWithEmailAndPassword } = window.firebaseAuth;
+            
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            
+            hideLoading();
+            showSuccessMessage(`🎉 ${user.displayName || '사용자'}님, 다시 오신 것을 환영합니다!`);
+            closeAuthModal();
+            
+        } catch (error) {
+            hideLoading();
+            console.error('로그인 오류:', error);
+            showError(getKoreanErrorMessage(error.code));
+        }
+    }
+
+    // 실제 Google 로그인 함수로 교체
+    async function signInWithGoogle() {
+        showLoading('🌐 Google 계정으로 로그인 중...');
+        
+        try {
+            if (!window.firebaseAuth) {
+                throw new Error('Firebase가 아직 로드되지 않았습니다.');
+            }
+            
+            const { auth, signInWithPopup, googleProvider } = window.firebaseAuth;
+            
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
+            
+            hideLoading();
+            showSuccessMessage(`🎉 ${user.displayName}님, Google 로그인이 완료되었습니다!`);
+            closeAuthModal();
+            
+        } catch (error) {
+            hideLoading();
+            console.error('Google 로그인 오류:', error);
+            
+            if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+                showError(getKoreanErrorMessage(error.code));
+            }
+        }
+    }
+</script>
 </body>
 </html>
