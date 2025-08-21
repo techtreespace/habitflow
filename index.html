@@ -612,6 +612,303 @@
             line-height: 1.6;
         }
         
+        /* 요금제 섹션 */
+        .pricing-section {
+            padding: 5rem 0;
+            background: #f8fafc;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .pricing-card-popular {
+            border-color: #667eea;
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .pricing-card-popular:hover {
+            transform: scale(1.05) translateY(-5px);
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff6b6b;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1a202c;
+        }
+        
+        .pricing-card-popular .pricing-header h3 {
+            color: white;
+        }
+        
+        .price {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .currency {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #718096;
+        }
+        
+        .pricing-card-popular .currency {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .amount {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin: 0 0.2rem;
+        }
+        
+        .pricing-card-popular .amount {
+            color: white;
+        }
+        
+        .period {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #718096;
+        }
+        
+        .pricing-card-popular .period {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .price-description {
+            color: #718096;
+            font-size: 1rem;
+        }
+        
+        .pricing-card-popular .price-description {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .pricing-features {
+            flex: 1;
+            margin-bottom: 2rem;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        
+        .feature-item .check {
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .pricing-card-popular .feature-item .check {
+            color: #10b981;
+        }
+        
+        .pricing-button {
+            margin-top: auto;
+        }
+        
+        .btn-pricing {
+            width: 100%;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-pricing-free {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .btn-pricing-free:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+        
+        .btn-pricing-premium {
+            background: white;
+            color: #667eea;
+            border: 2px solid white;
+        }
+        
+        .btn-pricing-premium:hover {
+            background: #f7fafc;
+            transform: translateY(-2px);
+        }
+        
+        .btn-pricing-enterprise {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: 2px solid transparent;
+        }
+        
+        .btn-pricing-enterprise:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .pricing-faq {
+            margin-top: 4rem;
+            text-align: center;
+        }
+        
+        .pricing-faq h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: #1a202c;
+        }
+        
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .faq-item-small {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: left;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .faq-item-small strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1a202c;
+            font-size: 1rem;
+        }
+        
+        .original-price {
+            font-size: 1.2rem;
+            color: #718096;
+            text-decoration: line-through;
+            margin-right: 0.5rem;
+        }
+        
+        .pricing-card-popular .original-price {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .discount-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0.5rem 0;
+            display: inline-block;
+        }
+        
+        .limited-offer {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+        
+        /* FAQ 탭 시스템 */
+        .faq-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .faq-tab {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #4a5568;
+        }
+        
+        .faq-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .faq-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .faq-category {
+            display: none;
+        }
+        
+        .faq-category.active {
+            display: block;
+        }
+        
         /* 통계 섹션 */
         .stats-section {
             background: linear-gradient(135deg, #1a202c, #2d3748);
@@ -877,6 +1174,23 @@
                 grid-template-columns: 1fr;
             }
             
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .pricing-card-popular {
+                transform: none;
+            }
+            
+            .pricing-card-popular:hover {
+                transform: translateY(-5px);
+            }
+            
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+            
             .about-grid {
                 grid-template-columns: 1fr;
             }
@@ -928,6 +1242,7 @@
             <ul class="nav-links">
                 <li><a href="#features">특징</a></li>
                 <li><a href="#demo">데모</a></li>
+                <li><a href="#pricing">요금제</a></li>
                 <li><a href="#about">소개</a></li>
                 <li><a href="#contact">문의</a></li>
             </ul>
@@ -1120,126 +1435,293 @@
         </div>
     </section>
 
-    <!-- 통계 섹션 -->
-    <section class="stats-section">
+    <!-- 요금제 섹션 -->
+    <section class="pricing-section" id="pricing">
         <div class="container">
-            <h2 class="section-title fade-in" style="color: white; margin-bottom: 3rem;">검증된 결과</h2>
-            <div class="stats-grid">
-                <div class="stat-card fade-in">
-                    <span class="number">89%</span>
-                    <span class="label">21일 챌린지 성공률</span>
-                </div>
-                <div class="stat-card fade-in">
-                    <span class="number">15,420</span>
-                    <span class="label">활성 사용자</span>
-                </div>
-                <div class="stat-card fade-in">
-                    <span class="number">2.3M</span>
-                    <span class="label">완료된 습관</span>
-                </div>
-                <div class="stat-card fade-in">
-                    <span class="number">4.9★</span>
-                    <span class="label">앱스토어 평점</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 회사 소개 섹션 -->
-    <section id="about" class="about-section">
-        <div class="container">
-            <h2 class="section-title fade-in">HabitFlow를 만든 이유</h2>
-            <p class="section-subtitle fade-in">우리의 미션은 AI 기술로 모든 사람이 쉽게 습관을 만들 수 있도록 돕는 것입니다</p>
+            <h2 class="section-title fade-in">나에게 맞는 플랜을 선택하세요</h2>
+            <p class="section-subtitle fade-in">모든 플랜에서 AI 코치 기본 기능을 제공합니다</p>
             
-            <div class="about-grid">
-                <div class="about-item fade-in">
-                    <div class="about-icon">🎯</div>
-                    <h3>우리의 미션</h3>
-                    <p>습관 형성이 어려운 이유를 AI로 분석하고, 개인에게 최적화된 솔루션을 제공하여 누구나 성공할 수 있도록 돕습니다.</p>
+            <div class="pricing-grid">
+                <!-- 무료 플랜 -->
+                <div class="pricing-card fade-in">
+                    <div class="pricing-header">
+                        <h3>시작하기</h3>
+                        <div class="price">
+                            <span class="currency">₩</span>
+                            <span class="amount">0</span>
+                            <span class="period">/월</span>
+                        </div>
+                        <p class="price-description">습관 형성을 시작해보세요</p>
+                    </div>
+                    
+                    <div class="pricing-features">
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>커뮤니티 챌린지</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>우선 고객지원</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>최대 3개 습관</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>기본 AI 분석</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>일간 리포트</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pricing-button">
+                        <a href="#app" class="btn-pricing btn-pricing-free">시작하기</a>
+                    </div>
                 </div>
                 
-                <div class="about-item fade-in">
-                    <div class="about-icon">📊</div>
-                    <h3>데이터 기반 접근</h3>
-                    <p>15,000명의 실제 사용자 데이터를 분석하여 89%의 정확도로 성공률을 예측하는 AI 시스템을 개발했습니다.</p>
+                <!-- 프리미엄 플랜 (추천) -->
+                <div class="pricing-card pricing-card-popular fade-in">
+                    <div class="popular-badge">가장 인기</div>
+                    <div class="pricing-header">
+                        <h3>프리미엄</h3>
+                        <div class="price">
+                            <span class="original-price">₩4,900</span>
+                            <span class="currency">₩</span>
+                            <span class="amount">2,900</span>
+                            <span class="period">/월</span>
+                        </div>
+                        <div class="discount-badge">🔥 얼리버드 40% 할인</div>
+                        <p class="price-description">첫 1000명 한정! 평생 할인가</p>
+                    </div>
+                    
+                    <div class="pricing-features">
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>커뮤니티 챌린지</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>우선 고객지원</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>무제한 습관</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>고급 AI 분석</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>상세 주간/월간 리포트</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>개인화 추천</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>습관 연결 분석</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pricing-button">
+                        <a href="#app" class="btn-pricing btn-pricing-premium">지금 가입하고 평생할인 🔥</a>
+                        <div class="limited-offer">⏰ 497명 남음 (1000명 한정)</div>
+                    </div>
                 </div>
                 
-                <div class="about-item fade-in">
-                    <div class="about-icon">🚀</div>
-                    <h3>지속적인 혁신</h3>
-                    <p>사용자 피드백을 바탕으로 매주 새로운 기능을 추가하고, AI 알고리즘을 지속적으로 개선하고 있습니다.</p>
+                <!-- 프로 플랜 -->
+                <div class="pricing-card fade-in">
+                    <div class="pricing-header">
+                        <h3>문의하기</h3>
+                        <div class="price">
+                            <span class="currency">₩</span>
+                            <span class="amount">49,000</span>
+                            <span class="period">/월</span>
+                        </div>
+                        <p class="price-description">팀과 기업을 위한 솔루션</p>
+                    </div>
+                    
+                    <div class="pricing-features">
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>전담 고객지원</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>팀 관리 대시보드</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>무제한 습관</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>고급 AI 분석</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>팀 성과 분석</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>API 연동</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check">✓</span>
+                            <span>맞춤형 교육</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pricing-button">
+                        <a href="#contact" class="btn-pricing btn-pricing-enterprise">문의하기</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- CTA 섹션 -->
-    <section class="cta-section" id="app">
-        <div class="container">
-            <h2 class="fade-in">당신의 변화는 오늘부터 시작됩니다</h2>
-            <p class="fade-in">15,000명이 이미 경험한 AI 습관 코치와 함께<br>21일 후 완전히 달라진 자신을 만나보세요</p>
             
-            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
-                <a href="./app.html" class="btn-primary" style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">🚀 무료로 시작하기</a>
-                <button class="btn-secondary" onclick="showDemo()" style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">📱 데모 체험하기</button>
-            </div>
-            
-            <div style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.8;">
-                💳 신용카드 불필요 · 📱 모든 기기 지원 · 🔒 개인정보 완전보호
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ 섹션 -->
+    <!-- 통합 FAQ 섹션 -->
     <section class="faq-section" id="faq">
         <div class="container">
             <h2 class="section-title fade-in">자주 묻는 질문</h2>
+            <p class="section-subtitle fade-in">궁금한 점이 있으시면 언제든 문의해주세요</p>
+            
+            <!-- FAQ 카테고리 탭 -->
+            <div class="faq-tabs fade-in">
+                <button class="faq-tab active" onclick="switchFAQTab('pricing')">💰 요금/결제</button>
+                <button class="faq-tab" onclick="switchFAQTab('service')">🔧 서비스</button>
+                <button class="faq-tab" onclick="switchFAQTab('technical')">📱 기술/앱</button>
+            </div>
             
             <div class="faq-container">
-                <div class="faq-item fade-in">
-                    <div class="faq-question" onclick="toggleFAQ(this)">
-                        <span>🤖 AI는 정말 정확한가요?</span>
-                        <span class="faq-toggle">+</span>
+                <!-- 요금/결제 FAQ -->
+                <div class="faq-category active" id="faq-pricing">
+                    <div class="faq-item fade-in">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>🔥 얼리버드 할인은 언제까지 유지되나요?</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <div>
+                                첫 1000명 가입자에게만 제공되는 평생 할인입니다. 한 번 가입하시면 서비스 이용 기간 동안 계속 월 2,900원으로 이용하실 수 있습니다.
+                            </div>
+                        </div>
                     </div>
-                    <div class="faq-answer">
-                        <div>
-                            15,000명의 사용자 데이터를 학습한 AI가 89%의 정확도로 성공률을 예측합니다. 개인의 패턴, 요일별 성향, 시간대별 활동량 등을 종합 분석하여 최적의 시간과 방법을 제안드립니다.
+                    
+                    <div class="faq-item fade-in">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>💰 무료 버전으로도 충분한가요?</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <div>
+                                무료 버전으로도 3개의 습관 관리와 기본 AI 분석을 사용할 수 있어 대부분의 사용자에게 충분합니다. 더 많은 습관이나 고급 기능이 필요하시다면 언제든 업그레이드하실 수 있습니다.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item fade-in">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>📅 언제든 취소할 수 있나요?</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <div>
+                                네, 언제든지 구독을 취소할 수 있으며 데이터는 안전하게 보관됩니다. 취소 후에도 무료 플랜으로 계속 이용 가능합니다.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item fade-in">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>🔄 플랜을 중간에 변경할 수 있나요?</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <div>
+                                언제든지 업그레이드/다운그레이드 가능하며, 차액은 일할 계산됩니다. 얼리버드 할인 혜택은 유지됩니다.
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="faq-item fade-in">
-                    <div class="faq-question" onclick="toggleFAQ(this)">
-                        <span>💰 무료 버전으로도 충분한가요?</span>
-                        <span class="faq-toggle">+</span>
+                <!-- 서비스 FAQ -->
+                <div class="faq-category" id="faq-service">
+                    <div class="faq-item fade-in">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>🤖 AI는 정말 정확한가요?</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <div>
+                                15,000명의 사용자 데이터를 학습한 AI가 89%의 정확도로 성공률을 예측합니다. 개인의 패턴, 요일별 성향, 시간대별 활동량 등을 종합 분석하여 최적의 시간과 방법을 제안드립니다.
+                            </div>
+                        </div>
                     </div>
-                    <div class="faq-answer">
-                        <div>
-                            무료 버전으로도 5개의 습관 관리와 기본 AI 분석을 사용할 수 있어 대부분의 사용자에게 충분합니다. 더 많은 습관이나 고급 기능이 필요하시다면 언제든 업그레이드하실 수 있습니다.
+                    
+                    <div class="faq-item fade-in">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>⏰ 21일이면 정말 습관이 만들어지나요?</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <div>
+                                연구에 따르면 평균 66일이 소요되지만, AI가 개인에게 최적화된 방법을 제안하여 21일 내 기본적인 습관 정착이 가능합니다. 89%의 사용자가 21일 챌린지를 성공적으로 완료했습니다.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item fade-in">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>🔒 개인정보는 안전한가요?</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <div>
+                                모든 데이터는 암호화되어 저장되며, 개인정보 보호법을 준수합니다. AI 분석에 사용되는 데이터는 익명화 처리되어 개인을 식별할 수 없습니다.
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="faq-item fade-in">
-                    <div class="faq-question" onclick="toggleFAQ(this)">
-                        <span>📱 모든 기기에서 사용할 수 있나요?</span>
-                        <span class="faq-toggle">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <div>
-                            네! 웹브라우저, iOS, Android 모든 기기에서 사용 가능하며, 클라우드 동기화로 어디서나 동일한 데이터를 확인할 수 있습니다.
+                <!-- 기술/앱 FAQ -->
+                <div class="faq-category" id="faq-technical">
+                    <div class="faq-item fade-in">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>📱 모든 기기에서 사용할 수 있나요?</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <div>
+                                네! 웹브라우저, iOS, Android 모든 기기에서 사용 가능하며, 클라우드 동기화로 어디서나 동일한 데이터를 확인할 수 있습니다.
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="faq-item fade-in">
-                    <div class="faq-question" onclick="toggleFAQ(this)">
-                        <span>🔒 개인정보는 안전한가요?</span>
-                        <span class="faq-toggle">+</span>
+                    
+                    <div class="faq-item fade-in">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>🌐 인터넷 연결 없이도 사용할 수 있나요?</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <div>
+                                기본적인 습관 체크는 오프라인에서도 가능하며, 인터넷 연결 시 자동으로 동기화됩니다. AI 분석 기능은 인터넷 연결이 필요합니다.
+                            </div>
+                        </div>
                     </div>
-                    <div class="faq-answer">
-                        <div>
-                            모든 데이터는 암호화되어 저장되며, 개인정보 보호법을 준수합니다. AI 분석에 사용되는 데이터는 익명화 처리되어 개인을 식별할 수 없습니다.
+                    
+                    <div class="faq-item fade-in">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>🔔 알림은 어떻게 설정하나요?</span>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <div>
+                                AI가 당신의 패턴을 분석해서 최적의 타이밍에만 알림을 보냅니다. 원하지 않는 시간대는 설정에서 제외할 수 있습니다.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1340,6 +1822,25 @@
             });
         });
 
+        // FAQ 탭 전환 함수
+        function switchFAQTab(category) {
+            // 모든 탭 비활성화
+            document.querySelectorAll('.faq-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 모든 FAQ 카테고리 숨기기
+            document.querySelectorAll('.faq-category').forEach(cat => {
+                cat.classList.remove('active');
+            });
+            
+            // 선택된 탭 활성화
+            event.target.classList.add('active');
+            
+            // 선택된 카테고리 표시
+            document.getElementById(`faq-${category}`).classList.add('active');
+        }
+
         // FAQ 토글
         function toggleFAQ(element) {
             const answer = element.nextElementSibling;
@@ -1393,17 +1894,13 @@
                         </div>
                     </div>
                     
-                    <div class="demo-habit-item" onclick="selectDemoHabit(this)">
-                        <div class="demo-habit-check">○</div>
-                        <div>
-                            <div style="font-weight: 600; font-size: 0.8rem;">10분 산책</div>
-                            <div style="font-size: 0.6rem; opacity: 0.7;">🚶‍♂️ 성공률 87% | 쉬움</div>
-                        </div>
-                    </div>
-                    
                     <div class="demo-ai-message">
                         <div style="font-size: 0.7rem; font-weight: 600; margin-bottom: 0.5rem;">💡 AI 추천 이유</div>
                         <div style="font-size: 0.6rem;">당신과 비슷한 패턴의 사용자들이 가장 성공한 습관이에요!</div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <div style="font-size: 0.7rem; color: rgba(255,255,255,0.7);">습관을 클릭해서 선택하세요</div>
                     </div>
                 </div>
             `,
