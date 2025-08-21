@@ -2604,26 +2604,54 @@
         console.log('🎯 CTO가 개발한 마케팅 최적화 랜딩페이지');
     </script>
 
-            <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<!-- Firebase SDK 및 인증 구현 -->
+    <script type="module">
+        // Firebase 모듈 임포트
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
 
-<script>
-// 여기에 찾은 Firebase 구성 정보 붙여넣기
-const firebaseConfig = {
-  apiKey: "AIzaSyCZVYENK7H96qe2Jrt1Wtf6AS2QaPcy4rg",
-  authDomain: "habitflow-e1e56.firebaseapp.com",
-  projectId: "habitflow-e1e56",
-  storageBucket: "habitflow-e1e56.firebasestorage.app",
-  messagingSenderId: "480767149947",
-  appId: "1:480767149947:web:13ee354d310963dd82dfde",
-  measurementId: "G-FHQPMRBX50"
-};
+        // Firebase 구성
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZVYENK7H96qe2Jrt1Wtf6AS2QaPcy4rg",
+            authDomain: "habitflow-e1e56.firebaseapp.com",
+            projectId: "habitflow-e1e56",
+            storageBucket: "habitflow-e1e56.firebasestorage.app",
+            messagingSenderId: "480767149947",
+            appId: "1:480767149947:web:13ee354d310963dd82dfde",
+            measurementId: "G-FHQPMRBX50"
+        };
 
-// Firebase 초기화
-firebase.initializeApp(firebaseConfig);
-console.log('🔥 Firebase 초기화 완료!');
-</script>
+        // Firebase 초기화
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const analytics = getAnalytics(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        console.log('🔥 Firebase 초기화 완료!');
+
+        // 전역 함수로 내보내기
+        window.firebaseAuth = {
+            auth,
+            googleProvider,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signInWithPopup,
+            updateProfile
+        };
+
+        // 인증 상태 변화 감지
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log('✅ 사용자 로그인:', user.email);
+                // 로그인 성공 시 대시보드로 이동
+                setTimeout(() => {
+                    window.location.href = './app.html';
+                }, 1000);
+            } else {
+                console.log('❌ 사용자 로그아웃');
+            }
+        });
+    </script>
 </body>
 </html>
