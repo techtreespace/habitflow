@@ -491,7 +491,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* 개선된 데모 모달 */
+        /* 데모 모달 */
         .demo-modal {
             display: none;
             position: fixed;
@@ -559,201 +559,6 @@
             transform: rotate(90deg);
         }
         
-        .demo-modal-body {
-            padding: 2rem;
-        }
-        
-        .demo-main-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            margin-bottom: 2rem;
-        }
-        
-        .demo-app-container {
-            background: #f8fafc;
-            border-radius: 15px;
-            padding: 1.5rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .demo-phone {
-            width: 280px;
-            height: 560px;
-            background: #000;
-            border-radius: 25px;
-            padding: 12px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            position: relative;
-        }
-        
-        .demo-screen {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 20px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .demo-content {
-            padding: 1.5rem 1rem;
-            color: white;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .demo-header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .demo-habits {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            margin-bottom: 1rem;
-        }
-        
-        .demo-habit {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 0.8rem;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .demo-habit:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-        
-        .demo-habit-check {
-            width: 24px;
-            height: 24px;
-            border: 2px solid white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            font-size: 0.8rem;
-        }
-        
-        .demo-habit-check.completed {
-            background: #10b981;
-            border-color: #10b981;
-            animation: checkPulse 0.5s ease;
-        }
-        
-        .demo-habit-info {
-            flex: 1;
-        }
-        
-        .demo-habit-name {
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 0.2rem;
-        }
-        
-        .demo-habit-streak {
-            font-size: 0.7rem;
-            opacity: 0.8;
-        }
-        
-        .demo-ai-insight {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.8rem;
-            border-radius: 12px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            margin-top: auto;
-        }
-        
-        .demo-ai-insight-text {
-            font-size: 0.7rem;
-            opacity: 0.9;
-        }
-
-        /* 개선된 하단 탭 */
-        .demo-bottom-tabs {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 0.8rem 0.5rem;
-            border-radius: 0 0 20px 20px;
-            display: flex;
-            justify-content: space-around;
-        }
-        
-        .demo-tab {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.2rem;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 0.3rem;
-            border-radius: 8px;
-            min-width: 0;
-            flex: 1;
-        }
-        
-        .demo-tab.active {
-            color: white;
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .demo-tab:hover {
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        .demo-tab-icon {
-            font-size: 1.2rem;
-            margin-bottom: 0.1rem;
-        }
-        
-        .demo-tab-label {
-            font-size: 0.6rem;
-            text-align: center;
-            line-height: 1;
-        }
-        
-        .demo-info-panel {
-            padding: 1rem;
-        }
-        
-        .demo-info-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #1a202c;
-            text-align: center;
-        }
-        
-        .demo-controls {
-            text-align: center;
-            margin: 2rem 0;
-        }
-        
         .demo-btn {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
@@ -782,50 +587,6 @@
             color: white;
         }
         
-        .demo-features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-        
-        .demo-feature {
-            text-align: center;
-            padding: 1rem;
-            background: #f8fafc;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
-        
-        .demo-feature:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .demo-feature-icon {
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .demo-feature h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #1a202c;
-        }
-        
-        .demo-feature p {
-            font-size: 0.85rem;
-            color: #718096;
-            line-height: 1.4;
-        }
-        
-        @keyframes checkPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        
         /* 스크롤 애니메이션 */
         .fade-in {
             opacity: 0;
@@ -836,6 +597,27 @@
         .fade-in.visible {
             opacity: 1;
             transform: translateY(0);
+        }
+        
+        /* 성공 애니메이션 */
+        @keyframes successAnimation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .success-animation {
+            animation: successAnimation 0.5s ease;
+        }
+        
+        /* 챌린지 참여 상태 */
+        .challenge-joined {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+        }
+        
+        .challenge-joined .demo-btn {
+            background: rgba(255,255,255,0.3) !important;
+            border: 1px solid rgba(255,255,255,0.5) !important;
         }
         
         /* 모바일 반응형 */
@@ -871,16 +653,6 @@
             .features-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .demo-main-container {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .demo-phone {
-                width: 260px;
-                height: 520px;
-            }
         }
     </style>
 </head>
@@ -894,8 +666,6 @@
                 <li><a href="#about">소개</a></li>
                 <li><a href="#contact">문의</a></li>
             </ul>
-            
-            <!-- 단순한 시작하기 버튼 -->
             <button class="cta-button" onclick="goToApp()">시작하기</button>
         </div>
     </nav>
@@ -1014,7 +784,7 @@
                 </div>
                 
                 <div class="feature-card fade-in">
-                    <div class="feature-icon">🌐</div>
+                    <div class="feature-icon">🌍</div>
                     <h3>커뮤니티 챌린지</h3>
                     <p>전국 수천 명과 함께하는 21일 챌린지로 혼자가 아닌 함께 성장하세요.</p>
                 </div>
@@ -1065,7 +835,7 @@
         <div class="loading-text">앱으로 이동 중...</div>
     </div>
 
-    <!-- 실제 앱 체험 데모 모달 -->
+    <!-- 데모 모달 -->
     <div id="demoModal" class="demo-modal">
         <div class="demo-modal-content" style="max-width: 1200px; width: 98%; max-height: 95vh;">
             <div class="demo-modal-header">
@@ -1076,7 +846,7 @@
                 <button class="demo-close" onclick="closeDemoModal()">&times;</button>
             </div>
             
-            <div class="demo-modal-body" style="padding: 1rem;">
+            <div style="padding: 1rem;">
                 <!-- 데모 앱 컨테이너 -->
                 <div id="demo-app-container" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 1rem; min-height: 600px; position: relative;">
                     
@@ -1159,13 +929,13 @@
                         <!-- 탐색 뷰 -->
                         <div id="demo-explore-view" class="demo-view" style="display: none;">
                             <!-- 주간 챌린지 -->
-                            <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; position: relative;">
+                            <div id="weekly-challenge" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; position: relative; cursor: pointer;" onclick="joinWeeklyChallenge()">
                                 <div style="position: absolute; top: -5px; right: -5px; font-size: 40px; opacity: 0.1;">🏆</div>
                                 <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 6px;">🏆 이번 주 챌린지</h3>
                                 <p style="font-size: 11px; opacity: 0.9; margin-bottom: 8px;">"21일 물 2L 마시기" - 1,247명 참여 중</p>
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
                                     <span style="font-size: 10px; opacity: 0.8;">참여율 87%</span>
-                                    <button class="demo-btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); font-size: 10px; padding: 4px 8px;">참여하기</button>
+                                    <button class="demo-btn" id="challenge-btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); font-size: 10px; padding: 4px 8px;">참여하기</button>
                                 </div>
                             </div>
 
@@ -1246,16 +1016,16 @@
                             <div style="background: #f8fafc; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
                                 <h3 style="font-weight: 500; margin-bottom: 8px; font-size: 14px;">🎯 AI 설정</h3>
                                 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                                    <input type="checkbox" checked disabled>
-                                    <span style="font-size: 12px;">AI 맞춤 알림 받기</span>
+                                    <input type="checkbox" id="ai-notifications" checked onchange="toggleAISetting('notifications')">
+                                    <label for="ai-notifications" style="font-size: 12px; cursor: pointer;">AI 맞춤 알림 받기</label>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                                    <input type="checkbox" checked disabled>
-                                    <span style="font-size: 12px;">패턴 분석 허용</span>
+                                    <input type="checkbox" id="pattern-analysis" checked onchange="toggleAISetting('pattern')">
+                                    <label for="pattern-analysis" style="font-size: 12px; cursor: pointer;">패턴 분석 허용</label>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" checked disabled>
-                                    <span style="font-size: 12px;">맞춤 습관 추천 받기</span>
+                                    <input type="checkbox" id="habit-recommendations" checked onchange="toggleAISetting('recommendations')">
+                                    <label for="habit-recommendations" style="font-size: 12px; cursor: pointer;">맞춤 습관 추천 받기</label>
                                 </div>
                             </div>
 
@@ -1269,23 +1039,23 @@
 
                     <!-- 데모 하단 네비게이션 -->
                     <div style="position: absolute; bottom: 1rem; left: 1rem; right: 1rem; background: white; border-radius: 12px; padding: 8px 12px; display: flex; justify-content: space-around; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
-                        <div class="demo-nav-item active" onclick="switchDemoView('dashboard')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #3b82f6; background: #eff6ff;">
+                        <div class="demo-nav-item active" data-view="dashboard" onclick="switchDemoView('dashboard')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #3b82f6; background: #eff6ff;">
                             <span style="font-size: 14px; margin-bottom: 2px;">📊</span>
                             <span>대시보드</span>
                         </div>
-                        <div class="demo-nav-item" onclick="switchDemoView('habits')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #6b7280;">
+                        <div class="demo-nav-item" data-view="habits" onclick="switchDemoView('habits')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #6b7280;">
                             <span style="font-size: 14px; margin-bottom: 2px;">🎯</span>
                             <span>습관</span>
                         </div>
-                        <div class="demo-nav-item" onclick="switchDemoView('explore')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #6b7280;">
+                        <div class="demo-nav-item" data-view="explore" onclick="switchDemoView('explore')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #6b7280;">
                             <span style="font-size: 14px; margin-bottom: 2px;">🔍</span>
                             <span>탐색</span>
                         </div>
-                        <div class="demo-nav-item" onclick="switchDemoView('stats')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #6b7280;">
+                        <div class="demo-nav-item" data-view="stats" onclick="switchDemoView('stats')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #6b7280;">
                             <span style="font-size: 14px; margin-bottom: 2px;">📊</span>
                             <span>통계</span>
                         </div>
-                        <div class="demo-nav-item" onclick="switchDemoView('profile')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #6b7280;">
+                        <div class="demo-nav-item" data-view="profile" onclick="switchDemoView('profile')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #6b7280;">
                             <span style="font-size: 14px; margin-bottom: 2px;">👤</span>
                             <span>프로필</span>
                         </div>
@@ -1311,7 +1081,6 @@
             </div>
         </div>
     </div>
-                        
 
     <!-- 푸터 -->
     <footer class="footer" id="contact">
@@ -1430,6 +1199,12 @@
             document.getElementById('loadingOverlay').classList.remove('show');
         }
 
+        // 데모 모달 닫기 함수 수정
+        function closeDemoModal() {
+            document.getElementById('demoModal').classList.remove('show');
+            showNotification('데모를 종료했습니다. 언제든 다시 체험해보세요! 👋', 'info');
+        }
+
         // 데모 앱 관련 변수들
         let demoHabits = [
             { id: 1, name: '물 2L 마시기', category: 'health', streak: 7, completed: true, aiScore: 94 },
@@ -1438,6 +1213,7 @@
         ];
         
         let currentDemoView = 'dashboard';
+        let challengeJoined = false;
         
         // 카테고리 정보
         const demoCategories = {
@@ -1448,7 +1224,7 @@
             mindfulness: { name: '마음챙김', emoji: '🧘‍♂️', color: '#f59e0b' }
         };
 
-        // 데모 뷰 전환
+        // 데모 뷰 전환 수정
         function switchDemoView(viewName) {
             // 모든 뷰 숨기기
             document.querySelectorAll('.demo-view').forEach(view => {
@@ -1459,14 +1235,22 @@
             document.querySelectorAll('.demo-nav-item').forEach(item => {
                 item.style.color = '#6b7280';
                 item.style.background = 'transparent';
+                item.classList.remove('active');
             });
             
             // 선택된 뷰 표시
-            document.getElementById(`demo-${viewName}-view`).style.display = 'block';
+            const targetView = document.getElementById(`demo-${viewName}-view`);
+            if (targetView) {
+                targetView.style.display = 'block';
+            }
             
             // 선택된 네비게이션 아이템 활성화
-            event.target.closest('.demo-nav-item').style.color = '#3b82f6';
-            event.target.closest('.demo-nav-item').style.background = '#eff6ff';
+            const activeNavItem = document.querySelector(`.demo-nav-item[data-view="${viewName}"]`);
+            if (activeNavItem) {
+                activeNavItem.style.color = '#3b82f6';
+                activeNavItem.style.background = '#eff6ff';
+                activeNavItem.classList.add('active');
+            }
             
             currentDemoView = viewName;
             
@@ -1591,7 +1375,7 @@
             `).join('');
         }
 
-        // 데모 습관 토글
+        // 데모 습관 토글 수정
         function toggleDemoHabit(id) {
             const habit = demoHabits.find(h => h.id === id);
             if (!habit) return;
@@ -1617,6 +1401,17 @@
             
             updateDemoStats();
             updateDemoAIMessage();
+        }
+
+        // 성공 애니메이션 함수
+        function showSuccessAnimation() {
+            const container = document.getElementById('demo-app-container');
+            if (container) {
+                container.classList.add('success-animation');
+                setTimeout(() => {
+                    container.classList.remove('success-animation');
+                }, 500);
+            }
         }
 
         // 데모 습관 추가
@@ -1682,6 +1477,44 @@
             showNotification(`"${name}" 습관이 추가되었습니다! 🎉`, 'success');
         }
 
+        // 주간 챌린지 참여 함수
+        function joinWeeklyChallenge() {
+            challengeJoined = !challengeJoined;
+            
+            const challengeCard = document.getElementById('weekly-challenge');
+            const challengeBtn = document.getElementById('challenge-btn');
+            
+            if (challengeJoined) {
+                challengeCard.classList.add('challenge-joined');
+                challengeBtn.textContent = '참여중 ✓';
+                challengeBtn.style.background = 'rgba(255,255,255,0.3)';
+                challengeBtn.style.border = '1px solid rgba(255,255,255,0.5)';
+                showNotification('주간 챌린지에 참여했습니다! 🏆', 'success');
+            } else {
+                challengeCard.classList.remove('challenge-joined');
+                challengeBtn.textContent = '참여하기';
+                challengeBtn.style.background = 'rgba(255,255,255,0.2)';
+                challengeBtn.style.border = '1px solid rgba(255,255,255,0.3)';
+                showNotification('주간 챌린지 참여를 취소했습니다.', 'info');
+            }
+        }
+
+        // AI 설정 토글 함수
+        function toggleAISetting(settingType) {
+            const settingNames = {
+                notifications: 'AI 맞춤 알림',
+                pattern: '패턴 분석',
+                recommendations: '맞춤 습관 추천'
+            };
+            
+            const checkbox = document.getElementById(`ai-${settingType === 'pattern' ? 'pattern-analysis' : settingType === 'recommendations' ? 'habit-recommendations' : 'notifications'}`);
+            
+            if (checkbox) {
+                const isChecked = checkbox.checked;
+                showNotification(`${settingNames[settingType]} ${isChecked ? '활성화' : '비활성화'}되었습니다.`, 'info');
+            }
+        }
+
         // 데모 습관 삭제
         function deleteDemoHabit(id) {
             const habit = demoHabits.find(h => h.id === id);
@@ -1706,12 +1539,16 @@
             const completionRate = totalHabits > 0 ? Math.round((completedToday / totalHabits) * 100) : 0;
             const maxStreak = demoHabits.length > 0 ? Math.max(...demoHabits.map(h => h.streak)) : 0;
             
-            document.getElementById('demo-completion-rate').textContent = completionRate + '%';
-            document.getElementById('demo-max-streak').textContent = maxStreak + '일';
+            const completionRateElement = document.getElementById('demo-completion-rate');
+            const maxStreakElement = document.getElementById('demo-max-streak');
+            
+            if (completionRateElement) completionRateElement.textContent = completionRate + '%';
+            if (maxStreakElement) maxStreakElement.textContent = maxStreak + '일';
             
             // 성공률 업데이트
             const successRate = Math.min(completionRate + (maxStreak * 2), 100);
-            document.getElementById('demo-success-rate').textContent = successRate;
+            const successRateElement = document.getElementById('demo-success-rate');
+            if (successRateElement) successRateElement.textContent = successRate;
         }
 
         // 데모 AI 메시지 업데이트
@@ -1725,7 +1562,10 @@
             ];
             
             const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-            document.getElementById('demo-ai-message').textContent = `"${randomMessage}"`;
+            const aiMessageElement = document.getElementById('demo-ai-message');
+            if (aiMessageElement) {
+                aiMessageElement.textContent = `"${randomMessage}"`;
+            }
         }
 
         // 데모 인사이트 생성
@@ -1747,6 +1587,17 @@
                 { id: 3, name: '10분 명상', category: 'mindfulness', streak: 2, completed: false, aiScore: 72 }
             ];
             
+            challengeJoined = false;
+            const challengeCard = document.getElementById('weekly-challenge');
+            const challengeBtn = document.getElementById('challenge-btn');
+            
+            if (challengeCard) challengeCard.classList.remove('challenge-joined');
+            if (challengeBtn) {
+                challengeBtn.textContent = '참여하기';
+                challengeBtn.style.background = 'rgba(255,255,255,0.2)';
+                challengeBtn.style.border = '1px solid rgba(255,255,255,0.3)';
+            }
+            
             if (currentDemoView === 'dashboard') {
                 renderDemoHabits();
             } else if (currentDemoView === 'habits') {
@@ -1765,12 +1616,6 @@
             renderDemoHabits();
             updateDemoStats();
             updateDemoAIMessage();
-        }
-
-        // 데모 모달이 열릴 때 초기화
-        function initializeDemo() {
-            currentDemoView = 'dashboard';
-            switchDemoView('dashboard');
         }
 
         // 알림 메시지 표시
