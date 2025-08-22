@@ -491,7 +491,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* 데모 모달 */
+        /* 개선된 데모 모달 */
         .demo-modal {
             display: none;
             position: fixed;
@@ -513,9 +513,9 @@
         .demo-modal-content {
             background: white;
             border-radius: 20px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
+            width: 95%;
+            max-width: 1000px;
+            max-height: 95vh;
             overflow-y: auto;
             position: relative;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
@@ -563,21 +563,30 @@
             padding: 2rem;
         }
         
-        .demo-app-container {
-            background: #f8fafc;
-            border-radius: 15px;
-            padding: 1rem;
+        .demo-main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
             margin-bottom: 2rem;
         }
         
+        .demo-app-container {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
         .demo-phone {
-            width: 320px;
-            height: 640px;
+            width: 280px;
+            height: 560px;
             background: #000;
             border-radius: 25px;
-            padding: 15px;
-            margin: 0 auto;
+            padding: 12px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
         
         .demo-screen {
@@ -608,18 +617,18 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.8rem;
             margin-bottom: 1rem;
         }
         
         .demo-habit {
             background: rgba(255, 255, 255, 0.15);
-            padding: 1rem;
+            padding: 0.8rem;
             border-radius: 12px;
             backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8rem;
             transition: all 0.3s ease;
             cursor: pointer;
         }
@@ -630,8 +639,8 @@
         }
         
         .demo-habit-check {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             border: 2px solid white;
             border-radius: 50%;
             display: flex;
@@ -640,6 +649,7 @@
             color: white;
             font-weight: bold;
             transition: all 0.3s ease;
+            font-size: 0.8rem;
         }
         
         .demo-habit-check.completed {
@@ -654,26 +664,94 @@
         
         .demo-habit-name {
             font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
         }
         
         .demo-habit-streak {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             opacity: 0.8;
         }
         
         .demo-ai-insight {
             background: rgba(255, 255, 255, 0.1);
-            padding: 1rem;
+            padding: 0.8rem;
             border-radius: 12px;
             text-align: center;
             backdrop-filter: blur(10px);
+            margin-top: auto;
+        }
+        
+        .demo-ai-insight-text {
+            font-size: 0.7rem;
+            opacity: 0.9;
+        }
+
+        /* 개선된 하단 탭 */
+        .demo-bottom-tabs {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 0.8rem 0.5rem;
+            border-radius: 0 0 20px 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .demo-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.2rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0.3rem;
+            border-radius: 8px;
+            min-width: 0;
+            flex: 1;
+        }
+        
+        .demo-tab.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .demo-tab:hover {
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .demo-tab-icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.1rem;
+        }
+        
+        .demo-tab-label {
+            font-size: 0.6rem;
+            text-align: center;
+            line-height: 1;
+        }
+        
+        .demo-info-panel {
+            padding: 1rem;
+        }
+        
+        .demo-info-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1a202c;
+            text-align: center;
         }
         
         .demo-controls {
             text-align: center;
-            margin-top: 2rem;
+            margin: 2rem 0;
         }
         
         .demo-btn {
@@ -705,7 +783,6 @@
         }
         
         .demo-features {
-            margin-top: 2rem;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
@@ -717,10 +794,16 @@
             background: #f8fafc;
             border-radius: 10px;
             border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-feature:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .demo-feature-icon {
-            font-size: 2rem;
+            font-size: 1.8rem;
             margin-bottom: 0.5rem;
         }
         
@@ -732,8 +815,9 @@
         }
         
         .demo-feature p {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #718096;
+            line-height: 1.4;
         }
         
         @keyframes checkPulse {
@@ -787,6 +871,16 @@
             .features-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .demo-main-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .demo-phone {
+                width: 260px;
+                height: 520px;
+            }
         }
     </style>
 </head>
@@ -823,7 +917,7 @@
                         <span class="stat-label">성공률</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-number">4.9★</span>
+                        <span class="stat-number">4.9⭐</span>
                         <span class="stat-label">사용자 평점</span>
                     </div>
                 </div>
@@ -920,7 +1014,7 @@
                 </div>
                 
                 <div class="feature-card fade-in">
-                    <div class="feature-icon">🌍</div>
+                    <div class="feature-icon">🌐</div>
                     <h3>커뮤니티 챌린지</h3>
                     <p>전국 수천 명과 함께하는 21일 챌린지로 혼자가 아닌 함께 성장하세요.</p>
                 </div>
@@ -971,97 +1065,253 @@
         <div class="loading-text">앱으로 이동 중...</div>
     </div>
 
-    <!-- 데모 모달 -->
+    <!-- 실제 앱 체험 데모 모달 -->
     <div id="demoModal" class="demo-modal">
-        <div class="demo-modal-content">
+        <div class="demo-modal-content" style="max-width: 1200px; width: 98%; max-height: 95vh;">
             <div class="demo-modal-header">
-                <h2>🎯 HabitFlow 실시간 데모</h2>
+                <h2>🎯 HabitFlow 무료 체험</h2>
+                <div style="font-size: 0.9rem; opacity: 0.9; margin-top: 0.5rem;">
+                    ⚡ 실제 앱 화면을 체험해보세요! (데이터는 저장되지 않습니다)
+                </div>
                 <button class="demo-close" onclick="closeDemoModal()">&times;</button>
             </div>
             
-            <div class="demo-modal-body">
-                <div class="demo-app-container">
-                    <div class="demo-phone">
-                        <div class="demo-screen">
-                            <div class="demo-content">
-                                <div class="demo-header">
-                                    <h3>🤖 AI 코치 "하비"</h3>
-                                    <p style="font-size: 0.9rem; opacity: 0.8;">오늘의 성공률: <span id="successRate">94</span>% 예측</p>
+            <div class="demo-modal-body" style="padding: 1rem;">
+                <!-- 데모 앱 컨테이너 -->
+                <div id="demo-app-container" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 1rem; min-height: 600px; position: relative;">
+                    
+                    <!-- 데모 사용자 헤더 -->
+                    <div class="demo-user-header" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); color: white; padding: 12px 16px; border-radius: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b6b); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">체</div>
+                            <div>
+                                <div style="font-weight: 600; font-size: 14px;">체험 사용자</div>
+                                <div style="font-size: 10px; opacity: 0.8;">AI 습관 코치와 함께</div>
+                            </div>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 4px 12px; border-radius: 15px; font-size: 11px;">
+                            데모 모드
+                        </div>
+                    </div>
+
+                    <!-- 데모 뷰 컨테이너 -->
+                    <div style="background: white; border-radius: 12px; padding: 16px; min-height: 500px; margin-bottom: 60px;">
+                        
+                        <!-- 대시보드 뷰 -->
+                        <div id="demo-dashboard-view" class="demo-view">
+                            <!-- AI 코치 카드 -->
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px; border-radius: 12px; margin-bottom: 16px; position: relative; overflow: hidden;">
+                                <div style="display: inline-flex; align-items: center; gap: 4px; background: linear-gradient(135deg, #ffd700, #ffed4e); color: #92400e; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; margin-bottom: 8px;">
+                                    🤖 AI 코치 "하비"
                                 </div>
                                 
-                                <div class="demo-habits">
-                                    <div class="demo-habit" onclick="toggleHabit(this)">
-                                        <div class="demo-habit-check completed">✓</div>
-                                        <div class="demo-habit-info">
-                                            <div class="demo-habit-name">물 2L 마시기</div>
-                                            <div class="demo-habit-streak">🔥 7일 연속</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="demo-habit" onclick="toggleHabit(this)">
-                                        <div class="demo-habit-check completed">✓</div>
-                                        <div class="demo-habit-info">
-                                            <div class="demo-habit-name">30분 독서</div>
-                                            <div class="demo-habit-streak">📚 AI 점수: 92점</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="demo-habit" onclick="toggleHabit(this)">
-                                        <div class="demo-habit-check">○</div>
-                                        <div class="demo-habit-info">
-                                            <div class="demo-habit-name">10분 명상</div>
-                                            <div class="demo-habit-streak">🧘‍♂️ 오후 7시 권장</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="demo-habit" onclick="toggleHabit(this)">
-                                        <div class="demo-habit-check">○</div>
-                                        <div class="demo-habit-info">
-                                            <div class="demo-habit-name">영어 단어 10개</div>
-                                            <div class="demo-habit-streak">📝 새로운 습관</div>
-                                        </div>
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #ffd700, #ff6b6b); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px;">🧠</div>
+                                    <div>
+                                        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">개인 맞춤 AI 분석</h3>
+                                        <div style="font-size: 11px; opacity: 0.8;">성공률 예측: <span id="demo-success-rate">94</span>%</div>
                                     </div>
                                 </div>
                                 
-                                <div class="demo-ai-insight">
-                                    <div style="font-size: 0.9rem; opacity: 0.8;">💡 AI 인사이트</div>
-                                    <div style="font-size: 0.8rem; margin-top: 0.5rem;" id="aiInsight">"오후 8시에 명상하면 성공률 23% 증가!"</div>
+                                <div style="background: rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 8px; font-size: 11px;">
+                                    <div style="font-weight: 600; margin-bottom: 4px;">📊 오늘의 AI 인사이트:</div>
+                                    <div id="demo-ai-message" style="opacity: 0.9;">"오후 8시에 명상하면 성공률 23% 증가!"</div>
                                 </div>
                             </div>
+
+                            <!-- 오늘의 습관 -->
+                            <div style="margin-bottom: 16px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <h2 style="font-size: 16px; font-weight: 600; color: #1a202c;">🎯 오늘의 습관</h2>
+                                    <button class="demo-btn" onclick="addDemoHabit()" style="font-size: 11px; padding: 4px 8px;">+ 추가</button>
+                                </div>
+                                
+                                <div id="demo-habits-list">
+                                    <!-- 습관들이 여기에 렌더링됩니다 -->
+                                </div>
+                            </div>
+
+                            <!-- 통계 -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; text-align: center;">
+                                    <div id="demo-completion-rate" style="font-size: 18px; font-weight: bold; color: #10b981; margin-bottom: 4px;">67%</div>
+                                    <div style="font-size: 10px; color: #6b7280;">오늘 달성률</div>
+                                </div>
+                                <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; text-align: center;">
+                                    <div id="demo-max-streak" style="font-size: 18px; font-weight: bold; color: #3b82f6; margin-bottom: 4px;">7일</div>
+                                    <div style="font-size: 10px; color: #6b7280;">최고 연속 기록</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 습관 관리 뷰 -->
+                        <div id="demo-habits-view" class="demo-view" style="display: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <h2 style="font-size: 18px; font-weight: 600; color: #1a202c;">🎯 습관 관리</h2>
+                                <button class="demo-btn" onclick="addDemoHabit()">+ 새 습관</button>
+                            </div>
+                            
+                            <div id="demo-all-habits-list">
+                                <!-- 모든 습관 목록이 여기에 표시됩니다 -->
+                            </div>
+                        </div>
+
+                        <!-- 탐색 뷰 -->
+                        <div id="demo-explore-view" class="demo-view" style="display: none;">
+                            <!-- 주간 챌린지 -->
+                            <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; position: relative;">
+                                <div style="position: absolute; top: -5px; right: -5px; font-size: 40px; opacity: 0.1;">🏆</div>
+                                <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 6px;">🏆 이번 주 챌린지</h3>
+                                <p style="font-size: 11px; opacity: 0.9; margin-bottom: 8px;">"21일 물 2L 마시기" - 1,247명 참여 중</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 10px; opacity: 0.8;">참여율 87%</span>
+                                    <button class="demo-btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); font-size: 10px; padding: 4px 8px;">참여하기</button>
+                                </div>
+                            </div>
+
+                            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #1a202c;">🔍 습관 탐색</h2>
+                            
+                            <!-- 인기 습관들 -->
+                            <div style="display: grid; gap: 8px;">
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; cursor: pointer;" onclick="addRecommendedHabitDemo('물 2L 마시기', 'health')">
+                                    <div style="font-weight: 500; margin-bottom: 4px; font-size: 12px;">🚰 물 2L 마시기 <span style="background: #f59e0b; color: white; padding: 1px 4px; border-radius: 4px; font-size: 8px;">인기</span></div>
+                                    <div style="font-size: 10px; color: #6b7280; margin-bottom: 4px;">하루에 물 2리터 마시기로 건강 개선</div>
+                                    <div style="font-size: 9px; color: #6b7280;">👥 15,420명 실행 | 📈 89% 성공률</div>
+                                </div>
+                                
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; cursor: pointer;" onclick="addRecommendedHabitDemo('30분 독서', 'learning')">
+                                    <div style="font-weight: 500; margin-bottom: 4px; font-size: 12px;">📚 30분 독서하기</div>
+                                    <div style="font-size: 10px; color: #6b7280; margin-bottom: 4px;">매일 30분씩 책 읽는 습관 만들기</div>
+                                    <div style="font-size: 9px; color: #6b7280;">👥 12,890명 실행 | 📈 76% 성공률</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 통계 뷰 -->
+                        <div id="demo-stats-view" class="demo-view" style="display: none;">
+                            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #1a202c;">📊 상세 통계</h2>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center;">
+                                    <div style="font-size: 20px; font-weight: bold; color: #10b981; margin-bottom: 4px;">3</div>
+                                    <div style="font-size: 11px; color: #6b7280;">총 습관</div>
+                                </div>
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center;">
+                                    <div style="font-size: 20px; font-weight: bold; color: #3b82f6; margin-bottom: 4px;">2</div>
+                                    <div style="font-size: 11px; color: #6b7280;">완료한 습관</div>
+                                </div>
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center;">
+                                    <div style="font-size: 20px; font-weight: bold; color: #f59e0b; margin-bottom: 4px;">5일</div>
+                                    <div style="font-size: 11px; color: #6b7280;">평균 연속 기록</div>
+                                </div>
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center;">
+                                    <div style="font-size: 20px; font-weight: bold; color: #8b5cf6; margin-bottom: 4px;">87%</div>
+                                    <div style="font-size: 11px; color: #6b7280;">전체 성공률</div>
+                                </div>
+                            </div>
+
+                            <div style="background: #f8fafc; border-radius: 8px; padding: 12px;">
+                                <h3 style="font-weight: 500; margin-bottom: 8px; font-size: 14px;">📈 주간 진행률</h3>
+                                <div style="display: flex; gap: 4px; align-items: end; height: 60px;">
+                                    <div style="background: #10b981; width: 20px; height: 45px; border-radius: 2px 2px 0 0;"></div>
+                                    <div style="background: #10b981; width: 20px; height: 38px; border-radius: 2px 2px 0 0;"></div>
+                                    <div style="background: #10b981; width: 20px; height: 52px; border-radius: 2px 2px 0 0;"></div>
+                                    <div style="background: #10b981; width: 20px; height: 41px; border-radius: 2px 2px 0 0;"></div>
+                                    <div style="background: #10b981; width: 20px; height: 48px; border-radius: 2px 2px 0 0;"></div>
+                                    <div style="background: #6b7280; width: 20px; height: 25px; border-radius: 2px 2px 0 0;"></div>
+                                    <div style="background: #e5e7eb; width: 20px; height: 15px; border-radius: 2px 2px 0 0;"></div>
+                                </div>
+                                <div style="display: flex; gap: 4px; font-size: 9px; color: #6b7280; margin-top: 4px;">
+                                    <div style="width: 20px; text-align: center;">월</div>
+                                    <div style="width: 20px; text-align: center;">화</div>
+                                    <div style="width: 20px; text-align: center;">수</div>
+                                    <div style="width: 20px; text-align: center;">목</div>
+                                    <div style="width: 20px; text-align: center;">금</div>
+                                    <div style="width: 20px; text-align: center;">토</div>
+                                    <div style="width: 20px; text-align: center;">일</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 프로필 뷰 -->
+                        <div id="demo-profile-view" class="demo-view" style="display: none;">
+                            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #1a202c;">👤 프로필</h2>
+                            
+                            <div style="text-align: center; margin-bottom: 16px;">
+                                <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff6b6b); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 24px; margin: 0 auto 8px;">체</div>
+                                <div style="font-weight: 600; font-size: 16px; color: #1a202c;">체험 사용자</div>
+                                <div style="font-size: 12px; color: #6b7280;">데모 계정</div>
+                            </div>
+
+                            <div style="background: #f8fafc; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+                                <h3 style="font-weight: 500; margin-bottom: 8px; font-size: 14px;">🎯 AI 설정</h3>
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                    <input type="checkbox" checked disabled>
+                                    <span style="font-size: 12px;">AI 맞춤 알림 받기</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                    <input type="checkbox" checked disabled>
+                                    <span style="font-size: 12px;">패턴 분석 허용</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <input type="checkbox" checked disabled>
+                                    <span style="font-size: 12px;">맞춤 습관 추천 받기</span>
+                                </div>
+                            </div>
+
+                            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px; text-align: center;">
+                                <div style="color: #dc2626; font-size: 12px; margin-bottom: 8px;">⚠️ 이것은 데모 모드입니다</div>
+                                <div style="color: #6b7280; font-size: 11px; margin-bottom: 8px;">실제 계정을 만들어 데이터를 저장하고 모든 기능을 이용하세요!</div>
+                                <button class="demo-btn" onclick="goToApp()" style="font-size: 11px; padding: 6px 12px;">🚀 회원가입하기</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 데모 하단 네비게이션 -->
+                    <div style="position: absolute; bottom: 1rem; left: 1rem; right: 1rem; background: white; border-radius: 12px; padding: 8px 12px; display: flex; justify-content: space-around; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                        <div class="demo-nav-item active" onclick="switchDemoView('dashboard')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #3b82f6; background: #eff6ff;">
+                            <span style="font-size: 14px; margin-bottom: 2px;">📊</span>
+                            <span>대시보드</span>
+                        </div>
+                        <div class="demo-nav-item" onclick="switchDemoView('habits')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #6b7280;">
+                            <span style="font-size: 14px; margin-bottom: 2px;">🎯</span>
+                            <span>습관</span>
+                        </div>
+                        <div class="demo-nav-item" onclick="switchDemoView('explore')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #6b7280;">
+                            <span style="font-size: 14px; margin-bottom: 2px;">🔍</span>
+                            <span>탐색</span>
+                        </div>
+                        <div class="demo-nav-item" onclick="switchDemoView('stats')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #6b7280;">
+                            <span style="font-size: 14px; margin-bottom: 2px;">📊</span>
+                            <span>통계</span>
+                        </div>
+                        <div class="demo-nav-item" onclick="switchDemoView('profile')" style="display: flex; flex-direction: column; align-items: center; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 10px; color: #6b7280;">
+                            <span style="font-size: 14px; margin-bottom: 2px;">👤</span>
+                            <span>프로필</span>
                         </div>
                     </div>
                 </div>
                 
-                <div class="demo-controls">
-                    <button class="demo-btn" onclick="startDemo()">🎮 인터렉티브 체험</button>
-                    <button class="demo-btn secondary" onclick="goToApp()">바로 시작하기</button>
-                </div>
-                
-                <div class="demo-features">
-                    <div class="demo-feature">
-                        <div class="demo-feature-icon">🤖</div>
-                        <h4>AI 개인화</h4>
-                        <p>15,000명 데이터 기반 맞춤 추천</p>
+                <!-- 데모 안내 및 액션 -->
+                <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+                    <div style="background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+                        <div style="color: #92400e; font-size: 13px; font-weight: 600; margin-bottom: 4px;">⚡ 데모 체험 중</div>
+                        <div style="color: #92400e; font-size: 11px;">이 데모에서 생성한 데이터는 저장되지 않습니다. 실제 사용을 위해서는 회원가입이 필요합니다.</div>
                     </div>
-                    <div class="demo-feature">
-                        <div class="demo-feature-icon">📊</div>
-                        <h4>실시간 분석</h4>
-                        <p>성공률 예측 및 최적 타이밍 제안</p>
-                    </div>
-                    <div class="demo-feature">
-                        <div class="demo-feature-icon">🎯</div>
-                        <h4>목표 달성</h4>
-                        <p>21일 완주 성공률 89%</p>
-                    </div>
-                    <div class="demo-feature">
-                        <div class="demo-feature-icon">🏆</div>
-                        <h4>게이미피케이션</h4>
-                        <p>재미있는 배지와 연속 기록</p>
+                    
+                    <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                        <button class="demo-btn secondary" onclick="resetDemoData()" style="font-size: 12px; padding: 8px 16px;">
+                            🔄 데모 초기화
+                        </button>
+                        <button class="demo-btn" onclick="goToApp()" style="font-size: 12px; padding: 8px 16px;">
+                            🚀 실제 서비스 이용하기
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+                        
 
     <!-- 푸터 -->
     <footer class="footer" id="contact">
@@ -1180,77 +1430,347 @@
             document.getElementById('loadingOverlay').classList.remove('show');
         }
 
-        // 데모 기능
-        function showDemo() {
-            document.getElementById('demoModal').classList.add('show');
-        }
+        // 데모 앱 관련 변수들
+        let demoHabits = [
+            { id: 1, name: '물 2L 마시기', category: 'health', streak: 7, completed: true, aiScore: 94 },
+            { id: 2, name: '30분 독서', category: 'learning', streak: 4, completed: true, aiScore: 87 },
+            { id: 3, name: '10분 명상', category: 'mindfulness', streak: 2, completed: false, aiScore: 72 }
+        ];
+        
+        let currentDemoView = 'dashboard';
+        
+        // 카테고리 정보
+        const demoCategories = {
+            health: { name: '건강', emoji: '🏃‍♂️', color: '#ef4444' },
+            learning: { name: '학습', emoji: '📚', color: '#3b82f6' },
+            productivity: { name: '생산성', emoji: '💼', color: '#10b981' },
+            social: { name: '관계', emoji: '👥', color: '#8b5cf6' },
+            mindfulness: { name: '마음챙김', emoji: '🧘‍♂️', color: '#f59e0b' }
+        };
 
-        function closeDemoModal() {
-            document.getElementById('demoModal').classList.remove('show');
-        }
-
-        // 습관 토글 (데모용)
-        function toggleHabit(habitElement) {
-            const checkbox = habitElement.querySelector('.demo-habit-check');
-            const isCompleted = checkbox.classList.contains('completed');
+        // 데모 뷰 전환
+        function switchDemoView(viewName) {
+            // 모든 뷰 숨기기
+            document.querySelectorAll('.demo-view').forEach(view => {
+                view.style.display = 'none';
+            });
             
-            if (isCompleted) {
-                checkbox.classList.remove('completed');
-                checkbox.textContent = '○';
-                updateSuccessRate(-1);
-            } else {
-                checkbox.classList.add('completed');
-                checkbox.textContent = '✓';
-                updateSuccessRate(1);
-                
-                // 체크 효과
-                showNotification('🎉 습관 완료! AI가 당신의 패턴을 학습했습니다.', 'success');
+            // 모든 네비게이션 아이템 비활성화
+            document.querySelectorAll('.demo-nav-item').forEach(item => {
+                item.style.color = '#6b7280';
+                item.style.background = 'transparent';
+            });
+            
+            // 선택된 뷰 표시
+            document.getElementById(`demo-${viewName}-view`).style.display = 'block';
+            
+            // 선택된 네비게이션 아이템 활성화
+            event.target.closest('.demo-nav-item').style.color = '#3b82f6';
+            event.target.closest('.demo-nav-item').style.background = '#eff6ff';
+            
+            currentDemoView = viewName;
+            
+            // 뷰별 데이터 렌더링
+            if (viewName === 'dashboard') {
+                renderDemoHabits();
+                updateDemoStats();
+            } else if (viewName === 'habits') {
+                renderDemoAllHabits();
             }
             
-            updateAIInsight();
+            showNotification(`${getViewName(viewName)} 화면으로 이동했습니다!`, 'info');
+        }
+        
+        function getViewName(viewName) {
+            const names = {
+                dashboard: '대시보드',
+                habits: '습관 관리',
+                explore: '탐색',
+                stats: '통계',
+                profile: '프로필'
+            };
+            return names[viewName] || viewName;
         }
 
-        // 성공률 업데이트
-        function updateSuccessRate(change) {
-            const rateElement = document.getElementById('successRate');
-            let currentRate = parseInt(rateElement.textContent);
+        // 데모 습관 렌더링
+        function renderDemoHabits() {
+            const container = document.getElementById('demo-habits-list');
             
-            if (change > 0) {
-                currentRate = Math.min(99, currentRate + Math.floor(Math.random() * 3) + 1);
-            } else {
-                currentRate = Math.max(70, currentRate - Math.floor(Math.random() * 3) - 1);
+            if (demoHabits.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #6b7280;">
+                        <div style="font-size: 32px; margin-bottom: 8px;">🎯</div>
+                        <p style="margin-bottom: 8px;">아직 습관이 없습니다</p>
+                        <button class="demo-btn" onclick="addDemoHabit()" style="font-size: 11px; padding: 6px 12px;">+ 첫 습관 추가</button>
+                    </div>
+                `;
+                return;
             }
             
-            rateElement.textContent = currentRate;
+            container.innerHTML = demoHabits.map(habit => `
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 8px; position: relative;">
+                    <div style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px;">
+                        <button onclick="deleteDemoHabit(${habit.id})" style="background: #ef4444; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-size: 10px; cursor: pointer;">삭제</button>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding-right: 40px;">
+                        <div onclick="toggleDemoHabit(${habit.id})" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid ${habit.completed ? '#10b981' : '#d1d5db'}; background: ${habit.completed ? '#10b981' : 'white'}; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 10px; transition: all 0.2s;">
+                            ${habit.completed ? '✓' : '○'}
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 style="font-size: 12px; font-weight: 500; margin-bottom: 4px; ${habit.completed ? 'text-decoration: line-through; color: #6b7280;' : ''}">
+                                ${habit.name}
+                            </h3>
+                            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                                <span style="font-size: 9px; padding: 2px 6px; border-radius: 8px; background: ${demoCategories[habit.category].color}20; color: ${demoCategories[habit.category].color};">
+                                    ${demoCategories[habit.category].emoji} ${demoCategories[habit.category].name}
+                                </span>
+                                <span style="font-size: 9px; color: #6b7280;">🔥 ${habit.streak}일 연속</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 2px 6px; border-radius: 6px; font-size: 8px; font-weight: 600;">
+                            AI: ${habit.aiScore}점
+                        </div>
+                        <div style="font-size: 9px; color: #3b82f6;">
+                            💡 ${getDemoInsight(habit)}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // AI 인사이트 업데이트
-        function updateAIInsight() {
-            const insights = [
-                "오후 8시에 명상하면 성공률 23% 증가!",
-                "물 마시기 후 독서하면 집중력 35% 향상!",
-                "현재 패턴으로 21일 완주 확률 94%!",
-                "월요일 아침 습관 성공률이 높습니다!",
-                "스트레스 수준이 낮을 때 새 습관 추가 권장!",
-                "연속 7일! 도파민 분비가 최적화되었습니다!"
+        // 모든 데모 습관 렌더링
+        function renderDemoAllHabits() {
+            const container = document.getElementById('demo-all-habits-list');
+            
+            if (demoHabits.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #6b7280;">
+                        <div style="font-size: 32px; margin-bottom: 8px;">📋</div>
+                        <p style="margin-bottom: 8px;">등록된 습관이 없습니다</p>
+                        <button class="demo-btn" onclick="addDemoHabit()" style="font-size: 11px; padding: 6px 12px;">+ 첫 습관 추가</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = demoHabits.map(habit => `
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 8px; position: relative;">
+                    <div style="position: absolute; top: 8px; right: 8px;">
+                        <button onclick="deleteDemoHabit(${habit.id})" style="background: #ef4444; color: white; border: none; padding: 2px 6px; border-radius: 4px; font-size: 10px; cursor: pointer;">삭제</button>
+                    </div>
+                    
+                    <div style="padding-right: 40px;">
+                        <h3 style="font-size: 14px; font-weight: 500; margin-bottom: 6px;">
+                            ${habit.name}
+                        </h3>
+                        
+                        <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 6px; flex-wrap: wrap;">
+                            <span style="font-size: 10px; padding: 2px 6px; border-radius: 8px; background: ${demoCategories[habit.category].color}20; color: ${demoCategories[habit.category].color};">
+                                ${demoCategories[habit.category].emoji} ${demoCategories[habit.category].name}
+                            </span>
+                            <span style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 1px 4px; border-radius: 4px; font-size: 8px;">AI: ${habit.aiScore}점</span>
+                        </div>
+                        
+                        <div style="display: flex; gap: 12px; font-size: 11px; margin-bottom: 6px;">
+                            <span style="color: #10b981;">🔥 현재: ${habit.streak}일</span>
+                            <span style="color: #3b82f6;">📈 진행률: ${Math.round((habit.streak / 30) * 100)}%</span>
+                            <span style="color: ${habit.completed ? '#10b981' : '#6b7280'};">
+                                ${habit.completed ? '✅ 완료' : '⏳ 대기'}
+                            </span>
+                        </div>
+                        
+                        <div style="font-size: 9px; color: #6b7280;">
+                            💡 ${getDemoInsight(habit)}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 데모 습관 토글
+        function toggleDemoHabit(id) {
+            const habit = demoHabits.find(h => h.id === id);
+            if (!habit) return;
+            
+            habit.completed = !habit.completed;
+            
+            if (habit.completed) {
+                habit.streak++;
+                habit.aiScore = Math.min(habit.aiScore + Math.floor(Math.random() * 5) + 1, 100);
+                showNotification('습관 완료! 🎉', 'success');
+                showSuccessAnimation();
+            } else {
+                if (habit.streak > 0) habit.streak--;
+                habit.aiScore = Math.max(habit.aiScore - Math.floor(Math.random() * 3), 50);
+            }
+            
+            // UI 업데이트
+            if (currentDemoView === 'dashboard') {
+                renderDemoHabits();
+            } else if (currentDemoView === 'habits') {
+                renderDemoAllHabits();
+            }
+            
+            updateDemoStats();
+            updateDemoAIMessage();
+        }
+
+        // 데모 습관 추가
+        function addDemoHabit() {
+            const newHabits = [
+                { name: '스트레칭 5분', category: 'health' },
+                { name: '영어 단어 10개', category: 'learning' },
+                { name: '일기 쓰기', category: 'productivity' },
+                { name: '가족과 대화', category: 'social' },
+                { name: '감사 표현', category: 'mindfulness' }
             ];
             
-            const randomInsight = insights[Math.floor(Math.random() * insights.length)];
-            document.getElementById('aiInsight').textContent = `"${randomInsight}"`;
+            const availableHabits = newHabits.filter(newHabit => 
+                !demoHabits.some(existing => existing.name.includes(newHabit.name.substring(0, 5)))
+            );
+            
+            if (availableHabits.length === 0) {
+                showNotification('더 이상 추가할 수 있는 데모 습관이 없습니다!', 'info');
+                return;
+            }
+            
+            const randomHabit = availableHabits[Math.floor(Math.random() * availableHabits.length)];
+            
+            const newHabit = {
+                id: Date.now(),
+                name: randomHabit.name,
+                category: randomHabit.category,
+                streak: 0,
+                completed: false,
+                aiScore: Math.floor(Math.random() * 20) + 60
+            };
+            
+            demoHabits.push(newHabit);
+            
+            if (currentDemoView === 'dashboard') {
+                renderDemoHabits();
+            } else if (currentDemoView === 'habits') {
+                renderDemoAllHabits();
+            }
+            
+            updateDemoStats();
+            showNotification(`"${newHabit.name}" 습관이 추가되었습니다! ✨`, 'success');
         }
 
-        // 인터렉티브 데모 시작
-        function startDemo() {
-            showNotification('🤖 AI가 당신의 패턴을 분석합니다...', 'info');
+        // 추천 습관 추가 (탐색 화면에서)
+        function addRecommendedHabitDemo(name, category) {
+            if (demoHabits.some(h => h.name.includes(name.substring(0, 5)))) {
+                showNotification('비슷한 습관이 이미 있습니다!', 'error');
+                return;
+            }
             
-            setTimeout(() => {
-                showNotification('📊 개인화된 습관 추천을 생성했습니다!', 'success');
-                updateAIInsight();
-            }, 2000);
+            const newHabit = {
+                id: Date.now(),
+                name: name,
+                category: category,
+                streak: 0,
+                completed: false,
+                aiScore: Math.floor(Math.random() * 20) + 70
+            };
             
-            setTimeout(() => {
-                showNotification('🎯 위의 습관들을 클릭해서 체험해보세요!', 'info');
-            }, 3500);
+            demoHabits.push(newHabit);
+            updateDemoStats();
+            showNotification(`"${name}" 습관이 추가되었습니다! 🎉`, 'success');
+        }
+
+        // 데모 습관 삭제
+        function deleteDemoHabit(id) {
+            const habit = demoHabits.find(h => h.id === id);
+            if (!habit) return;
+            
+            demoHabits = demoHabits.filter(h => h.id !== id);
+            
+            if (currentDemoView === 'dashboard') {
+                renderDemoHabits();
+            } else if (currentDemoView === 'habits') {
+                renderDemoAllHabits();
+            }
+            
+            updateDemoStats();
+            showNotification(`"${habit.name}" 습관이 삭제되었습니다.`, 'success');
+        }
+
+        // 데모 통계 업데이트
+        function updateDemoStats() {
+            const totalHabits = demoHabits.length;
+            const completedToday = demoHabits.filter(h => h.completed).length;
+            const completionRate = totalHabits > 0 ? Math.round((completedToday / totalHabits) * 100) : 0;
+            const maxStreak = demoHabits.length > 0 ? Math.max(...demoHabits.map(h => h.streak)) : 0;
+            
+            document.getElementById('demo-completion-rate').textContent = completionRate + '%';
+            document.getElementById('demo-max-streak').textContent = maxStreak + '일';
+            
+            // 성공률 업데이트
+            const successRate = Math.min(completionRate + (maxStreak * 2), 100);
+            document.getElementById('demo-success-rate').textContent = successRate;
+        }
+
+        // 데모 AI 메시지 업데이트
+        function updateDemoAIMessage() {
+            const messages = [
+                "오늘 아침 8시에 습관을 실행하면 성공률이 23% 증가합니다! ⏰",
+                "연속 3일 달성 시 뇌에서 도파민이 더 많이 분비됩니다! 🧠",
+                "현재 패턴으로 목표 달성 확률은 87%입니다! 🎯",
+                "주말 습관 실행률이 평일보다 34% 낮습니다. 알림을 설정해보세요! 📱",
+                "스트레스가 높은 날 습관 실패율이 67% 증가합니다. 명상을 추천드려요! 🧘‍♂️"
+            ];
+            
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            document.getElementById('demo-ai-message').textContent = `"${randomMessage}"`;
+        }
+
+        // 데모 인사이트 생성
+        function getDemoInsight(habit) {
+            const insights = [
+                `오전 실행 시 성공률 ${habit.streak + 15}% 증가`,
+                `현재 패턴으로 ${Math.round(85 + habit.streak)}% 달성 확률`,
+                `연속 ${habit.streak + 1}일 달성 시 자동화 단계 진입`,
+                `이 시간대 완료 시 집중력 ${Math.round(20 + habit.streak * 2)}% 향상`
+            ];
+            return insights[Math.floor(Math.random() * insights.length)];
+        }
+
+        // 데모 데이터 초기화
+        function resetDemoData() {
+            demoHabits = [
+                { id: 1, name: '물 2L 마시기', category: 'health', streak: 7, completed: true, aiScore: 94 },
+                { id: 2, name: '30분 독서', category: 'learning', streak: 4, completed: true, aiScore: 87 },
+                { id: 3, name: '10분 명상', category: 'mindfulness', streak: 2, completed: false, aiScore: 72 }
+            ];
+            
+            if (currentDemoView === 'dashboard') {
+                renderDemoHabits();
+            } else if (currentDemoView === 'habits') {
+                renderDemoAllHabits();
+            }
+            
+            updateDemoStats();
+            updateDemoAIMessage();
+            showNotification('🔄 데모 데이터가 초기화되었습니다!', 'info');
+        }
+
+        // 기존 함수들 수정
+        function showDemo() {
+            document.getElementById('demoModal').classList.add('show');
+            // 데모 시작 시 초기 렌더링
+            renderDemoHabits();
+            updateDemoStats();
+            updateDemoAIMessage();
+        }
+
+        // 데모 모달이 열릴 때 초기화
+        function initializeDemo() {
+            currentDemoView = 'dashboard';
+            switchDemoView('dashboard');
         }
 
         // 알림 메시지 표시
