@@ -484,7 +484,7 @@
             right: 0;
             background: white;
             border-top: 1px solid #e5e7eb;
-            padding: 12px 20px;
+            padding: 8px 16px;
             display: flex;
             justify-content: space-around;
             box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
@@ -494,13 +494,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 8px 12px;
+            padding: 6px 8px;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 12px;
+            font-size: 11px;
             color: #6b7280;
-            min-width: 60px;
+            min-width: 50px;
+            position: relative;
         }
         
         .nav-item.active {
@@ -510,6 +511,126 @@
         
         .nav-item:hover {
             background: #f3f4f6;
+        }
+        
+        /* 알림 뱃지 스타일 */
+        .notification-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+        
+        /* 알림센터 스타일 */
+        .notification-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .notification-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .notification-item.unread {
+            background: #f0f9ff;
+            border-color: #3b82f6;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+        }
+        
+        .notification-item.unread::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 8px;
+            height: 8px;
+            background: #3b82f6;
+            border-radius: 50%;
+        }
+        
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .notification-message {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        
+        .notification-time {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+        
+        .notification-type {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .notification-type.system {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .notification-type.habit {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        
+        .notification-type.achievement {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .notification-type.reminder {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .notification-delete {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+        
+        .notification-delete:hover {
+            background: #fee2e2;
+            color: #dc2626;
         }
         
         .modal {
@@ -1002,6 +1123,23 @@
                 </div>
             </div>
 
+            <!-- 알림센터 뷰 -->
+            <div id="notifications-view" class="view">
+                <div class="card">
+                    <div class="section-header">
+                        <h2 style="font-size: 20px; font-weight: 600;">🔔 알림센터</h2>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-small btn-outline" onclick="markAllAsRead()">모두 읽음</button>
+                            <button class="btn btn-small btn-danger" onclick="clearAllNotifications()">모두 삭제</button>
+                        </div>
+                    </div>
+                    
+                    <div id="notifications-list">
+                        <!-- 알림 목록이 여기에 표시됩니다 -->
+                    </div>
+                </div>
+            </div>
+
             <!-- 탐색 뷰 -->
             <div id="explore-view" class="view">
                 <!-- 주간 챌린지 -->
@@ -1100,6 +1238,13 @@
                 <span style="font-size: 16px;">🎯</span>
                 <span>습관</span>
             </div>
+            <div class="nav-item" onclick="switchView('notifications')">
+                <span style="font-size: 16px; position: relative;">
+                    🔔
+                    <span id="notification-badge" class="notification-badge" style="display: none;">0</span>
+                </span>
+                <span>알림</span>
+            </div>
             <div class="nav-item" onclick="switchView('explore')">
                 <span style="font-size: 16px;">🔍</span>
                 <span>탐색</span>
@@ -1178,6 +1323,7 @@
         let currentUser = null;
         let habits = [];
         let history = [];
+        let notifications = []; // 🔔 알림 배열 추가
         let currentEditId = null;
         let currentCategory = 'trending';
 
@@ -1189,6 +1335,199 @@
             social: { name: '관계', emoji: '👥', class: 'category-social' },
             mindfulness: { name: '마음챙김', emoji: '🧘‍♂️', class: 'category-mindfulness' }
         };
+
+        // 샘플 알림 데이터
+        function initializeNotifications() {
+            notifications = [
+                {
+                    id: 1,
+                    title: "🎉 새로운 습관 완료!",
+                    message: "'매일 물 2L 마시기' 습관을 7일 연속으로 완료하셨습니다!",
+                    type: "achievement",
+                    timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30분 전
+                    isRead: false
+                },
+                {
+                    id: 2,
+                    title: "⏰ 습관 리마인더",
+                    message: "오늘의 습관을 완료할 시간입니다. 목표 달성까지 조금만 더!",
+                    type: "reminder",
+                    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2시간 전
+                    isRead: false
+                },
+                {
+                    id: 3,
+                    title: "🤖 AI 분석 완료",
+                    message: "이번 주 습관 패턴을 분석했습니다. 성공률이 15% 향상되었어요!",
+                    type: "system",
+                    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5), // 5시간 전
+                    isRead: true
+                },
+                {
+                    id: 4,
+                    title: "📈 주간 리포트",
+                    message: "이번 주 총 5개 습관을 완료하셨습니다. 지난주보다 20% 향상!",
+                    type: "habit",
+                    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1일 전
+                    isRead: true
+                },
+                {
+                    id: 5,
+                    title: "🏆 도전 과제 달성",
+                    message: "'21일 챌린지'에서 상위 10%에 진입하셨습니다!",
+                    type: "achievement",
+                    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2일 전
+                    isRead: false
+                }
+            ];
+        }
+
+        // 🔔 알림 관련 함수들
+        function renderNotifications() {
+            const container = document.getElementById('notifications-list');
+            
+            if (notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔔</div>
+                        <p style="margin-bottom: 8px;">받은 알림이 없습니다</p>
+                        <p style="font-size: 14px;">습관을 완료하면 알림이 도착해요!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 최신 순으로 정렬
+            const sortedNotifications = [...notifications].sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+            
+            container.innerHTML = sortedNotifications.map(notification => `
+                <div class="notification-item ${!notification.isRead ? 'unread' : ''}" 
+                     onclick="markNotificationAsRead(${notification.id})">
+                    <div class="notification-header">
+                        <div>
+                            <div class="notification-title">${notification.title}</div>
+                            <span class="notification-type ${notification.type}">${getNotificationTypeLabel(notification.type)}</span>
+                        </div>
+                        <button class="notification-delete" onclick="deleteNotification(event, ${notification.id})">
+                            ✕
+                        </button>
+                    </div>
+                    <div class="notification-message">${notification.message}</div>
+                    <div class="notification-time">${formatNotificationTime(notification.timestamp)}</div>
+                </div>
+            `).join('');
+            
+            updateNotificationBadge();
+        }
+
+        function getNotificationTypeLabel(type) {
+            const labels = {
+                system: '시스템',
+                habit: '습관',
+                achievement: '성취',
+                reminder: '리마인더'
+            };
+            return labels[type] || '알림';
+        }
+
+        function formatNotificationTime(timestamp) {
+            const now = new Date();
+            const diff = now - new Date(timestamp);
+            const minutes = Math.floor(diff / (1000 * 60));
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+            if (minutes < 60) return `${minutes}분 전`;
+            if (hours < 24) return `${hours}시간 전`;
+            return `${days}일 전`;
+        }
+
+        function updateNotificationBadge() {
+            const unreadCount = notifications.filter(n => !n.isRead).length;
+            const badge = document.getElementById('notification-badge');
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function markNotificationAsRead(notificationId) {
+            const notification = notifications.find(n => n.id === notificationId);
+            if (notification && !notification.isRead) {
+                notification.isRead = true;
+                renderNotifications();
+                // Firebase에 저장하는 로직 추가 예정
+            }
+        }
+
+        function deleteNotification(event, notificationId) {
+            event.stopPropagation();
+            
+            if (confirm('이 알림을 삭제하시겠습니까?')) {
+                notifications = notifications.filter(n => n.id !== notificationId);
+                renderNotifications();
+                showNotification('알림이 삭제되었습니다.', 'success');
+            }
+        }
+
+        function markAllAsRead() {
+            const unreadCount = notifications.filter(n => !n.isRead).length;
+            
+            if (unreadCount === 0) {
+                showNotification('읽지 않은 알림이 없습니다.', 'info');
+                return;
+            }
+            
+            notifications.forEach(n => n.isRead = true);
+            renderNotifications();
+            showNotification(`${unreadCount}개의 알림을 모두 읽음으로 표시했습니다.`, 'success');
+        }
+
+        function clearAllNotifications() {
+            if (notifications.length === 0) {
+                showNotification('삭제할 알림이 없습니다.', 'info');
+                return;
+            }
+            
+            if (confirm(`모든 알림을 삭제하시겠습니까?\n\n총 ${notifications.length}개의 알림이 삭제됩니다.`)) {
+                const deletedCount = notifications.length;
+                notifications = [];
+                renderNotifications();
+                showNotification(`${deletedCount}개의 알림이 모두 삭제되었습니다.`, 'success');
+            }
+        }
+
+        // 새 알림 추가 함수
+        function addNotification(title, message, type = 'system') {
+            const newNotification = {
+                id: Date.now(),
+                title,
+                message,
+                type,
+                timestamp: new Date(),
+                isRead: false
+            };
+            
+            notifications.unshift(newNotification);
+            
+            // 최대 50개 알림만 유지
+            if (notifications.length > 50) {
+                notifications = notifications.slice(0, 50);
+            }
+            
+            updateNotificationBadge();
+            
+            // 현재 알림 탭을 보고 있다면 즉시 업데이트
+            const currentView = document.querySelector('.view.active');
+            if (currentView && currentView.id === 'notifications-view') {
+                renderNotifications();
+            }
+        }
 
         // 카테고리별 인기 습관 데이터베이스
         const habitRecommendations = {
@@ -1447,13 +1786,17 @@
                     ...doc.data()
                 }));
                 
-                console.log('✅ 사용자 데이터 로드 완료:', { habits: habits.length, history: history.length });
+                // 알림 데이터 로드 (임시로 샘플 데이터 사용)
+                initializeNotifications();
+                
+                console.log('✅ 사용자 데이터 로드 완료:', { habits: habits.length, history: history.length, notifications: notifications.length });
                 
                 // UI 업데이트
                 updateUserHeader();
                 renderHabits();
                 renderAllHabits();
                 renderHistory();
+                renderNotifications(); // 🔔 알림 렌더링 추가
                 updateStats();
                 updateAIMessage();
                 showCategoryRecommendations('trending');
@@ -1565,6 +1908,7 @@
         // 초기화
         function init() {
             setupCategoryTabs();
+            initializeNotifications(); // 🔔 알림 초기화
         }
 
         // 카테고리 탭 이벤트 설정
@@ -1590,6 +1934,7 @@
             event.target.closest('.nav-item').classList.add('active');
             
             if (viewName === 'habits') renderAllHabits();
+            if (viewName === 'notifications') renderNotifications(); // 🔔 알림 뷰 전환 시 렌더링
             if (viewName === 'explore') showCategoryRecommendations(currentCategory);
             if (viewName === 'history') renderHistory();
             if (viewName === 'settings') updateSettings();
@@ -1696,6 +2041,13 @@
             await saveHabitToFirestore(newHabit);
             addHistory(`💡 추천 습관 "${name}"을(를) 추가했습니다.`);
             
+            // 🔔 새 습관 추가 알림
+            addNotification(
+                "🎯 새로운 습관 추가!",
+                `'${name}' 습관이 추가되었습니다. 오늘부터 시작해보세요!`,
+                "habit"
+            );
+            
             renderHabits();
             renderAllHabits();
             updateStats();
@@ -1762,7 +2114,7 @@
             if (habits.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">📝</div>
+                        <div class="empty-state-icon">🔍</div>
                         <p style="margin-bottom: 8px;">등록된 습관이 없습니다</p>
                         <div style="display: flex; gap: 8px; justify-content: center;">
                             <button class="btn btn-outline" onclick="switchView('explore')">🔍 탐색하기</button>
@@ -1866,6 +2218,23 @@
             if (habit.completed) {
                 habit.streak++;
                 addHistory(`✅ "${habit.name}" 습관을 완료했습니다! (${habit.streak}일 연속)`);
+                
+                // 🔔 습관 완료 알림 추가
+                addNotification(
+                    "🎉 습관 완료!",
+                    `'${habit.name}' 습관을 완료했습니다! ${habit.streak}일 연속 달성 중이에요!`,
+                    "achievement"
+                );
+                
+                // 🔔 연속 기록 달성 시 특별 알림
+                if (habit.streak % 7 === 0) {
+                    addNotification(
+                        "🔥 연속 기록 달성!",
+                        `'${habit.name}' 습관을 ${habit.streak}일 연속으로 완료하셨습니다! 정말 대단해요!`,
+                        "achievement"
+                    );
+                }
+                
                 showSuccessAnimation();
                 showNotification('습관 완료! 🎉', 'success');
             } else {
@@ -1928,6 +2297,13 @@
                     habit.description = description;
                     await saveHabitToFirestore(habit);
                     addHistory(`✏️ "${name}" 습관을 수정했습니다.`);
+                    
+                    // 🔔 습관 수정 알림
+                    addNotification(
+                        "✏️ 습관 수정됨",
+                        `'${name}' 습관이 수정되었습니다.`,
+                        "system"
+                    );
                 }
             } else {
                 const newHabit = {
@@ -1943,6 +2319,13 @@
                 habits.push(newHabit);
                 await saveHabitToFirestore(newHabit);
                 addHistory(`➕ "${name}" 습관을 추가했습니다.`);
+                
+                // 🔔 새 습관 추가 알림
+                addNotification(
+                    "🎯 새로운 습관 추가!",
+                    `'${name}' 습관이 추가되었습니다. 오늘부터 시작해보세요!`,
+                    "habit"
+                );
             }
             
             renderHabits();
@@ -1960,6 +2343,13 @@
                 habits = habits.filter(h => h.id !== id);
                 await deleteHabitFromFirestore(id);
                 addHistory(`🗑️ "${habit.name}" 습관을 삭제했습니다.`);
+                
+                // 🔔 습관 삭제 알림
+                addNotification(
+                    "🗑️ 습관 삭제됨",
+                    `'${habit.name}' 습관이 삭제되었습니다.`,
+                    "system"
+                );
                 
                 renderHabits();
                 renderAllHabits();
@@ -2034,7 +2424,7 @@
         }
 
         async function clearAllData() {
-            if (confirm('⚠️ 모든 데이터를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.\n\n- 모든 습관\n- 연속 기록\n- 활동 이력\n\n정말로 삭제하시겠습니까?')) {
+            if (confirm('⚠️ 모든 데이터를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.\n\n- 모든 습관\n- 연속 기록\n- 활동 이력\n- 알림 기록\n\n정말로 삭제하시겠습니까?')) {
                 
                 if (!currentUser || !db) return;
                 
@@ -2054,10 +2444,12 @@
                     // 로컬 데이터 초기화
                     habits = [];
                     history = [];
+                    notifications = []; // 🔔 알림도 초기화
                     
                     renderHabits();
                     renderAllHabits();
                     renderHistory();
+                    renderNotifications(); // 🔔 알림 렌더링
                     updateStats();
                     updateAIMessage();
                     
@@ -2158,6 +2550,24 @@
         // 자동 업데이트
         setInterval(updateAIMessage, 45000);
 
+        // 🔔 주기적 알림 체크 (실제 서비스에서는 서버에서 푸시 알림으로 처리)
+        setInterval(() => {
+            const now = new Date();
+            const hour = now.getHours();
+            
+            // 오전 9시와 오후 6시에 리마인더 알림
+            if ((hour === 9 || hour === 18) && Math.random() < 0.1) { // 10% 확률로 테스트
+                const incompleteHabits = habits.filter(h => !h.completed);
+                if (incompleteHabits.length > 0) {
+                    addNotification(
+                        "⏰ 습관 리마인더",
+                        `아직 완료하지 않은 습관이 ${incompleteHabits.length}개 있어요. 지금 시작해보세요!`,
+                        "reminder"
+                    );
+                }
+            }
+        }, 60000); // 1분마다 체크
+
         // 페이지 언로드 시 데이터 동기화
         window.addEventListener('beforeunload', function() {
             // 마지막 활동 시간 업데이트
@@ -2173,6 +2583,7 @@
             getCurrentUser: () => currentUser,
             getHabits: () => habits,
             getHistory: () => history,
+            getNotifications: () => notifications, // 🔔 알림 디버그 추가
             getRecommendations: (category) => habitRecommendations[category || 'trending'],
             addTestHabit: () => {
                 const testHabits = [
@@ -2199,6 +2610,17 @@
                 renderAllHabits();
                 updateStats();
                 console.log('🧪 테스트 습관 추가됨');
+            },
+            addTestNotification: () => { // 🔔 테스트 알림 추가 함수
+                const testNotifications = [
+                    { title: "🧪 테스트 알림", message: "이것은 테스트 알림입니다.", type: "system" },
+                    { title: "🎯 테스트 습관", message: "테스트 습관이 완료되었습니다!", type: "habit" },
+                    { title: "🏆 테스트 성취", message: "테스트 성취를 달성했습니다!", type: "achievement" },
+                    { title: "⏰ 테스트 리마인더", message: "테스트 리마인더입니다.", type: "reminder" }
+                ];
+                const testNotif = testNotifications[Math.floor(Math.random() * testNotifications.length)];
+                addNotification(testNotif.title, testNotif.message, testNotif.type);
+                console.log('🔔 테스트 알림 추가됨');
             },
             clearAll: () => clearAllData(),
             testFirestore: async () => {
