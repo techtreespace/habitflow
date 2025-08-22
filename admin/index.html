@@ -201,7 +201,7 @@
         const ADMIN_EMAILS = [
             "admin@habitflow.com",          // 기본 관리자
             "cto@habitflow.com",            // CTO 계정  
-            "techtreespace@gmail.com"          // 여기에 본인 이메일 추가
+            "your-email@gmail.com"          // 여기에 본인 이메일 추가
         ];
 
         // Firebase 설정 (앱과 동일)
@@ -268,7 +268,15 @@
             
             if (ADMIN_EMAILS.includes(user.email)) {
                 isAdmin = true;
-                showAdminDashboard();
+                
+                // 로그인 화면이 표시된 상태라면 대시보드로 전환
+                if (document.body.innerHTML.includes('HabitFlow 관리자') && document.body.innerHTML.includes('관리자 인증이 필요합니다')) {
+                    showAdminDashboard();
+                } else {
+                    // 이미 대시보드가 로드된 상태라면 초기화만
+                    initializeAdminDashboard();
+                }
+                
                 addActivityLog(`관리자 로그인: ${user.email}`);
                 console.log('✅ 관리자 인증 성공:', user.email);
             } else {
@@ -394,8 +402,16 @@
 
         // ✅ 관리자 대시보드 표시
         function showAdminDashboard() {
-            // 원래 대시보드 HTML로 복원
-            location.reload(); // 간단하게 페이지 새로고침으로 대시보드 로드
+            // 대시보드 HTML이 이미 로드되어 있으므로 단순히 초기화만 수행
+            console.log('✅ 관리자 대시보드 접근 허용');
+            
+            // 관리자 대시보드 초기화
+            initializeAdminDashboard();
+            
+            // 환영 메시지
+            setTimeout(() => {
+                showNotification(`👋 환영합니다, ${currentUser.email}님!`, 'success');
+            }, 1000);
         }
 
         // 🔐 Google 로그인
@@ -1181,7 +1197,9 @@
             console.log('✅ 관리자 대시보드 초기화');
             
             // 실시간 데이터 로드
-            loadRealTimeData();
+            setTimeout(() => {
+                loadRealTimeData();
+            }, 1000);
             
             // 설정 로드
             loadSettings();
