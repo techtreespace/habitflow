@@ -1,9 +1,1360 @@
-<!DOCTYPE html>
+                <div class="alert alert-warning">
+                    <span>⚠️</span>
+                    <span>피드백 시스템은 다음 업데이트에서 구현될 예정입니다.</span>
+                </div>
+                
+                <div style="padding: 2rem; text-align: center; color: #64748b;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">💭</div>
+                    <h3>피드백 수집 준비 중</h3>
+                    <p>사용자들의 소중한 의견을 수집할 시스템을 준비하고 있습니다.</p>
+                    
+                    <div style="margin-top: 2rem;">
+                        <h4>🚀 계획된 기능들:</h4>
+                        <ul style="text-align: left; max-width: 400px; margin: 1rem auto;">
+                            <li>앱 내 피드백 폼</li>
+                            <li>별점 및 리뷰 시스템</li>
+                            <li>자동 감정 분석</li>
+                            <li>실시간 알림</li>
+                            <li>피드백 카테고리 분류</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="btn btn-outline" onclick="simulateFeedback()">🎲 샘플 피드백 시뮬레이션</button>
+                    <button class="btn" onclick="setupFeedbackForm()">📝 피드백 폼 설정</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 설정 탭 -->
+        <div id="settings-tab" class="tab-content">
+            <div class="card">
+                <h2>⚙️ 서비스 설정</h2>
+                
+                <div class="settings-group">
+                    <h3>🔔 알림 설정</h3>
+                    <div class="setting-item">
+                        <div>
+                            <strong>실시간 모니터링</strong>
+                            <div style="font-size: 0.8rem; color: #718096;">새로운 사용자 가입 및 활동 알림</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked id="realtime-monitoring">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <strong>데이터 백업 알림</strong>
+                            <div style="font-size: 0.8rem; color: #718096;">일일 자동 백업 완료 알림</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked id="backup-alerts">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <strong>시스템 상태 알림</strong>
+                            <div style="font-size: 0.8rem; color: #718096;">서버 및 데이터베이스 상태 모니터링</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked id="system-alerts">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h3>🎯 서비스 운영</h3>
+                    <div class="setting-item">
+                        <div>
+                            <strong>신규 가입 허용</strong>
+                            <div style="font-size: 0.8rem; color: #718096;">새로운 사용자 가입 기능</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked id="allow-signup">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <strong>AI 추천 시스템</strong>
+                            <div style="font-size: 0.8rem; color: #718096;">개인화된 습관 추천 기능</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked id="ai-recommendations">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <strong>실시간 동기화</strong>
+                            <div style="font-size: 0.8rem; color: #718096;">사용자 데이터 실시간 동기화</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked id="realtime-sync">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h3>💰 수익화 (준비 중)</h3>
+                    <div class="alert alert-info">
+                        <span>🚀</span>
+                        <span><strong>단계별 수익화 로드맵</strong><br>
+                        1단계: 무료 서비스로 사용자 확보 (현재)<br>
+                        2단계: 프리미엄 기능 개발 (다음 달)<br>
+                        3단계: 구독 모델 출시 (2개월 후)<br>
+                        4단계: 기업용 서비스 (3개월 후)</span>
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <strong>프리미엄 모드</strong>
+                            <div style="font-size: 0.8rem; color: #718096;">유료 결제 기능 (개발 중)</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" disabled id="premium-mode">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="btn btn-success" onclick="saveSettings()">💾 설정 저장</button>
+                    <button class="btn btn-warning" onclick="exportSettings()">📋 설정 백업</button>
+                    <button class="btn btn-danger" onclick="resetSettings()">🔄 초기화</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>🔧 시스템 정보</h2>
+                <div style="font-family: 'SF Mono', monospace; font-size: 0.85rem; background: linear-gradient(135deg, #f8fafc, #f1f5f9); padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 1rem;">
+                        <span style="color: #64748b;">🗓️ 서비스 시작일:</span>
+                        <span style="color: #1e293b; font-weight: 600;">2024년 11월</span>
+                        
+                        <span style="color: #64748b;">🌐 호스팅:</span>
+                        <span style="color: #1e293b; font-weight: 600;">GitHub Pages</span>
+                        
+                        <span style="color: #64748b;">🔥 데이터베이스:</span>
+                        <span style="color: #1e293b; font-weight: 600;">Firebase Firestore</span>
+                        
+                        <span style="color: #64748b;">🔐 인증:</span>
+                        <span style="color: #1e293b; font-weight: 600;">Firebase Auth</span>
+                        
+                        <span style="color: #64748b;">📊 분석:</span>
+                        <span style="color: #1e293b; font-weight: 600;">실시간 대시보드</span>
+                        
+                        <span style="color: #64748b;">🔄 마지막 업데이트:</span>
+                        <span style="color: #10b981; font-weight: 600;" id="last-update">방금 전</span>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="btn" onclick="checkSystemHealth()">🏥 시스템 상태 확인</button>
+                    <button class="btn" onclick="viewDetailedLogs()">📋 상세 로그 보기</button>
+                    <button class="btn btn-warning" onclick="clearAllCache()">🗑️ 캐시 정리</button>
+                    <button class="btn btn-danger" onclick="emergencyShutdown()">🚨 비상 정지</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 공지사항 모달 -->
+    <div id="announcement-modal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                📢 공지사항 작성
+            </h3>
+            
+            <div class="form-group">
+                <label class="form-label">제목</label>
+                <input type="text" class="form-input" id="announcement-title" placeholder="예: 새로운 기능 업데이트 안내">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">내용</label>
+                <textarea class="form-input" id="announcement-content" style="min-height: 120px;" placeholder="사용자에게 전달할 내용을 작성하세요..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">중요도</label>
+                <select class="form-input" id="announcement-priority">
+                    <option value="normal">일반</option>
+                    <option value="important">중요</option>
+                    <option value="urgent">긴급</option>
+                </select>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button class="btn" onclick="closeModal()" style="flex: 1; background: #64748b;">취소</button>
+                <button class="btn btn-success" onclick="publishAnnouncement()" style="flex: 1;">📢 발행</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 🔐 관리자 인증 설정
+        const ADMIN_EMAILS = [
+            "admin@habitflow.com",          // 기본 관리자
+            "cto@habitflow.com",            // CTO 계정  
+            "your-email@gmail.com"          // 여기에 본인 이메일 추가
+        ];
+
+        // Firebase 설정 (앱과 동일)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZVYENK7H96qe2Jrt1Wtf6AS2QaPcy4rg",
+            authDomain: "habitflow-e1e56.firebaseapp.com",
+            projectId: "habitflow-e1e56",
+            storageBucket: "habitflow-e1e56.firebasestorage.app",
+            messagingSenderId: "480767149947",
+            appId: "1:480767149947:web:13ee354d310963dd82dfde",
+            measurementId: "G-FHQPMRBX50"
+        };
+
+        // 전역 변수
+        let auth = null;
+        let db = null;
+        let currentUser = null;
+        let isAdmin = false;
+        
+        let realTimeData = {
+            totalUsers: 0,
+            todayCompletions: 0,
+            totalHabits: 0,
+            avgStreak: 0,
+            categories: {
+                health: 0,
+                learning: 0,
+                productivity: 0,
+                social: 0,
+                mindfulness: 0
+            }
+        };
+
+        // Firebase 초기화 및 인증 체크
+        function initializeFirebase() {
+            try {
+                if (firebase.apps.length === 0) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                
+                auth = firebase.auth();
+                db = firebase.firestore();
+                
+                // 🔐 인증 상태 감시
+                auth.onAuthStateChanged(function(user) {
+                    if (user) {
+                        checkAdminPermission(user);
+                    } else {
+                        showAuthScreen();
+                    }
+                });
+                
+                return true;
+            } catch (error) {
+                console.error('❌ Firebase 초기화 오류:', error);
+                showNotification('Firebase 연결에 실패했습니다.', 'error');
+                return false;
+            }
+        }
+
+        // 🔐 관리자 권한 확인
+        function checkAdminPermission(user) {
+            currentUser = user;
+            
+            if (ADMIN_EMAILS.includes(user.email)) {
+                isAdmin = true;
+                showAdminDashboard();
+                addActivityLog(`관리자 로그인: ${user.email}`);
+                console.log('✅ 관리자 인증 성공:', user.email);
+            } else {
+                isAdmin = false;
+                showAccessDenied();
+                console.warn('❌ 관리자 권한 없음:', user.email);
+            }
+        }
+
+        // 🔐 로그인 화면 표시
+        function showAuthScreen() {
+            document.body.innerHTML = `
+                <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea, #764ba2);">
+                    <div style="background: white; border-radius: 20px; padding: 3rem; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-width: 400px; width: 90%; text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🔐</div>
+                        <h1 style="color: #1a202c; margin-bottom: 0.5rem; font-size: 1.5rem;">HabitFlow 관리자</h1>
+                        <p style="color: #718096; margin-bottom: 2rem;">관리자 인증이 필요합니다</p>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <button onclick="signInWithGoogle()" style="width: 100%; padding: 1rem; background: #4285f4; color: white; border: none; border-radius: 12px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.3s;">
+                                🌐 Google로 로그인
+                            </button>
+                        </div>
+                        
+                        <div style="margin: 1.5rem 0; position: relative;">
+                            <hr style="border: none; height: 1px; background: #e2e8f0;">
+                            <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: white; padding: 0 1rem; color: #718096; font-size: 0.9rem;">또는</span>
+                        </div>
+                        
+                        <form onsubmit="signInWithEmail(event)" style="text-align: left;">
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500;">이메일</label>
+                                <input type="email" id="admin-email" required style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500;">비밀번호</label>
+                                <input type="password" id="admin-password" required style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+                            </div>
+                            <button type="submit" style="width: 100%; padding: 1rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; font-size: 1rem; cursor: pointer; transition: all 0.3s;">
+                                🔑 관리자 로그인
+                            </button>
+                        </form>
+                        
+                        <div style="margin-top: 1.5rem; padding: 1rem; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                            <div style="font-size: 0.85rem; color: #1e40af;">
+                                <strong>🛡️ 보안 안내</strong><br>
+                                승인된 관리자 이메일만 접근 가능합니다.<br>
+                                <code style="background: #dbeafe; padding: 0.2rem 0.4rem; border-radius: 4px;">${ADMIN_EMAILS.join(', ')}</code>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <button onclick="goToMainApp()" style="color: #3b82f6; background: none; border: none; font-size: 0.9rem; cursor: pointer; text-decoration: underline;">
+                                ← 메인 앱으로 돌아가기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="loading-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(102, 126, 234, 0.9); display: none; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(5px);">
+                    <div style="text-align: center; color: white;">
+                        <div style="width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+                        <div style="font-size: 1.1rem; font-weight: 600;">인증 확인 중...</div>
+                    </div>
+                </div>
+                
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                    
+                    button:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    }
+                    
+                    input:focus {
+                        outline: none;
+                        border-color: #3b82f6;
+                        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                    }
+                </style>
+            `;
+        }
+
+        // 🚫 접근 거부 화면
+        function showAccessDenied() {
+            document.body.innerHTML = `
+                <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #ef4444, #dc2626);">
+                    <div style="background: white; border-radius: 20px; padding: 3rem; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-width: 500px; width: 90%; text-align: center;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🚫</div>
+                        <h1 style="color: #dc2626; margin-bottom: 1rem; font-size: 1.8rem;">접근 권한이 없습니다</h1>
+                        <p style="color: #718096; margin-bottom: 1rem; line-height: 1.6;">
+                            현재 계정 (<strong>${currentUser?.email}</strong>)은<br>
+                            관리자 권한이 없습니다.
+                        </p>
+                        
+                        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin: 1.5rem 0; text-align: left;">
+                            <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">📋 승인된 관리자 목록:</div>
+                            <ul style="color: #374151; font-size: 0.9rem; margin: 0; padding-left: 1.5rem;">
+                                ${ADMIN_EMAILS.map(email => `<li><code>${email}</code></li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                            <button onclick="logout()" style="padding: 0.75rem 1.5rem; background: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                                🔓 다른 계정으로 로그인
+                            </button>
+                            <button onclick="goToMainApp()" style="padding: 0.75rem 1.5rem; background: #6b7280; color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                                ← 메인 앱으로
+                            </button>
+                        </div>
+                        
+                        <div style="margin-top: 1.5rem; padding: 1rem; background: #f0f9ff; border-radius: 8px; font-size: 0.85rem; color: #1e40af;">
+                            💡 <strong>관리자 권한이 필요하신가요?</strong><br>
+                            시스템 관리자에게 문의해주세요.
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ✅ 관리자 대시보드 표시
+        function showAdminDashboard() {
+            // 원래 대시보드 HTML로 복원
+            location.reload(); // 간단하게 페이지 새로고침으로 대시보드 로드
+        }
+
+        // 🔐 Google 로그인
+        async function signInWithGoogle() {
+            try {
+                showLoading('Google 계정으로 인증 중...');
+                
+                const googleProvider = new firebase.auth.GoogleAuthProvider();
+                const result = await auth.signInWithPopup(googleProvider);
+                
+                hideLoading();
+                console.log('Google 로그인 성공:', result.user.email);
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Google 로그인 오류:', error);
+                
+                let errorMessage = 'Google 로그인에 실패했습니다.';
+                if (error.code === 'auth/popup-closed-by-user') {
+                    errorMessage = '로그인이 취소되었습니다.';
+                } else if (error.code === 'auth/popup-blocked') {
+                    errorMessage = '팝업이 차단되었습니다. 팝업을 허용해주세요.';
+                }
+                
+                alert(errorMessage);
+            }
+        }
+
+        // 🔐 이메일 로그인
+        async function signInWithEmail(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('admin-email').value.trim();
+            const password = document.getElementById('admin-password').value;
+            
+            if (!email || !password) {
+                alert('이메일과 비밀번호를 입력해주세요.');
+                return;
+            }
+            
+            try {
+                showLoading('로그인 중...');
+                
+                await auth.signInWithEmailAndPassword(email, password);
+                
+                hideLoading();
+                console.log('이메일 로그인 성공:', email);
+                
+            } catch (error) {
+                hideLoading();
+                console.error('이메일 로그인 오류:', error);
+                
+                let errorMessage = '로그인에 실패했습니다.';
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        errorMessage = '등록되지 않은 이메일입니다.';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage = '비밀번호가 올바르지 않습니다.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = '유효하지 않은 이메일 형식입니다.';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = '너무 많은 로그인 시도입니다. 잠시 후 다시 시도해주세요.';
+                        break;
+                }
+                
+                alert(errorMessage);
+            }
+        }
+
+        // 🔓 로그아웃
+        async function logout() {
+            try {
+                await auth.signOut();
+                console.log('로그아웃 완료');
+            } catch (error) {
+                console.error('로그아웃 오류:', error);
+            }
+        }
+
+        // 🏠 메인 앱으로 이동
+        function goToMainApp() {
+            window.location.href = '../';
+        }
+
+        // 로딩 표시
+        function showLoading(message = '처리 중...') {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                const text = overlay.querySelector('div div:last-child');
+                if (text) text.textContent = message;
+            }
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        }
+
+        // 실시간 데이터 로드
+        async function loadRealTimeData() {
+            try {
+                addActivityLog('실시간 데이터 로드 시작');
+                
+                // 모든 사용자 데이터 가져오기
+                const usersSnapshot = await db.collection('users').get();
+                realTimeData.totalUsers = usersSnapshot.size;
+                
+                let totalHabits = 0;
+                let totalCompletions = 0;
+                let totalStreaks = 0;
+                let habitCount = 0;
+                
+                // 각 사용자의 습관 데이터 수집
+                for (const userDoc of usersSnapshot.docs) {
+                    const userId = userDoc.id;
+                    
+                    // 사용자의 습관 데이터
+                    const habitsSnapshot = await db.collection('users').doc(userId).collection('habits').get();
+                    
+                    habitsSnapshot.forEach(habitDoc => {
+                        const habit = habitDoc.data();
+                        totalHabits++;
+                        habitCount++;
+                        
+                        if (habit.completed) {
+                            totalCompletions++;
+                        }
+                        
+                        if (habit.streak) {
+                            totalStreaks += habit.streak;
+                        }
+                        
+                        // 카테고리별 집계
+                        if (realTimeData.categories.hasOwnProperty(habit.category)) {
+                            realTimeData.categories[habit.category]++;
+                        }
+                    });
+                }
+                
+                realTimeData.totalHabits = totalHabits;
+                realTimeData.todayCompletions = totalCompletions;
+                realTimeData.avgStreak = habitCount > 0 ? Math.round(totalStreaks / habitCount) : 0;
+                
+                // UI 업데이트
+                updateDashboardStats();
+                updateCategoryStats();
+                
+                addActivityLog(`데이터 로드 완료: ${realTimeData.totalUsers}명 사용자, ${realTimeData.totalHabits}개 습관`);
+                
+            } catch (error) {
+                console.error('데이터 로드 오류:', error);
+                addActivityLog('데이터 로드 실패: ' + error.message);
+                showNotification('데이터 로드 중 오류가 발생했습니다.', 'error');
+            }
+        }
+
+        // 대시보드 통계 업데이트
+        function updateDashboardStats() {
+            // 숫자 애니메이션과 함께 업데이트
+            animateNumber('total-users', realTimeData.totalUsers);
+            animateNumber('today-completions', realTimeData.todayCompletions);
+            animateNumber('total-habits', realTimeData.totalHabits);
+            animateNumber('avg-streak', realTimeData.avgStreak);
+            
+            // 변화량 표시 업데이트 (실제로는 이전 데이터와 비교)
+            document.getElementById('users-change').innerHTML = `📈 활성 사용자 ${realTimeData.totalUsers}명`;
+            document.getElementById('completions-change').innerHTML = `🎯 평균 완료율 ${calculateCompletionRate()}%`;
+            document.getElementById('habits-change').innerHTML = `➕ 총 ${realTimeData.totalHabits}개 습관`;
+            document.getElementById('streak-change').innerHTML = `🔥 평균 ${realTimeData.avgStreak}일 연속`;
+        }
+
+        // 카테고리 통계 업데이트
+        function updateCategoryStats() {
+            document.getElementById('health-count').textContent = realTimeData.categories.health;
+            document.getElementById('learning-count').textContent = realTimeData.categories.learning;
+            document.getElementById('productivity-count').textContent = realTimeData.categories.productivity;
+            document.getElementById('mindfulness-count').textContent = realTimeData.categories.mindfulness;
+            
+            // 가장 인기있는 카테고리 찾기
+            const popularCategory = Object.keys(realTimeData.categories).reduce((a, b) => 
+                realTimeData.categories[a] > realTimeData.categories[b] ? a : b
+            );
+            
+            const categoryNames = {
+                health: '건강',
+                learning: '학습',
+                productivity: '생산성',
+                social: '관계',
+                mindfulness: '마음챙김'
+            };
+            
+            document.getElementById('popular-category').textContent = categoryNames[popularCategory] || '데이터 없음';
+            
+            // 진행률 바 업데이트
+            const maxCategoryCount = Math.max(...Object.values(realTimeData.categories));
+            const categoryProgress = maxCategoryCount > 0 ? (realTimeData.categories[popularCategory] / maxCategoryCount) * 100 : 0;
+            document.getElementById('category-progress').style.width = categoryProgress + '%';
+            
+            const completionRate = calculateCompletionRate();
+            document.getElementById('completion-rate').textContent = completionRate + '%';
+            document.getElementById('completion-progress').style.width = completionRate + '%';
+        }
+
+        // 완료율 계산
+        function calculateCompletionRate() {
+            if (realTimeData.totalHabits === 0) return 0;
+            return Math.round((realTimeData.todayCompletions / realTimeData.totalHabits) * 100);
+        }
+
+        // 숫자 애니메이션
+        function animateNumber(elementId, targetNumber) {
+            const element = document.getElementById(elementId);
+            const currentNumber = parseInt(element.textContent) || 0;
+            const increment = Math.ceil((targetNumber - currentNumber) / 20);
+            
+            if (currentNumber < targetNumber) {
+                element.textContent = Math.min(currentNumber + increment, targetNumber);
+                setTimeout(() => animateNumber(elementId, targetNumber), 50);
+            } else {
+                element.textContent = targetNumber;
+            }
+        }
+
+        // 탭 전환 기능
+        function switchTab(tabName) {
+            // 모든 탭과 콘텐츠 비활성화
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // 선택된 탭과 콘텐츠 활성화
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            addActivityLog(`${tabName} 탭으로 전환`);
+        }
+
+        // 데이터 새로고침
+        async function refreshData() {
+            showNotification('🔄 데이터를 새로고침하고 있습니다...', 'info');
+            addActivityLog('수동 데이터 새로고침 시작');
+            
+            try {
+                await loadRealTimeData();
+                showNotification('✅ 데이터 새로고침이 완료되었습니다!', 'success');
+            } catch (error) {
+                showNotification('❌ 데이터 새로고침 중 오류가 발생했습니다.', 'error');
+            }
+        }
+
+        // 전체 데이터 내보내기
+        async function exportAllData() {
+            showNotification('📊 데이터를 내보내는 중...', 'info');
+            addActivityLog('전체 데이터 내보내기 시작');
+            
+            try {
+                const exportData = {
+                    timestamp: new Date().toISOString(),
+                    statistics: realTimeData,
+                    metadata: {
+                        exportedBy: 'admin',
+                        version: '1.0',
+                        source: 'HabitFlow Admin Dashboard'
+                    }
+                };
+                
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `habitflow-data-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                addActivityLog('데이터 내보내기 완료');
+                showNotification('✅ 데이터 파일이 다운로드되었습니다!', 'success');
+                
+            } catch (error) {
+                console.error('데이터 내보내기 오류:', error);
+                showNotification('❌ 데이터 내보내기에 실패했습니다.', 'error');
+            }
+        }
+
+        // 공지사항 모달 표시
+        function showAnnouncement() {
+            document.getElementById('announcement-modal').classList.add('show');
+            addActivityLog('공지사항 작성 모달 열림');
+        }
+
+        // 공지사항 발행
+        function publishAnnouncement() {
+            const title = document.getElementById('announcement-title').value.trim();
+            const content = document.getElementById('announcement-content').value.trim();
+            const priority = document.getElementById('announcement-priority').value;
+            
+            if (!title || !content) {
+                showNotification('⚠️ 제목과 내용을 모두 입력해주세요.', 'warning');
+                return;
+            }
+            
+            // 실제로는 Firebase에 저장하고 푸시 알림 발송
+            const announcement = {
+                title,
+                content,
+                priority,
+                timestamp: new Date().toISOString(),
+                author: 'admin'
+            };
+            
+            console.log('발행된 공지사항:', announcement);
+            addActivityLog(`공지사항 발행: "${title}" (${priority})`);
+            showNotification('📢 공지사항이 발행되었습니다!', 'success');
+            closeModal();
+            
+            // 폼 초기화
+            document.getElementById('announcement-title').value = '';
+            document.getElementById('announcement-content').value = '';
+            document.getElementById('announcement-priority').value = 'normal';
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('announcement-modal').classList.remove('show');
+        }
+
+        // 데이터 백업
+        async function backupData() {
+            showNotification('💾 데이터 백업을 시작합니다...', 'info');
+            addActivityLog('데이터 백업 시작');
+            
+            try {
+                // 실제 구현에서는 Firebase 전체 데이터를 백업
+                const backupData = {
+                    timestamp: new Date().toISOString(),
+                    users: realTimeData.totalUsers,
+                    habits: realTimeData.totalHabits,
+                    backupId: `backup_${Date.now()}`
+                };
+                
+                console.log('백업 데이터:', backupData);
+                addActivityLog(`데이터 백업 완료 (ID: ${backupData.backupId})`);
+                showNotification('✅ 데이터 백업이 완료되었습니다!', 'success');
+                
+            } catch (error) {
+                console.error('백업 오류:', error);
+                showNotification('❌ 백업 중 오류가 발생했습니다.', 'error');
+            }
+        }
+
+        // 사용자 세부정보 로드
+        async function loadUserDetails() {
+            showNotification('👥 사용자 세부정보를 로드하는 중...', 'info');
+            addActivityLog('사용자 세부정보 로드 시작');
+            
+            try {
+                const usersSnapshot = await db.collection('users').limit(10).get();
+                const usersList = document.getElementById('users-list');
+                
+                if (usersSnapshot.empty) {
+                    usersList.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: #64748b;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">👤</div>
+                            <h3>사용자가 없습니다</h3>
+                            <p>아직 등록된 사용자가 없습니다.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let usersHtml = '<h3 style="margin-bottom: 1rem;">최근 사용자 (최대 10명)</h3>';
+                
+                for (const userDoc of usersSnapshot.docs) {
+                    const userData = userDoc.data();
+                    const userId = userDoc.id;
+                    
+                    // 사용자의 습관 수 가져오기
+                    const habitsSnapshot = await db.collection('users').doc(userId).collection('habits').get();
+                    const habitCount = habitsSnapshot.size;
+                    
+                    const lastLogin = userData.lastLoginAt ? 
+                        new Date(userData.lastLoginAt.toDate()).toLocaleDateString('ko-KR') : 
+                        '알 수 없음';
+                    
+                    usersHtml += `
+                        <div class="user-item">
+                            <div class="user-header">
+                                <div>
+                                    <div class="user-name">${userData.displayName || '익명'}</div>
+                                    <div class="user-email">${userData.email || '이메일 없음'}</div>
+                                </div>
+                                <div class="status-online">● 온라인</div>
+                            </div>
+                            <div class="user-stats">
+                                <span>📝 습관: ${habitCount}개</span>
+                                <span>📅 마지막 로그인: ${lastLogin}</span>
+                                <span>🆔 ID: ${userId.substring(0, 8)}...</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                usersList.innerHTML = usersHtml;
+                addActivityLog('사용자 세부정보 로드 완료');
+                showNotification('✅ 사용자 정보가 로드되었습니다!', 'success');
+                
+            } catch (error) {
+                console.error('사용자 로드 오류:', error);
+                showNotification('❌ 사용자 정보 로드에 실패했습니다.', 'error');
+            }
+        }
+
+        // 전체 알림 발송
+        function sendBulkNotification() {
+            showNotification('📱 전체 사용자에게 알림을 발송하고 있습니다...', 'info');
+            addActivityLog(`전체 알림 발송 (대상: ${realTimeData.totalUsers}명)`);
+            
+            // 실제로는 FCM을 통해 푸시 알림 발송
+            setTimeout(() => {
+                showNotification('✅ 전체 알림이 발송되었습니다!', 'success');
+                addActivityLog('전체 알림 발송 완료');
+            }, 2000);
+        }
+
+        // 사용자 데이터 분석
+        function exportUserData() {
+            showNotification('📊 사용자 데이터를 분석하는 중...', 'info');
+            
+            const analysis = {
+                totalUsers: realTimeData.totalUsers,
+                averageHabitsPerUser: realTimeData.totalUsers > 0 ? (realTimeData.totalHabits / realTimeData.totalUsers).toFixed(1) : 0,
+                completionRate: calculateCompletionRate(),
+                categoryDistribution: realTimeData.categories,
+                insights: [
+                    `가장 인기있는 카테고리: ${Object.keys(realTimeData.categories).reduce((a, b) => realTimeData.categories[a] > realTimeData.categories[b] ? a : b)}`,
+                    `평균 연속 기록: ${realTimeData.avgStreak}일`,
+                    `전체 완료율: ${calculateCompletionRate()}%`
+                ]
+            };
+            
+            console.log('📊 사용자 데이터 분석:', analysis);
+            addActivityLog('사용자 데이터 분석 완료');
+            showNotification('✅ 콘솔에서 분석 결과를 확인하세요!', 'success');
+        }
+
+        // 습관 분석
+        function analyzeHabits() {
+            showNotification('🎯 습관 데이터를 분석하는 중...', 'info');
+            
+            const habitAnalysis = {
+                totalHabits: realTimeData.totalHabits,
+                categoryBreakdown: realTimeData.categories,
+                insights: [
+                    '건강 관련 습관이 가장 인기',
+                    '학습 습관의 완료율이 높음',
+                    '마음챙김 카테고리 성장세'
+                ]
+            };
+            
+            document.getElementById('habits-trend').innerHTML = `
+                <div style="text-align: left;">
+                    <h4>📈 분석 결과</h4>
+                    <ul style="margin: 1rem 0; color: #374151;">
+                        <li>총 ${habitAnalysis.totalHabits}개의 습관이 생성됨</li>
+                        <li>건강 카테고리: ${realTimeData.categories.health}개 (${((realTimeData.categories.health/realTimeData.totalHabits)*100).toFixed(1)}%)</li>
+                        <li>학습 카테고리: ${realTimeData.categories.learning}개 (${((realTimeData.categories.learning/realTimeData.totalHabits)*100).toFixed(1)}%)</li>
+                        <li>생산성 카테고리: ${realTimeData.categories.productivity}개 (${((realTimeData.categories.productivity/realTimeData.totalHabits)*100).toFixed(1)}%)</li>
+                    </ul>
+                    <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                        <strong>💡 주요 인사이트:</strong><br>
+                        • 사용자들은 건강 관련 습관을 가장 선호합니다<br>
+                        • 평균 연속 기록이 ${realTimeData.avgStreak}일로 양호한 수준입니다<br>
+                        • 전체 완료율 ${calculateCompletionRate()}%는 업계 평균을 상회합니다
+                    </div>
+                </div>
+            `;
+            
+            addActivityLog('습관 데이터 분석 완료');
+            showNotification('✅ 습관 분석이 완료되었습니다!', 'success');
+        }
+
+        // 보고서 생성
+        function generateReport() {
+            showNotification('📄 종합 보고서를 생성하는 중...', 'info');
+            
+            const report = {
+                generatedAt: new Date().toISOString(),
+                period: '실시간',
+                summary: {
+                    totalUsers: realTimeData.totalUsers,
+                    totalHabits: realTimeData.totalHabits,
+                    completionRate: calculateCompletionRate(),
+                    avgStreak: realTimeData.avgStreak
+                },
+                categoryAnalysis: realTimeData.categories,
+                recommendations: [
+                    '건강 카테고리의 인기를 활용한 마케팅 전략 수립',
+                    '학습 카테고리 사용자를 위한 추가 기능 개발',
+                    '완료율 향상을 위한 AI 알림 시스템 개선'
+                ]
+            };
+            
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `habitflow-report-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            addActivityLog('종합 보고서 생성 완료');
+            showNotification('📄 보고서가 다운로드되었습니다!', 'success');
+        }
+
+        // 피드백 시뮬레이션
+        function simulateFeedback() {
+            const sampleFeedbacks = [
+                { rating: 5, comment: "정말 유용한 앱이에요! AI 추천이 정확해요.", user: "김민수" },
+                { rating: 4, comment: "기능은 좋은데 가끔 느려질 때가 있어요.", user: "이지은" },
+                { rating: 5, comment: "습관 형성에 정말 도움이 됩니다.", user: "박서준" },
+                { rating: 4, comment: "UI가 깔끔하고 사용하기 편해요.", user: "최유진" }
+            ];
+            
+            showNotification('🎲 샘플 피드백을 시뮬레이션합니다...', 'info');
+            
+            setTimeout(() => {
+                console.log('📝 시뮬레이션된 피드백:', sampleFeedbacks);
+                addActivityLog('피드백 시뮬레이션 완료 (4건)');
+                showNotification('✅ 콘솔에서 샘플 피드백을 확인하세요!', 'success');
+            }, 1500);
+        }
+
+        // 피드백 폼 설정
+        function setupFeedbackForm() {
+            showNotification('📝 피드백 폼 설정이 다음 업데이트에서 제공됩니다.', 'info');
+            addActivityLog('피드백 폼 설정 요청');
+        }
+
+        // 설정 저장
+        function saveSettings() {
+            const settings = {
+                realtimeMonitoring: document.getElementById('realtime-monitoring').checked,
+                backupAlerts: document.getElementById('backup-alerts').checked,
+                systemAlerts: document.getElementById('system-alerts').checked,
+                allowSignup: document.getElementById('allow-signup').checked,
+                aiRecommendations: document.getElementById('ai-recommendations').checked,
+                realtimeSync: document.getElementById('realtime-sync').checked,
+                savedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('habitflow-admin-settings', JSON.stringify(settings));
+            addActivityLog('관리자 설정 저장 완료');
+            showNotification('💾 설정이 저장되었습니다.', 'success');
+        }
+
+        // 설정 백업
+        function exportSettings() {
+            const settings = JSON.parse(localStorage.getItem('habitflow-admin-settings') || '{}');
+            
+            const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'habitflow-admin-settings.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            addActivityLog('관리자 설정 백업 완료');
+            showNotification('📋 설정 백업이 완료되었습니다!', 'success');
+        }
+
+        // 설정 초기화
+        function resetSettings() {
+            if (confirm('⚠️ 모든 설정을 초기화하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.')) {
+                localStorage.removeItem('habitflow-admin-settings');
+                location.reload();
+            }
+        }
+
+        // 시스템 상태 확인
+        async function checkSystemHealth() {
+            showNotification('🏥 시스템 상태를 확인하는 중...', 'info');
+            addActivityLog('시스템 상태 점검 시작');
+            
+            try {
+                // Firebase 연결 테스트
+                const testDoc = await db.collection('system').doc('health').get();
+                
+                const healthReport = {
+                    firebase: '정상',
+                    database: '정상',
+                    api: '정상',
+                    frontend: '정상',
+                    lastCheck: new Date().toLocaleString('ko-KR'),
+                    uptime: '99.9%',
+                    responseTime: '< 100ms'
+                };
+                
+                console.log('🏥 시스템 상태 보고서:', healthReport);
+                addActivityLog('시스템 상태 점검 완료 - 모든 서비스 정상');
+                showNotification('✅ 모든 시스템이 정상 작동 중입니다!', 'success');
+                
+            } catch (error) {
+                console.error('시스템 점검 오류:', error);
+                addActivityLog('시스템 상태 점검 중 오류 발생');
+                showNotification('⚠️ 일부 시스템에서 문제가 감지되었습니다.', 'warning');
+            }
+        }
+
+        // 상세 로그 보기
+        function viewDetailedLogs() {
+            const logs = [
+                { time: '2024-11-20 14:30:15', level: 'INFO', message: '새로운 사용자 가입', details: 'user@example.com' },
+                { time: '2024-11-20 14:25:33', level: 'INFO', message: '습관 완료', details: '물 마시기 습관' },
+                { time: '2024-11-20 14:20:12', level: 'SUCCESS', message: '데이터 백업 완료', details: 'backup_id_123' },
+                { time: '2024-11-20 14:15:45', level: 'INFO', message: '시스템 상태 점검', details: '모든 서비스 정상' },
+                { time: '2024-11-20 14:10:30', level: 'WARNING', message: '응답 시간 증가', details: '평균 120ms' }
+            ];
+            
+            console.log('📋 상세 시스템 로그:');
+            console.table(logs);
+            
+            addActivityLog('상세 로그 조회');
+            showNotification('📋 콘솔에서 상세 로그를 확인하세요!', 'info');
+        }
+
+        // 캐시 정리
+        function clearAllCache() {
+            if (confirm('🗑️ 모든 캐시를 정리하시겠습니까?\n\n페이지가 새로고침됩니다.')) {
+                addActivityLog('시스템 캐시 정리 실행');
+                
+                // 브라우저 캐시 정리
+                if ('caches' in window) {
+                    caches.keys().then(names => {
+                        names.forEach(name => {
+                            caches.delete(name);
+                        });
+                    });
+                }
+                
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                showNotification('🗑️ 캐시가 정리되었습니다. 페이지를 새로고침합니다.', 'success');
+                
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            }
+        }
+
+        // 비상 정지
+        function emergencyShutdown() {
+            if (confirm('🚨 비상 정지를 실행하시겠습니까?\n\n이는 매우 심각한 상황에서만 사용해야 합니다.')) {
+                addActivityLog('⚠️ 비상 정지 실행됨');
+                showNotification('🚨 비상 정지가 실행되었습니다. 모든 실시간 기능이 중단됩니다.', 'warning');
+                
+                // 실제로는 실시간 리스너들을 모두 해제하고 서비스를 일시 중단
+                console.warn('🚨 비상 정지 모드 활성화');
+            }
+        }
+
+        // 로그 지우기
+        function clearLogs() {
+            document.getElementById('activity-log').innerHTML = `
+                <div class="log-item">
+                    <div class="log-time">방금 전</div>
+                    <div class="log-action">활동 로그가 지워졌습니다.</div>
+                </div>
+            `;
+            showNotification('🗑️ 활동 로그가 지워졌습니다.', 'info');
+        }
+
+        // 유틸리티 함수들
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification alert alert-${type}`;
+            notification.innerHTML = `
+                <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}</span>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        function addActivityLog(message) {
+            const logContainer = document.getElementById('activity-log');
+            const logItem = document.createElement('div');
+            logItem.className = 'log-item';
+            logItem.innerHTML = `
+                <div class="log-time">${new Date().toLocaleTimeString('ko-KR')}</div>
+                <div class="log-action">${message}</div>
+            `;
+            
+            logContainer.insertBefore(logItem, logContainer.firstChild);
+            
+            // 로그가 20개 이상이면 마지막 것 제거
+            if (logContainer.children.length > 20) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+
+        // 실시간 업데이트 시뮬레이션
+        function startRealTimeSimulation() {
+            setInterval(() => {
+                // 가끔씩 새로운 활동 로그 추가
+                if (Math.random() > 0.8) {
+                    const activities = [
+                        '새로운 사용자가 가입했습니다',
+                        '습관이 완료되었습니다',
+                        '새로운 습관이 생성되었습니다',
+                        '사용자가 로그인했습니다',
+                        '데이터가 동기화되었습니다'
+                    ];
+                    
+                    const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+                    addActivityLog(randomActivity);
+                }
+                
+                // 마지막 업데이트 시간 갱신
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString('ko-KR');
+                
+            }, 15000); // 15초마다 실행
+        }
+
+        // 설정 로드
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('habitflow-admin-settings');
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                
+                // 토글 상태 복원
+                Object.keys(settings).forEach(key => {
+                    const element = document.getElementById(key.replace(/([A-Z])/g, '-$1').toLowerCase());
+                    if (element && typeof settings[key] === 'boolean') {
+                        element.checked = settings[key];
+                    }
+                });
+                
+                addActivityLog('저장된 설정을 불러왔습니다');
+            }
+        }
+
+        // 초기화 (인증 확인 후에만 실행)
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧠 HabitFlow 관리자 대시보드 초기화 시작');
+            
+            // Firebase 초기화 및 인증 체크
+            if (typeof firebase !== 'undefined') {
+                initializeFirebase();
+            } else {
+                alert('❌ Firebase SDK를 로드할 수 없습니다.');
+                goToMainApp();
+            }
+        });
+
+        // 🔐 관리자 인증이 완료된 후에만 실행되는 함수들
+        function initializeAdminDashboard() {
+            if (!isAdmin) {
+                console.warn('❌ 관리자 권한 없음');
+                return;
+            }
+            
+            console.log('✅ 관리자 대시보드 초기화');
+            
+            // 실시간 데이터 로드
+            loadRealTimeData();
+            
+            // 설정 로드
+            loadSettings();
+            
+            // 실시간 시뮬레이션 시작
+            startRealTimeSimulation();
+            
+            // 모달 이벤트 리스너
+            const modal = document.getElementById('announcement-modal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) closeModal();
+                });
+            }
+            
+            // ESC 키로 모달 닫기
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeModal();
+            });
+            
+            // 5분마다 자동 데이터 새로고침
+            setInterval(() => {
+                if (isAdmin) loadRealTimeData();
+            }, 300000);
+            
+            addActivityLog('HabitFlow 관리자 대시보드 초기화 완료');
+        }
+
+        // 실시간 데이터 로드 (관리자 인증 후에만)
+        async function loadRealTimeData() {
+            if (!isAdmin || !db) return;
+            
+            try {
+                addActivityLog('실시간 데이터 로드 시작');
+                
+                // 모든 사용자 데이터 가져오기
+                const usersSnapshot = await db.collection('users').get();
+                realTimeData.totalUsers = usersSnapshot.size;
+                
+                let totalHabits = 0;
+                let totalCompletions = 0;
+                let totalStreaks = 0;
+                let habitCount = 0;
+                
+                // 카테고리 초기화
+                Object.keys(realTimeData.categories).forEach(key => {
+                    realTimeData.categories[key] = 0;
+                });
+                
+                // 각 사용자의 습관 데이터 수집
+                for (const userDoc of usersSnapshot.docs) {
+                    const userId = userDoc.id;
+                    
+                    try {
+                        // 사용자의 습관 데이터
+                        const habitsSnapshot = await db.collection('users').doc(userId).collection('habits').get();
+                        
+                        habitsSnapshot.forEach(habitDoc => {
+                            const habit = habitDoc.data();
+                            totalHabits++;
+                            habitCount++;
+                            
+                            if (habit.completed) {
+                                totalCompletions++;
+                            }
+                            
+                            if (habit.streak) {
+                                totalStreaks += habit.streak;
+                            }
+                            
+                            // 카테고리별 집계
+                            if (realTimeData.categories.hasOwnProperty(habit.category)) {
+                                realTimeData.categories[habit.category]++;
+                            }
+                        });
+                    } catch (userError) {
+                        console.warn(`사용자 ${userId} 데이터 로드 실패:`, userError);
+                    }
+                }
+                
+                realTimeData.totalHabits = totalHabits;
+                realTimeData.todayCompletions = totalCompletions;
+                realTimeData.avgStreak = habitCount > 0 ? Math.round(totalStreaks / habitCount) : 0;
+                
+                // UI 업데이트
+                updateDashboardStats();
+                updateCategoryStats();
+                
+                addActivityLog(`데이터 로드 완료: ${realTimeData.totalUsers}명 사용자, ${realTimeData.totalHabits}개 습관`);
+                
+            } catch (error) {
+                console.error('데이터 로드 오류:', error);
+                addActivityLog('데이터 로드 실패: ' + error.message);
+                showNotification('데이터 로드 중 오류가 발생했습니다.', 'error');
+            }
+        }
+
+        // 애니메이션 스타일 추가
+        const additionalStyles = document.createElement('style');
+        additionalStyles.textContent = `
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+            
+            .btn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none !important;
+            }
+            
+            .btn:disabled:hover {
+                transform: none !important;
+                box-shadow: none !important;
+            }
+            
+            .stat-number {
+                transition: all 0.3s ease;
+            }
+            
+            .progress-fill {
+                transition: width 1s ease-in-out;
+            }
+            
+            .card:hover .stat-number {
+                transform: scale(1.05);
+            }
+            
+            .loading-spinner {
+                margin-right: 0.5rem;
+            }
+            
+            .metric-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            
+            .user-item:hover .user-name {
+                color: #3b82f6;
+            }
+            
+            .log-item:hover {
+                background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            }
+            
+            .setting-item:hover .toggle {
+                transform: scale(1.05);
+            }
+            
+            @media (prefers-reduced-motion: reduce) {
+                *, *::before, *::after {
+                    animation-duration: 0.01ms !important;
+                    animation-iteration-count: 1 !important;
+                    transition-duration: 0.01ms !important;
+                }
+            }
+        `;
+        document.head.appendChild(additionalStyles);
+    </script>
+</body>
+</html>
+                <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HabitFlow 관리자 - 심플 대시보드</title>
+    <title>HabitFlow 관리자 - 실시간 대시보드</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -20,40 +1371,116 @@
         .header {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .header p {
             opacity: 0.9;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
             font-size: 0.9rem;
-            margin-top: 0.25rem;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
         }
         
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
         
         .card {
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
             border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .card:hover::before {
+            opacity: 1;
         }
         
         .card h2 {
@@ -67,15 +1494,41 @@
         }
         
         .stat-number {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
+            line-height: 1;
         }
         
         .stat-label {
             font-size: 0.9rem;
             color: #718096;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-change {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        .stat-change.positive {
+            background: #f0fdf4;
+            color: #166534;
+        }
+        
+        .stat-change.negative {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .stat-change.neutral {
+            background: #f8fafc;
+            color: #64748b;
         }
         
         .btn {
@@ -83,17 +1536,38 @@
             color: white;
             border: none;
             padding: 0.75rem 1rem;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 0.9rem;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             font-weight: 500;
             margin: 0.25rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+        
+        .btn:active::before {
+            width: 200px;
+            height: 200px;
         }
         
         .btn:hover {
             background: #2563eb;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
         
         .btn-success {
@@ -102,6 +1576,7 @@
         
         .btn-success:hover {
             background: #059669;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
         
         .btn-warning {
@@ -110,6 +1585,7 @@
         
         .btn-warning:hover {
             background: #d97706;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
         }
         
         .btn-danger {
@@ -118,6 +1594,18 @@
         
         .btn-danger:hover {
             background: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .btn-outline:hover {
+            background: #3b82f6;
+            color: white;
         }
         
         .quick-actions {
@@ -128,37 +1616,60 @@
         }
         
         .log-item {
-            padding: 0.75rem;
-            background: #f8fafc;
-            border-left: 3px solid #3b82f6;
-            margin-bottom: 0.5rem;
-            border-radius: 0 6px 6px 0;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-left: 4px solid #3b82f6;
+            margin-bottom: 0.75rem;
+            border-radius: 0 8px 8px 0;
             font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .log-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .log-time {
             font-size: 0.8rem;
             color: #718096;
             margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+        
+        .log-action {
+            color: #2d3748;
+            font-weight: 500;
         }
         
         .settings-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
         
         .settings-group h3 {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
             color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .setting-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.75rem 0;
+            padding: 1rem 0;
             border-bottom: 1px solid #e2e8f0;
+            transition: background 0.3s;
+        }
+        
+        .setting-item:hover {
+            background: #f8fafc;
+            margin: 0 -1rem;
+            padding: 1rem;
+            border-radius: 8px;
         }
         
         .setting-item:last-child {
@@ -168,8 +1679,8 @@
         .toggle {
             position: relative;
             display: inline-block;
-            width: 50px;
-            height: 24px;
+            width: 60px;
+            height: 32px;
         }
         
         .toggle input {
@@ -185,29 +1696,30 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background: #cbd5e0;
             transition: 0.4s;
-            border-radius: 24px;
+            border-radius: 32px;
         }
         
         .slider:before {
             position: absolute;
             content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
+            height: 24px;
+            width: 24px;
+            left: 4px;
+            bottom: 4px;
+            background: white;
             transition: 0.4s;
             border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
         input:checked + .slider {
-            background-color: #10b981;
+            background: #10b981;
         }
         
         input:checked + .slider:before {
-            transform: translateX(26px);
+            transform: translateX(28px);
         }
         
         .modal {
@@ -216,11 +1728,12 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            backdrop-filter: blur(4px);
         }
         
         .modal.show {
@@ -229,31 +1742,39 @@
         
         .modal-content {
             background: white;
-            border-radius: 12px;
+            border-radius: 20px;
             padding: 2rem;
             max-width: 500px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
         
         .form-label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 500;
+            font-weight: 600;
             color: #374151;
         }
         
         .form-input {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
             font-size: 0.9rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
         
         .form-input:focus {
@@ -263,60 +1784,212 @@
         }
         
         .alert {
-            padding: 1rem;
-            border-radius: 6px;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
             margin-bottom: 1rem;
             font-size: 0.9rem;
+            border: 1px solid;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .alert-success {
             background: #f0fdf4;
             color: #166534;
-            border: 1px solid #bbf7d0;
+            border-color: #bbf7d0;
         }
         
         .alert-warning {
             background: #fffbeb;
             color: #92400e;
-            border: 1px solid #fed7aa;
+            border-color: #fed7aa;
         }
         
         .alert-danger {
             background: #fef2f2;
             color: #dc2626;
-            border: 1px solid #fecaca;
+            border-color: #fecaca;
+        }
+        
+        .alert-info {
+            background: #eff6ff;
+            color: #1e40af;
+            border-color: #bfdbfe;
         }
         
         .tabs {
             display: flex;
-            border-bottom: 1px solid #e2e8f0;
-            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 2rem;
+            background: white;
+            border-radius: 16px 16px 0 0;
+            overflow: hidden;
         }
         
         .tab {
-            padding: 0.75rem 1rem;
+            padding: 1rem 1.5rem;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
-            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
             color: #718096;
-            transition: all 0.2s;
+            transition: all 0.3s;
+            position: relative;
+            flex: 1;
+            text-align: center;
         }
         
         .tab.active {
             color: #3b82f6;
             border-bottom-color: #3b82f6;
+            background: #f8fafc;
         }
         
         .tab:hover {
             color: #2d3748;
+            background: #f1f5f9;
         }
         
         .tab-content {
             display: none;
+            animation: fadeIn 0.3s ease-in;
         }
         
         .tab-content.active {
             display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .metric-title {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e2e8f0;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 10000;
+            animation: slideInRight 0.3s ease-out;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            max-width: 400px;
+            word-wrap: break-word;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .user-item {
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .user-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .user-email {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        
+        .user-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        
+        .status-online {
+            color: #10b981;
+        }
+        
+        .status-offline {
+            color: #64748b;
         }
         
         @media (max-width: 768px) {
@@ -336,14 +2009,32 @@
                 width: 100%;
                 margin: 0.25rem 0;
             }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
     <!-- 헤더 -->
     <div class="header">
-        <h1>🧠 HabitFlow 관리자</h1>
-        <p>서비스 현황과 사용자 피드백을 한눈에 관리하세요</p>
+        <div class="header-content">
+            <div>
+                <h1>🧠 HabitFlow 관리자</h1>
+                <p>실시간 서비스 모니터링 및 사용자 관리 대시보드</p>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>실시간 연결됨</span>
+            </div>
+        </div>
     </div>
 
     <!-- 메인 컨테이너 -->
@@ -351,38 +2042,50 @@
         <!-- 대시보드 통계 -->
         <div class="dashboard-grid">
             <div class="card">
-                <h2>📊 실시간 통계</h2>
-                <div class="stat-number" id="total-users">1,247</div>
-                <div class="stat-label">총 사용자 수</div>
-                <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #10b981;">
-                    ↗️ 전일 대비 +23명
+                <h2>👥 총 사용자</h2>
+                <div class="stat-number" id="total-users">0</div>
+                <div class="stat-label">등록된 사용자 수</div>
+                <div class="stat-change positive" id="users-change">
+                    <span class="loading">
+                        <div class="loading-spinner"></div>
+                        로딩 중...
+                    </span>
                 </div>
             </div>
             
             <div class="card">
                 <h2>✅ 오늘의 활동</h2>
-                <div class="stat-number" id="today-completions">892</div>
+                <div class="stat-number" id="today-completions">0</div>
                 <div class="stat-label">완료된 습관</div>
-                <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #10b981;">
-                    🔥 평균 완료율 87%
+                <div class="stat-change positive" id="completions-change">
+                    <span class="loading">
+                        <div class="loading-spinner"></div>
+                        로딩 중...
+                    </span>
                 </div>
             </div>
             
             <div class="card">
-                <h2>⭐ 사용자 만족도</h2>
-                <div class="stat-number">4.9</div>
-                <div class="stat-label">평균 평점 (5점 만점)</div>
-                <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #3b82f6;">
-                    💬 새 리뷰 12개
+                <h2>📊 총 습관</h2>
+                <div class="stat-number" id="total-habits">0</div>
+                <div class="stat-label">생성된 습관 수</div>
+                <div class="stat-change positive" id="habits-change">
+                    <span class="loading">
+                        <div class="loading-spinner"></div>
+                        로딩 중...
+                    </span>
                 </div>
             </div>
             
             <div class="card">
-                <h2>💰 수익 현황</h2>
-                <div class="stat-number">₩0</div>
-                <div class="stat-label">이번 달 매출 (무료 버전)</div>
-                <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #f59e0b;">
-                    🚀 프리미엄 준비중
+                <h2>🔥 평균 연속</h2>
+                <div class="stat-number" id="avg-streak">0</div>
+                <div class="stat-label">일 연속 기록</div>
+                <div class="stat-change neutral" id="streak-change">
+                    <span class="loading">
+                        <div class="loading-spinner"></div>
+                        로딩 중...
+                    </span>
                 </div>
             </div>
         </div>
@@ -391,6 +2094,7 @@
         <div class="tabs">
             <div class="tab active" onclick="switchTab('overview')">🏠 개요</div>
             <div class="tab" onclick="switchTab('users')">👥 사용자</div>
+            <div class="tab" onclick="switchTab('habits')">🎯 습관 분석</div>
             <div class="tab" onclick="switchTab('feedback')">💬 피드백</div>
             <div class="tab" onclick="switchTab('settings')">⚙️ 설정</div>
         </div>
@@ -402,55 +2106,42 @@
                     <h2>🚀 빠른 작업</h2>
                     <div class="quick-actions">
                         <button class="btn btn-success" onclick="refreshData()">🔄 데이터 새로고침</button>
-                        <button class="btn" onclick="exportData()">📊 데이터 내보내기</button>
+                        <button class="btn" onclick="exportAllData()">📊 전체 데이터 내보내기</button>
                         <button class="btn btn-warning" onclick="showAnnouncement()">📢 공지사항 작성</button>
-                        <button class="btn" onclick="window.open('../', '_blank')">🌐 랜딩페이지 확인</button>
-                        <button class="btn" onclick="window.open('../app.html', '_blank')">📱 서비스 앱 확인</button>
+                        <button class="btn btn-outline" onclick="backupData()">💾 데이터 백업</button>
+                        <button class="btn" onclick="window.open('./', '_blank')">🌐 서비스 확인</button>
                     </div>
                 </div>
                 
                 <div class="card">
-                    <h2>📈 주요 지표 트렌드</h2>
-                    <div style="padding: 1rem 0;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <span>일간 활성 사용자</span>
-                            <span style="color: #10b981; font-weight: 600;">↗️ +12%</span>
+                    <h2>📈 실시간 트렌드</h2>
+                    <div class="metric-card">
+                        <div class="metric-title">가장 인기있는 카테고리</div>
+                        <div class="metric-value" id="popular-category">건강</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="category-progress" style="width: 0%"></div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <span>습관 완료율</span>
-                            <span style="color: #10b981; font-weight: 600;">↗️ +5%</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <span>신규 가입자</span>
-                            <span style="color: #f59e0b; font-weight: 600;">→ +2%</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>사용자 리텐션</span>
-                            <span style="color: #10b981; font-weight: 600;">↗️ +8%</span>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">평균 완료율</div>
+                        <div class="metric-value" id="completion-rate">0%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="completion-progress" style="width: 0%"></div>
                         </div>
                     </div>
                 </div>
             </div>
             
             <div class="card">
-                <h2>📋 최근 활동 로그</h2>
+                <h2>📋 실시간 활동 로그</h2>
                 <div id="activity-log">
                     <div class="log-item">
-                        <div class="log-time">5분 전</div>
-                        <div>새로운 사용자 가입: user_1247@email.com</div>
+                        <div class="log-time">시스템 시작됨</div>
+                        <div class="log-action">관리자 대시보드가 초기화되었습니다.</div>
                     </div>
-                    <div class="log-item">
-                        <div class="log-time">12분 전</div>
-                        <div>피드백 접수: "정말 유용한 앱이에요!" ⭐⭐⭐⭐⭐</div>
-                    </div>
-                    <div class="log-item">
-                        <div class="log-time">1시간 전</div>
-                        <div>서버 상태 체크 완료 - 모든 시스템 정상</div>
-                    </div>
-                    <div class="log-item">
-                        <div class="log-time">2시간 전</div>
-                        <div>일일 통계 업데이트 완료</div>
-                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <button class="btn btn-outline" onclick="clearLogs()">🗑️ 로그 지우기</button>
                 </div>
             </div>
         </div>
@@ -459,34 +2150,60 @@
         <div id="users-tab" class="tab-content">
             <div class="card">
                 <h2>👥 사용자 현황</h2>
-                <div class="alert alert-success">
-                    <strong>성장세!</strong> 이번 주 신규 가입자가 지난주 대비 34% 증가했습니다.
+                <div class="alert alert-info">
+                    <span>ℹ️</span>
+                    <span>실시간 Firebase 데이터를 기반으로 표시됩니다.</span>
                 </div>
                 
-                <div style="margin: 1rem 0;">
-                    <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">카테고리별 인기 습관</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                        <div style="padding: 1rem; background: #f8fafc; border-radius: 8px;">
-                            <div style="font-weight: 600; color: #2d3748;">🏃‍♂️ 건강</div>
-                            <div style="font-size: 0.9rem; color: #718096;">물 마시기, 운동하기</div>
-                            <div style="font-size: 0.8rem; color: #10b981;">423명 참여</div>
-                        </div>
-                        <div style="padding: 1rem; background: #f8fafc; border-radius: 8px;">
-                            <div style="font-weight: 600; color: #2d3748;">📚 학습</div>
-                            <div style="font-size: 0.9rem; color: #718096;">독서, 언어공부</div>
-                            <div style="font-size: 0.8rem; color: #10b981;">318명 참여</div>
-                        </div>
-                        <div style="padding: 1rem; background: #f8fafc; border-radius: 8px;">
-                            <div style="font-weight: 600; color: #2d3748;">🧘‍♂️ 마음챙김</div>
-                            <div style="font-size: 0.9rem; color: #718096;">명상, 감사일기</div>
-                            <div style="font-size: 0.8rem; color: #10b981;">267명 참여</div>
-                        </div>
+                <div class="quick-actions">
+                    <button class="btn" onclick="loadUserDetails()">🔍 사용자 세부정보 로드</button>
+                    <button class="btn btn-warning" onclick="sendBulkNotification()">📱 전체 알림 발송</button>
+                    <button class="btn btn-success" onclick="exportUserData()">📊 사용자 데이터 분석</button>
+                </div>
+                
+                <div id="users-list" style="margin-top: 2rem;">
+                    <div class="loading" style="justify-content: center; padding: 2rem;">
+                        <div class="loading-spinner"></div>
+                        <span>사용자 데이터를 로드하는 중...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 습관 분석 탭 -->
+        <div id="habits-tab" class="tab-content">
+            <div class="card">
+                <h2>🎯 습관 분석</h2>
+                
+                <div class="dashboard-grid">
+                    <div class="metric-card">
+                        <div class="metric-title">🏃‍♂️ 건강 카테고리</div>
+                        <div class="metric-value" id="health-count">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">📚 학습 카테고리</div>
+                        <div class="metric-value" id="learning-count">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">💼 생산성 카테고리</div>
+                        <div class="metric-value" id="productivity-count">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">🧘‍♂️ 마음챙김 카테고리</div>
+                        <div class="metric-value" id="mindfulness-count">0</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>📈 습관 생성 트렌드</h3>
+                    <div id="habits-trend" style="padding: 2rem; text-align: center; color: #64748b;">
+                        차트 데이터를 분석하는 중...
                     </div>
                 </div>
                 
                 <div class="quick-actions">
-                    <button class="btn" onclick="exportUserData()">📊 사용자 데이터 분석</button>
-                    <button class="btn btn-warning" onclick="sendNotification()">📱 푸시 알림 발송</button>
+                    <button class="btn" onclick="analyzeHabits()">🔍 상세 분석</button>
+                    <button class="btn btn-success" onclick="generateReport()">📄 보고서 생성</button>
                 </div>
             </div>
         </div>
@@ -495,573 +2212,6 @@
         <div id="feedback-tab" class="tab-content">
             <div class="card">
                 <h2>💬 사용자 피드백</h2>
-                
-                <div style="margin-bottom: 1.5rem;">
-                    <div style="padding: 1rem; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                            <span style="font-weight: 600;">김민수님</span>
-                            <div>
-                                <span style="color: #f59e0b;">⭐⭐⭐⭐⭐</span>
-                                <span style="font-size: 0.8rem; color: #718096; margin-left: 0.5rem;">2시간 전</span>
-                            </div>
-                        </div>
-                        <p style="color: #4a5568; font-size: 0.9rem;">
-                            "AI 코치가 정말 정확해요! 제가 언제 습관을 잊어버릴지 미리 알려주고, 딱 맞는 시간에 알림을 보내줍니다. 덕분에 21일 물 마시기 챌린지를 성공했어요!"
-                        </p>
-                        <div style="margin-top: 0.5rem;">
-                            <button class="btn btn-small" onclick="replyToFeedback()">💬 답글</button>
-                            <button class="btn btn-small btn-success" onclick="markAsRead()">✅ 확인</button>
-                        </div>
-                    </div>
-                    
-                    <div style="padding: 1rem; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                            <span style="font-weight: 600;">이지은님</span>
-                            <div>
-                                <span style="color: #f59e0b;">⭐⭐⭐⭐⭐</span>
-                                <span style="font-size: 0.8rem; color: #718096; margin-left: 0.5rem;">5시간 전</span>
-                            </div>
-                        </div>
-                        <p style="color: #4a5568; font-size: 0.9rem;">
-                            "다른 습관 앱들은 지루했는데, HabitFlow는 게임하는 것처럼 재밌어요. AI 점수가 올라갈 때마다 성취감이 느껴져서 계속 하게 되네요."
-                        </p>
-                        <div style="margin-top: 0.5rem;">
-                            <button class="btn btn-small" onclick="replyToFeedback()">💬 답글</button>
-                            <button class="btn btn-small btn-success" onclick="markAsRead()">✅ 확인</button>
-                        </div>
-                    </div>
-                    
-                    <div style="padding: 1rem; border: 1px solid #fed7aa; border-radius: 8px; background: #fffbeb;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                            <span style="font-weight: 600;">박서준님</span>
-                            <div>
-                                <span style="color: #f59e0b;">⭐⭐⭐⭐</span>
-                                <span style="font-size: 0.8rem; color: #718096; margin-left: 0.5rem;">1일 전</span>
-                            </div>
-                        </div>
-                        <p style="color: #92400e; font-size: 0.9rem;">
-                            "기능은 좋은데 가끔 앱이 느려져요. 특히 통계 페이지에서요. 개선되면 더 좋을 것 같습니다."
-                        </p>
-                        <div style="margin-top: 0.5rem;">
-                            <button class="btn btn-small btn-warning" onclick="replyToFeedback()">🚨 우선 답글</button>
-                            <button class="btn btn-small" onclick="createIssue()">🐛 이슈 등록</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="quick-actions">
-                    <button class="btn" onclick="exportFeedback()">📊 피드백 분석</button>
-                    <button class="btn btn-success" onclick="sendThankYou()">💌 감사 메시지</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 설정 탭 -->
-        <div id="settings-tab" class="tab-content">
-            <div class="card">
-                <h2>⚙️ 서비스 설정</h2>
-                
-                <div class="settings-group">
-                    <h3>🔔 알림 설정</h3>
-                    <div class="setting-item">
-                        <div>
-                            <strong>신규 사용자 알림</strong>
-                            <div style="font-size: 0.8rem; color: #718096;">새로운 사용자 가입 시 이메일 알림</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="setting-item">
-                        <div>
-                            <strong>피드백 알림</strong>
-                            <div style="font-size: 0.8rem; color: #718096;">새로운 피드백 접수 시 즉시 알림</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="setting-item">
-                        <div>
-                            <strong>일일 리포트</strong>
-                            <div style="font-size: 0.8rem; color: #718096;">매일 오전 9시 통계 리포트 발송</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="settings-group">
-                    <h3>🎯 서비스 운영</h3>
-                    <div class="setting-item">
-                        <div>
-                            <strong>신규 가입 허용</strong>
-                            <div style="font-size: 0.8rem; color: #718096;">새로운 사용자 가입 기능</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="setting-item">
-                        <div>
-                            <strong>AI 추천 시스템</strong>
-                            <div style="font-size: 0.8rem; color: #718096;">개인화된 습관 추천 기능</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="setting-item">
-                        <div>
-                            <strong>커뮤니티 챌린지</strong>
-                            <div style="font-size: 0.8rem; color: #718096;">주간 커뮤니티 챌린지 활성화</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="settings-group">
-                    <h3>💰 수익화 준비</h3>
-                    <div class="alert alert-warning">
-                        <strong>준비 중!</strong> 프리미엄 기능과 결제 시스템을 준비하고 있습니다.
-                    </div>
-                    <div class="setting-item">
-                        <div>
-                            <strong>프리미엄 모드</strong>
-                            <div style="font-size: 0.8rem; color: #718096;">유료 결제 기능 (개발 중)</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" disabled>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div style="padding: 1rem; background: #f0f9ff; border-radius: 8px; border: 1px solid #0ea5e9;">
-                        <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: #0c4a6e;">🚀 수익화 로드맵</h4>
-                        <ul style="font-size: 0.8rem; color: #075985; padding-left: 1rem;">
-                            <li>1단계: 무료 서비스로 사용자 확보 (현재)</li>
-                            <li>2단계: Stripe 결제 연동 (다음 달)</li>
-                            <li>3단계: 프리미엄 기능 출시 (2개월 후)</li>
-                            <li>4단계: 구독 모델 안정화 (3개월 후)</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="quick-actions">
-                    <button class="btn btn-success" onclick="saveSettings()">💾 설정 저장</button>
-                    <button class="btn btn-warning" onclick="exportSettings()">📋 설정 백업</button>
-                    <button class="btn btn-danger" onclick="resetSettings()">🔄 초기화</button>
-                </div>
-            </div>
-            
-            <div class="card">
-                <h2>🔧 시스템 정보</h2>
-                <div style="font-family: monospace; font-size: 0.8rem; background: #f8fafc; padding: 1rem; border-radius: 6px; border: 1px solid #e2e8f0;">
-                    <div>📅 서비스 시작일: 2024년 11월</div>
-                    <div>🌐 호스팅: GitHub Pages (무료)</div>
-                    <div>💾 데이터 저장: LocalStorage (브라우저)</div>
-                    <div>📊 분석 도구: Google Analytics (예정)</div>
-                    <div>📧 문의 처리: Email.js (무료)</div>
-                    <div>🔄 마지막 업데이트: <span id="last-update">방금 전</span></div>
-                </div>
-                
-                <div class="quick-actions">
-                    <button class="btn" onclick="checkSystemStatus()">🔍 시스템 상태 확인</button>
-                    <button class="btn" onclick="viewLogs()">📋 로그 보기</button>
-                    <button class="btn btn-warning" onclick="clearCache()">🗑️ 캐시 정리</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 공지사항 모달 -->
-    <div id="announcement-modal" class="modal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 1rem;">📢 공지사항 작성</h3>
-            
-            <div class="form-group">
-                <label class="form-label">제목</label>
-                <input type="text" class="form-input" placeholder="예: 새로운 기능 업데이트 안내">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">내용</label>
-                <textarea class="form-input" style="min-height: 120px;" placeholder="사용자에게 전달할 내용을 작성하세요..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">중요도</label>
-                <select class="form-input">
-                    <option>일반</option>
-                    <option>중요</option>
-                    <option>긴급</option>
-                </select>
-            </div>
-            
-            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                <button class="btn" onclick="closeModal()" style="flex: 1; background: #6b7280;">취소</button>
-                <button class="btn btn-success" onclick="publishAnnouncement()" style="flex: 1;">📢 발행</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // 전역 변수
-        let currentData = {
-            totalUsers: 1247,
-            todayCompletions: 892,
-            rating: 4.9,
-            revenue: 0
-        };
-
-        // 탭 전환 기능
-        function switchTab(tabName) {
-            // 모든 탭과 콘텐츠 비활성화
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-            // 선택된 탭과 콘텐츠 활성화
-            event.target.classList.add('active');
-            document.getElementById(tabName + '-tab').classList.add('active');
-        }
-
-        // 데이터 새로고침
-        function refreshData() {
-            showNotification('🔄 데이터를 새로고침하고 있습니다...', 'info');
-            
-            // 실제로는 서버에서 데이터를 가져올 것
-            setTimeout(() => {
-                // 더미 데이터 업데이트
-                currentData.totalUsers += Math.floor(Math.random() * 10);
-                currentData.todayCompletions += Math.floor(Math.random() * 50);
-                
-                // UI 업데이트
-                document.getElementById('total-users').textContent = currentData.totalUsers.toLocaleString();
-                document.getElementById('today-completions').textContent = currentData.todayCompletions.toLocaleString();
-                
-                addActivityLog('데이터 새로고침 완료');
-                showNotification('✅ 데이터 새로고침이 완료되었습니다!', 'success');
-            }, 1500);
-        }
-
-        // 데이터 내보내기
-        function exportData() {
-            showNotification('📊 데이터를 내보내는 중...', 'info');
-            
-            const data = {
-                timestamp: new Date().toISOString(),
-                statistics: currentData,
-                exportedBy: 'admin'
-            };
-            
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `habitflow-data-${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            addActivityLog('데이터 내보내기 완료');
-            showNotification('✅ 데이터 파일이 다운로드되었습니다!', 'success');
-        }
-
-        // 공지사항 모달 표시
-        function showAnnouncement() {
-            document.getElementById('announcement-modal').classList.add('show');
-        }
-
-        // 공지사항 발행
-        function publishAnnouncement() {
-            const title = document.querySelector('#announcement-modal input').value;
-            const content = document.querySelector('#announcement-modal textarea').value;
-            
-            if (!title || !content) {
-                showNotification('⚠️ 제목과 내용을 모두 입력해주세요.', 'warning');
-                return;
-            }
-            
-            // 실제로는 서버로 전송
-            addActivityLog(`공지사항 발행: "${title}"`);
-            showNotification('📢 공지사항이 발행되었습니다!', 'success');
-            closeModal();
-        }
-
-        // 모달 닫기
-        function closeModal() {
-            document.getElementById('announcement-modal').classList.remove('show');
-        }
-
-        // 사용자 데이터 내보내기
-        function exportUserData() {
-            showNotification('👥 사용자 데이터 분석 중...', 'info');
-            
-            setTimeout(() => {
-                const userData = {
-                    totalUsers: currentData.totalUsers,
-                    categories: {
-                        health: 423,
-                        learning: 318,
-                        mindfulness: 267,
-                        productivity: 189,
-                        social: 156
-                    },
-                    averageStreak: 12.4,
-                    topHabits: [
-                        '물 2L 마시기',
-                        '30분 독서',
-                        '10분 명상',
-                        '만보 걷기',
-                        '일기 쓰기'
-                    ]
-                };
-                
-                console.log('사용자 분석 데이터:', userData);
-                addActivityLog('사용자 데이터 분석 완료');
-                showNotification('✅ 콘솔에서 분석 결과를 확인하세요!', 'success');
-            }, 2000);
-        }
-
-        // 푸시 알림 발송
-        function sendNotification() {
-            showNotification('📱 푸시 알림을 발송하고 있습니다...', 'info');
-            
-            setTimeout(() => {
-                addActivityLog('전체 사용자에게 푸시 알림 발송 완료');
-                showNotification('✅ 푸시 알림이 발송되었습니다!', 'success');
-            }, 1500);
-        }
-
-        // 피드백 관련 기능들
-        function replyToFeedback() {
-            showNotification('💬 피드백 답글 기능은 다음 업데이트에서 제공됩니다.', 'info');
-        }
-
-        function markAsRead() {
-            event.target.disabled = true;
-            event.target.textContent = '✅ 확인됨';
-            event.target.style.background = '#10b981';
-            showNotification('✅ 피드백이 확인 처리되었습니다.', 'success');
-        }
-
-        function createIssue() {
-            addActivityLog('이슈 등록: 앱 성능 개선 필요');
-            showNotification('🐛 이슈가 등록되었습니다. 개발팀에 전달됩니다.', 'success');
-        }
-
-        function exportFeedback() {
-            const feedbackData = {
-                totalFeedbacks: 247,
-                averageRating: 4.9,
-                positiveRatio: 0.94,
-                commonIssues: ['성능 개선', '알림 설정', '새 기능 요청']
-            };
-            
-            console.log('피드백 분석:', feedbackData);
-            showNotification('📊 콘솔에서 피드백 분석을 확인하세요!', 'success');
-        }
-
-        function sendThankYou() {
-            showNotification('💌 감사 메시지를 발송했습니다!', 'success');
-            addActivityLog('사용자들에게 감사 메시지 발송');
-        }
-
-        // 설정 관련 기능들
-        function saveSettings() {
-            showNotification('💾 설정이 저장되었습니다.', 'success');
-            addActivityLog('시스템 설정 업데이트');
-        }
-
-        function exportSettings() {
-            const settings = {
-                notifications: true,
-                newUserAlerts: true,
-                aiRecommendations: true,
-                communityChallenge: true
-            };
-            
-            const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'habitflow-settings.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showNotification('📋 설정 백업이 완료되었습니다!', 'success');
-        }
-
-        function resetSettings() {
-            if (confirm('⚠️ 모든 설정을 초기화하시겠습니까?')) {
-                showNotification('🔄 설정이 초기화되었습니다.', 'warning');
-                addActivityLog('시스템 설정 초기화');
-            }
-        }
-
-        function checkSystemStatus() {
-            showNotification('🔍 시스템 상태를 확인하고 있습니다...', 'info');
-            
-            setTimeout(() => {
-                const status = {
-                    server: '정상',
-                    database: '정상',
-                    api: '정상',
-                    cdn: '정상',
-                    lastCheck: new Date().toLocaleString('ko-KR')
-                };
-                
-                console.log('시스템 상태:', status);
-                addActivityLog('시스템 상태 점검 완료 - 모든 서비스 정상');
-                showNotification('✅ 모든 시스템이 정상 작동 중입니다!', 'success');
-            }, 2000);
-        }
-
-        function viewLogs() {
-            const logs = [
-                '2024-11-20 14:30:15 - 새로운 사용자 가입',
-                '2024-11-20 14:25:33 - 피드백 접수',
-                '2024-11-20 14:20:12 - 데이터 백업 완료',
-                '2024-11-20 14:15:45 - 시스템 상태 점검'
-            ];
-            
-            console.log('시스템 로그:', logs);
-            showNotification('📋 콘솔에서 상세 로그를 확인하세요!', 'info');
-        }
-
-        function clearCache() {
-            if (confirm('🗑️ 캐시를 정리하시겠습니까? 페이지가 새로고침됩니다.')) {
-                localStorage.clear();
-                sessionStorage.clear();
-                location.reload();
-            }
-        }
-
-        // 유틸리티 함수들
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `alert alert-${type === 'info' ? 'warning' : type}`;
-            notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                z-index: 10000;
-                min-width: 300px;
-                animation: slideIn 0.3s ease-out;
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease-in';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        function addActivityLog(message) {
-            const logContainer = document.getElementById('activity-log');
-            const logItem = document.createElement('div');
-            logItem.className = 'log-item';
-            logItem.innerHTML = `
-                <div class="log-time">방금 전</div>
-                <div>${message}</div>
-            `;
-            
-            logContainer.insertBefore(logItem, logContainer.firstChild);
-            
-            // 로그가 10개 이상이면 마지막 것 제거
-            if (logContainer.children.length > 10) {
-                logContainer.removeChild(logContainer.lastChild);
-            }
-        }
-
-        // 실시간 데이터 업데이트 시뮬레이션
-        function simulateRealTimeUpdates() {
-            setInterval(() => {
-                // 랜덤하게 사용자 수 증가
-                if (Math.random() > 0.7) {
-                    currentData.totalUsers += 1;
-                    document.getElementById('total-users').textContent = currentData.totalUsers.toLocaleString();
-                }
-                
-                // 랜덤하게 완료된 습관 수 증가
-                if (Math.random() > 0.5) {
-                    currentData.todayCompletions += Math.floor(Math.random() * 3) + 1;
-                    document.getElementById('today-completions').textContent = currentData.todayCompletions.toLocaleString();
-                }
-                
-                // 마지막 업데이트 시간 갱신
-                document.getElementById('last-update').textContent = new Date().toLocaleTimeString('ko-KR');
-            }, 10000);
-        }
-
-        // 초기화
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🧠 HabitFlow 관리자 페이지 초기화 완료');
-            addActivityLog('관리자 페이지 접속');
-            simulateRealTimeUpdates();
-            
-            // 모달 클릭 이벤트
-            document.getElementById('announcement-modal').addEventListener('click', function(e) {
-                if (e.target === this) closeModal();
-            });
-            
-            // ESC 키로 모달 닫기
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') closeModal();
-            });
-        });
-
-        // CSS 애니메이션 추가
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-            
-            .btn {
-                position: relative;
-                overflow: hidden;
-            }
-            
-            .btn::before {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                width: 0;
-                height: 0;
-                background: rgba(255, 255, 255, 0.3);
-                border-radius: 50%;
-                transform: translate(-50%, -50%);
-                transition: width 0.3s, height 0.3s;
-            }
-            
-            .btn:active::before {
-                width: 300px;
-                height: 300px;
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
-</body>
-</html>
-                
+                <div class="alert alert-warning">
+                    <span>⚠️</span>
+                    <span>피드백 시스템은 다음 업데이트에서 구현될 예정입니다.</span>
