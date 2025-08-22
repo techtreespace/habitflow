@@ -546,9 +546,12 @@
             }
         }
 
-        // 🔔 실시간 알림 수신 시스템
+        // 🔔 실시간 알림 수신 시스템 (디버깅 강화)
         async function setupNotificationListener() {
-            if (!currentUser || !db) return;
+            if (!currentUser || !db) {
+                console.error('❌ 알림 리스너 설정 실패: 사용자 또는 DB 없음');
+                return;
+            }
 
             try {
                 if (notificationListener) {
@@ -556,13 +559,39 @@
                 }
 
                 console.log('🔔 실시간 알림 리스너 설정 중...');
+                console.log('👤 현재 사용자 UID:', currentUser.uid);
 
+                // 🔍 먼저 기존 알림 확인
+                console.log('🔍 기존 알림 데이터 확인 중...');
+                const existingNotifications = await db.collection('notifications')
+                    .where('userId', '==', currentUser.uid)
+                    .where('isActive', '==', true)
+                    .get();
+                
+                console.log('📊 기존 알림 개수:', existingNotifications.size);
+                existingNotifications.docs.forEach(doc => {
+                    console.log('📄 기존 알림:', doc.id, doc.data());
+                });
+
+                // 🔍 전체 알림도 확인 (전체 발송용)
+                console.log('🔍 전체 발송 알림 확인 중...');
+                const broadcastNotifications = await db.collection('notifications')
+                    .where('userId', '==', 'all')
+                    .where('isActive', '==', true)
+                    .get();
+                
+                console.log('📢 전체 발송 알림 개수:', broadcastNotifications.size);
+                broadcastNotifications.docs.forEach(doc => {
+                    console.log('📄 전체 발송 알림:', doc.id, doc.data());
+                });
+
+                // 실시간 리스너 설정 (개인 알림)
                 notificationListener = db.collection('notifications')
                     .where('userId', '==', currentUser.uid)
                     .where('isActive', '==', true)
                     .orderBy('createdAt', 'desc')
                     .onSnapshot(snapshot => {
-                        console.log('📡 알림 업데이트 감지:', snapshot.size, '개');
+                        console.log('📡 개인 알림 업데이트 감지:', snapshot.size, '개');
                         
                         snapshot.docChanges().forEach(change => {
                             if (change.type === 'added') {
@@ -571,14 +600,42 @@
                                     ...change.doc.data()
                                 };
                                 
+                                console.log('🔔 새 개인 알림 수신:', notificationData);
                                 handleNewNotification(notificationData);
                             }
                         });
                         
                         loadNotificationsFromFirestore();
                     }, error => {
-                        console.error('❌ 알림 리스너 오류:', error);
+                        console.error('❌ 개인 알림 리스너 오류:', error);
                     });
+
+                // 전체 발송 알림 리스너도 추가
+                const broadcastListener = db.collection('notifications')
+                    .where('userId', '==', 'all')
+                    .where('isActive', '==', true)
+                    .orderBy('createdAt', 'desc')
+                    .onSnapshot(snapshot => {
+                        console.log('📡 전체 발송 알림 업데이트 감지:', snapshot.size, '개');
+                        
+                        snapshot.docChanges().forEach(change => {
+                            if (change.type === 'added') {
+                                const notificationData = {
+                                    id: change.doc.id,
+                                    ...change.doc.data()
+                                };
+                                
+                                console.log('🔔 새 전체 발송 알림 수신:', notificationData);
+                                handleNewNotification(notificationData);
+                            }
+                        });
+                        
+                        loadNotificationsFromFirestore();
+                    }, error => {
+                        console.error('❌ 전체 발송 알림 리스너 오류:', error);
+                    });
+
+                console.log('✅ 알림 리스너 설정 완료 (개인 + 전체 발송)');
                 
             } catch (error) {
                 console.error('❌ 알림 리스너 설정 실패:', error);
@@ -620,37 +677,72 @@
             }
         }
 
-        // Firestore에서 알림 목록 로드
+        // Firestore에서 알림 목록 로드 (전체 발송 포함)
         async function loadNotificationsFromFirestore() {
             if (!currentUser || !db) return;
 
             try {
-                const snapshot = await db.collection('notifications')
+                console.log('📱 Firestore 알림 로드 시작...');
+
+                // 개인 알림 로드
+                const personalSnapshot = await db.collection('notifications')
                     .where('userId', '==', currentUser.uid)
                     .where('isActive', '==', true)
                     .orderBy('createdAt', 'desc')
-                    .limit(50)
+                    .limit(25)
                     .get();
                 
-                const firestoreNotifications = snapshot.docs.map(doc => ({
+                console.log('👤 개인 알림:', personalSnapshot.size, '개');
+
+                // 전체 발송 알림 로드
+                const broadcastSnapshot = await db.collection('notifications')
+                    .where('userId', '==', 'all')
+                    .where('isActive', '==', true)
+                    .orderBy('createdAt', 'desc')
+                    .limit(25)
+                    .get();
+                
+                console.log('📢 전체 발송 알림:', broadcastSnapshot.size, '개');
+
+                // 두 타입의 알림 합치기
+                const personalNotifications = personalSnapshot.docs.map(doc => ({
                     id: doc.id,
                     title: doc.data().title || '알림',
                     message: doc.data().message || '',
                     type: doc.data().type || 'system',
                     timestamp: doc.data().createdAt?.toDate() || new Date(),
-                    isRead: doc.data().isRead || false
+                    isRead: doc.data().isRead || false,
+                    senderName: doc.data().senderName || '시스템'
                 }));
+
+                const broadcastNotifications = broadcastSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    title: doc.data().title || '알림',
+                    message: doc.data().message || '',
+                    type: doc.data().type || 'system',
+                    timestamp: doc.data().createdAt?.toDate() || new Date(),
+                    isRead: false, // 전체 발송은 항상 새 알림으로 처리
+                    senderName: doc.data().senderName || '관리자'
+                }));
+
+                const allFirestoreNotifications = [...personalNotifications, ...broadcastNotifications];
                 
+                console.log('📊 총 Firestore 알림:', allFirestoreNotifications.length, '개');
+
+                // 기존 로컬 알림과 중복 제거 후 병합
                 const localNotificationIds = notifications.map(n => n.id);
-                const newFirestoreNotifications = firestoreNotifications.filter(fn => 
+                const newFirestoreNotifications = allFirestoreNotifications.filter(fn => 
                     !localNotificationIds.includes(fn.id)
                 );
                 
+                console.log('🆕 새로운 알림:', newFirestoreNotifications.length, '개');
+
+                // 병합하여 시간순 정렬
                 notifications = [...newFirestoreNotifications, ...notifications]
                     .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
                     .slice(0, 50);
                 
-                console.log('📱 Firestore 알림 로드 완료:', firestoreNotifications.length, '개');
+                console.log('📱 최종 알림 목록:', notifications.length, '개');
                 
                 updateNotificationBadge();
                 
@@ -661,6 +753,7 @@
                 
             } catch (error) {
                 console.error('❌ Firestore 알림 로드 실패:', error);
+                showNotification('알림을 불러오는데 실패했습니다.', 'error');
             }
         }
 
@@ -1061,7 +1154,7 @@
             closeModal();
         }
 
-        // 디버그 도구
+        // 디버그 도구 (강화)
         window.habitFlowDebug = {
             testNotificationSystem: async () => {
                 if (!currentUser || !db) {
@@ -1113,11 +1206,97 @@
                     console.error('❌ 관리자 알림 시뮬레이션 실패:', error);
                 }
             },
+
+            // 🔍 새로운 디버깅 함수들
+            checkFirestoreNotifications: async () => {
+                if (!currentUser || !db) {
+                    console.log('❌ 로그인이 필요합니다');
+                    return;
+                }
+
+                console.log('🔍 Firestore 알림 전체 조회...');
+                console.log('👤 현재 사용자 UID:', currentUser.uid);
+
+                try {
+                    // 개인 알림 확인
+                    const personalQuery = await db.collection('notifications')
+                        .where('userId', '==', currentUser.uid)
+                        .get();
+                    
+                    console.log('👤 개인 알림 총 개수:', personalQuery.size);
+                    personalQuery.docs.forEach(doc => {
+                        const data = doc.data();
+                        console.log('📄 개인 알림:', {
+                            id: doc.id,
+                            title: data.title,
+                            message: data.message,
+                            isActive: data.isActive,
+                            createdAt: data.createdAt?.toDate()
+                        });
+                    });
+
+                    // 전체 발송 알림 확인
+                    const broadcastQuery = await db.collection('notifications')
+                        .where('userId', '==', 'all')
+                        .get();
+                    
+                    console.log('📢 전체 발송 알림 총 개수:', broadcastQuery.size);
+                    broadcastQuery.docs.forEach(doc => {
+                        const data = doc.data();
+                        console.log('📄 전체 발송 알림:', {
+                            id: doc.id,
+                            title: data.title,
+                            message: data.message,
+                            isActive: data.isActive,
+                            senderName: data.senderName,
+                            createdAt: data.createdAt?.toDate()
+                        });
+                    });
+
+                } catch (error) {
+                    console.error('❌ Firestore 조회 실패:', error);
+                }
+            },
+
+            forceRefreshNotifications: async () => {
+                console.log('🔄 강제 알림 새로고침...');
+                await loadNotificationsFromFirestore();
+                renderNotifications();
+                console.log('✅ 새로고침 완료');
+            },
+
+            simulateBroadcastNotification: async () => {
+                if (!db) {
+                    console.log('❌ DB 연결이 필요합니다');
+                    return;
+                }
+
+                console.log('📢 전체 발송 알림 시뮬레이션...');
+
+                const broadcastNotification = {
+                    userId: 'all', // 전체 발송용
+                    title: '📢 전체 공지사항',
+                    message: '모든 사용자에게 발송되는 중요한 공지사항입니다!',
+                    type: 'system',
+                    senderName: 'HabitFlow 관리자',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    isActive: true,
+                    isRead: false
+                };
+
+                try {
+                    const docRef = await db.collection('notifications').add(broadcastNotification);
+                    console.log('✅ 전체 발송 알림 생성됨:', docRef.id);
+                } catch (error) {
+                    console.error('❌ 전체 발송 알림 생성 실패:', error);
+                }
+            },
             
             checkNotificationListener: () => {
                 console.log('🔔 알림 리스너 상태:', notificationListener ? '활성' : '비활성');
-                console.log('📱 현재 알림 개수:', notifications.length);
+                console.log('📱 현재 로컬 알림 개수:', notifications.length);
                 console.log('👤 현재 사용자:', currentUser?.email || '없음');
+                console.log('🔗 DB 연결:', db ? '연결됨' : '연결 안됨');
             }
         };
 
