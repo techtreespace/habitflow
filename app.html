@@ -11,11 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -24,930 +20,232 @@
             padding: 20px;
         }
         
-        .container {
-            max-width: 400px;
-            margin: 0 auto;
-            padding-bottom: 80px;
-        }
+        .container { max-width: 400px; margin: 0 auto; padding-bottom: 80px; }
         
-        /* 로그인 화면 스타일 */
+        /* 로그인 화면 */
         .auth-container {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            max-width: 400px; margin: 0 auto; padding: 20px; min-height: 100vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
         
         .auth-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px 32px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            width: 100%;
-            max-width: 380px;
-            text-align: center;
+            background: white; border-radius: 20px; padding: 40px 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); width: 100%; max-width: 380px; text-align: center;
         }
         
-        .auth-logo {
-            font-size: 2.5rem;
-            margin-bottom: 16px;
-        }
-        
-        .auth-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1a202c;
-            margin-bottom: 8px;
-        }
-        
-        .auth-subtitle {
-            color: #718096;
-            margin-bottom: 32px;
-            font-size: 16px;
-        }
+        .auth-logo { font-size: 2.5rem; margin-bottom: 16px; }
+        .auth-title { font-size: 24px; font-weight: 700; color: #1a202c; margin-bottom: 8px; }
+        .auth-subtitle { color: #718096; margin-bottom: 32px; font-size: 16px; }
         
         .auth-btn {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 25px;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
+            width: 100%; padding: 16px; border: none; border-radius: 25px; font-weight: 600;
+            font-size: 16px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 16px;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
         }
         
-        .auth-btn-google {
-            background: white;
-            border: 2px solid #e2e8f0;
-            color: #4a5568;
-        }
+        .auth-btn-google { background: white; border: 2px solid #e2e8f0; color: #4a5568; }
+        .auth-btn-google:hover { border-color: #cbd5e0; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); }
+        .auth-btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .auth-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3); }
         
-        .auth-btn-google:hover {
-            border-color: #cbd5e0;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
+        .auth-divider { text-align: center; margin: 24px 0; position: relative; }
+        .auth-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #e2e8f0; }
+        .auth-divider span { background: white; padding: 0 16px; color: #718096; font-size: 14px; }
         
-        .auth-btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-        
-        .auth-btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-        
-        .auth-divider {
-            text-align: center;
-            margin: 24px 0;
-            position: relative;
-        }
-        
-        .auth-divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #e2e8f0;
-        }
-        
-        .auth-divider span {
-            background: white;
-            padding: 0 16px;
-            color: #718096;
-            font-size: 14px;
-        }
-        
-        .auth-input-group {
-            margin-bottom: 16px;
-            text-align: left;
-        }
-        
+        .auth-input-group { margin-bottom: 16px; text-align: left; }
         .auth-input-group input {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 25px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
+            width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 25px;
+            font-size: 16px; transition: border-color 0.3s ease;
         }
+        .auth-input-group input:focus { outline: none; border-color: #667eea; }
         
-        .auth-input-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
+        .auth-switch { text-align: center; margin-top: 24px; color: #718096; }
+        .auth-switch a { color: #667eea; text-decoration: none; font-weight: 600; }
+        .auth-switch a:hover { text-decoration: underline; }
         
-        .auth-switch {
-            text-align: center;
-            margin-top: 24px;
-            color: #718096;
-        }
+        .auth-terms { font-size: 13px; color: #718096; text-align: center; margin-top: 16px; line-height: 1.4; }
+        .auth-terms a { color: #667eea; text-decoration: none; }
         
-        .auth-switch a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .auth-switch a:hover {
-            text-decoration: underline;
-        }
-        
-        .auth-terms {
-            font-size: 13px;
-            color: #718096;
-            text-align: center;
-            margin-top: 16px;
-            line-height: 1.4;
-        }
-        
-        .auth-terms a {
-            color: #667eea;
-            text-decoration: none;
-        }
-        
-        /* 로딩 및 앱 스타일 */
+        /* 로딩 */
         .loading-overlay {
-            display: none;
-            position: fixed;
-            z-index: 10001;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(102, 126, 234, 0.9);
-            backdrop-filter: blur(5px);
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
+            display: none; position: fixed; z-index: 10001; left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(102, 126, 234, 0.9); backdrop-filter: blur(5px);
+            align-items: center; justify-content: center; flex-direction: column;
         }
-        
-        .loading-overlay.show {
-            display: flex;
-        }
+        .loading-overlay.show { display: flex; }
         
         .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 16px;
+            width: 50px; height: 50px; border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white; border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 16px;
         }
-        
-        .loading-text {
-            color: white;
-            font-size: 18px;
-            font-weight: 600;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .loading-text { color: white; font-size: 18px; font-weight: 600; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         /* 사용자 헤더 */
         .user-header {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            color: white;
-            padding: 16px 20px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); color: white;
+            padding: 16px 20px; border-radius: 20px; margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center;
         }
         
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
+        .user-info { display: flex; align-items: center; gap: 12px; }
         .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            width: 40px; height: 40px; border-radius: 50%;
             background: linear-gradient(135deg, #ffd700, #ff6b6b);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 18px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 600; font-size: 18px;
         }
-        
-        .user-name {
-            font-weight: 600;
-            font-size: 16px;
-        }
+        .user-name { font-weight: 600; font-size: 16px; }
         
         .logout-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer;
+            font-size: 14px; transition: all 0.3s ease;
         }
+        .logout-btn:hover { background: rgba(255, 255, 255, 0.3); border-color: rgba(255, 255, 255, 0.5); }
         
-        .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-        
-        /* 기존 앱 스타일 유지 */
+        /* 카드 스타일 */
         .card {
-            background: white;
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 20px;
+            background: white; border-radius: 20px; padding: 24px; margin-bottom: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
         
         .ai-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            position: relative;
-            overflow: hidden;
+            color: white; position: relative; overflow: hidden;
         }
         
         .ai-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
             background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
             animation: shimmer 3s infinite;
         }
-        
         @keyframes shimmer {
             0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
             100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
         
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        @keyframes successBounce {
-            0% { transform: translate(-50%, -50%) scale(0.5) rotate(-5deg); opacity: 0; }
-            50% { transform: translate(-50%, -50%) scale(1.2) rotate(2deg); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0; }
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
         .ai-avatar {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #ffd700, #ff6b6b);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin-bottom: 16px;
-            animation: pulse 2s infinite;
+            width: 60px; height: 60px; background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 24px; margin-bottom: 16px; animation: pulse 2s infinite;
             box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
         }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         
         .ai-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            color: #92400e;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 12px;
+            display: inline-flex; align-items: center; gap: 6px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e); color: #92400e;
+            padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 12px;
         }
         
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        
+        /* 버튼 스타일 */
         .btn {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-            font-weight: 500;
+            background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 8px;
+            cursor: pointer; font-size: 14px; transition: all 0.2s; font-weight: 500;
         }
+        .btn:hover { background: #2563eb; transform: translateY(-1px); }
+        .btn-small { padding: 6px 12px; font-size: 12px; }
+        .btn-danger { background: #ef4444; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-success { background: #10b981; }
+        .btn-success:hover { background: #059669; }
+        .btn-outline { background: transparent; border: 1px solid #3b82f6; color: #3b82f6; }
+        .btn-outline:hover { background: #3b82f6; color: white; }
         
-        .btn:hover {
-            background: #2563eb;
-            transform: translateY(-1px);
-        }
-        
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-        
-        .btn-danger {
-            background: #ef4444;
-        }
-        
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-        
-        .btn-success {
-            background: #10b981;
-        }
-        
-        .btn-success:hover {
-            background: #059669;
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 1px solid #3b82f6;
-            color: #3b82f6;
-        }
-        
-        .btn-outline:hover {
-            background: #3b82f6;
-            color: white;
-        }
-        
-        .habit-item {
-            padding: 20px;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        
-        .habit-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .habit-actions {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            display: flex;
-            gap: 6px;
-        }
-        
-        .habit-content {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-            padding-right: 80px;
-        }
-        
-        .checkbox {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: 2px solid #d1d5db;
-            background: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            font-weight: bold;
-        }
-        
-        .checkbox.completed {
-            background: #10b981;
-            border: none;
-            color: white;
-            transform: scale(1.1);
-        }
-        
-        .ai-score {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: inline-block;
-        }
-        
-        .smart-insight {
-            background: rgba(59, 130, 246, 0.1);
-            border-left: 3px solid #3b82f6;
-            padding: 8px 12px;
-            border-radius: 0 8px 8px 0;
-            font-size: 12px;
-            color: #1e40af;
-            margin-top: 8px;
-        }
-        
+        /* 네비게이션 */
         .navigation {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            border-top: 1px solid #e5e7eb;
-            padding: 8px 16px;
-            display: flex;
-            justify-content: space-around;
-            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed; bottom: 0; left: 0; right: 0; background: white;
+            border-top: 1px solid #e5e7eb; padding: 8px 16px;
+            display: flex; justify-content: space-around; box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
         }
         
         .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 6px 8px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 11px;
-            color: #6b7280;
-            min-width: 50px;
-            position: relative;
+            display: flex; flex-direction: column; align-items: center; padding: 6px 8px;
+            border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 11px;
+            color: #6b7280; min-width: 50px; position: relative;
         }
+        .nav-item.active { background: #eff6ff; color: #3b82f6; }
+        .nav-item:hover { background: #f3f4f6; }
         
-        .nav-item.active {
-            background: #eff6ff;
-            color: #3b82f6;
-        }
-        
-        .nav-item:hover {
-            background: #f3f4f6;
-        }
-        
-        /* 알림 뱃지 스타일 */
+        /* 알림 뱃지 */
         .notification-badge {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            background: #ef4444;
-            color: white;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: 600;
-            animation: pulse 2s infinite;
+            position: absolute; top: 2px; right: 2px; background: #ef4444; color: white;
+            border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center;
+            justify-content: center; font-size: 10px; font-weight: 600; animation: pulse 2s infinite;
         }
         
         /* 알림센터 스타일 */
         .notification-item {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            position: relative;
+            background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px;
+            margin-bottom: 12px; transition: all 0.2s ease; cursor: pointer; position: relative;
         }
-        
-        .notification-item:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
+        .notification-item:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
         .notification-item.unread {
-            background: #f0f9ff;
-            border-color: #3b82f6;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+            background: #f0f9ff; border-color: #3b82f6; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
         }
-        
         .notification-item.unread::before {
-            content: '';
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            width: 8px;
-            height: 8px;
-            background: #3b82f6;
-            border-radius: 50%;
+            content: ''; position: absolute; top: 16px; right: 16px; width: 8px; height: 8px;
+            background: #3b82f6; border-radius: 50%;
         }
         
-        .notification-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 8px;
-        }
+        .notification-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+        .notification-title { font-weight: 600; font-size: 14px; color: #1f2937; margin-bottom: 4px; }
+        .notification-message { font-size: 13px; color: #6b7280; margin-bottom: 8px; }
+        .notification-time { font-size: 11px; color: #9ca3af; }
         
-        .notification-title {
-            font-weight: 600;
-            font-size: 14px;
-            color: #1f2937;
-            margin-bottom: 4px;
-        }
-        
-        .notification-message {
-            font-size: 13px;
-            color: #6b7280;
-            margin-bottom: 8px;
-        }
-        
-        .notification-time {
-            font-size: 11px;
-            color: #9ca3af;
-        }
-        
-        .notification-type {
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-        
-        .notification-type.system {
-            background: #f3f4f6;
-            color: #374151;
-        }
-        
-        .notification-type.habit {
-            background: #dbeafe;
-            color: #1d4ed8;
-        }
-        
-        .notification-type.achievement {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        
-        .notification-type.reminder {
-            background: #fef3c7;
-            color: #92400e;
-        }
+        .notification-type { padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; }
+        .notification-type.system { background: #f3f4f6; color: #374151; }
+        .notification-type.habit { background: #dbeafe; color: #1d4ed8; }
+        .notification-type.achievement { background: #d1fae5; color: #065f46; }
+        .notification-type.reminder { background: #fef3c7; color: #92400e; }
         
         .notification-delete {
-            background: none;
-            border: none;
-            color: #9ca3af;
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-            transition: all 0.2s;
-            font-size: 16px;
+            background: none; border: none; color: #9ca3af; cursor: pointer;
+            padding: 4px; border-radius: 4px; transition: all 0.2s; font-size: 16px;
         }
+        .notification-delete:hover { background: #fee2e2; color: #dc2626; }
         
-        .notification-delete:hover {
-            background: #fee2e2;
-            color: #dc2626;
-        }
+        /* 기타 스타일 */
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .view { display: none; }
+        .view.active { display: block; }
+        .hidden { display: none !important; }
+        
+        .empty-state { text-align: center; padding: 40px 20px; color: #6b7280; }
+        .empty-state-icon { font-size: 48px; margin-bottom: 16px; }
         
         .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
         }
-        
-        .modal.show {
-            display: flex;
-        }
-        
+        .modal.show { display: flex; }
         .modal-content {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            margin: 20px;
-            max-width: 400px;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
+            background: white; border-radius: 16px; padding: 24px; margin: 20px;
+            max-width: 400px; width: 100%; max-height: 80vh; overflow-y: auto;
         }
         
-        .form-group {
-            margin-bottom: 16px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #374151;
-        }
-        
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 500; color: #374151; }
         .form-input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
+            width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;
         }
+        .form-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .form-select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: white; }
+        .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
         
-        .form-input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        
-        .form-select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
-            background: white;
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-        
-        .view {
-            display: none;
-        }
-        
-        .view.active {
-            display: block;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #6b7280;
-        }
-        
-        .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
-        
-        .history-item {
-            padding: 12px;
-            border-left: 4px solid #3b82f6;
-            background: #f8fafc;
-            margin-bottom: 8px;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        .history-date {
-            font-size: 11px;
-            color: #6b7280;
-            margin-bottom: 4px;
-        }
-        
-        .history-action {
-            font-weight: 500;
-            color: #1f2937;
-            font-size: 13px;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .stat-number {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: #6b7280;
-        }
-        
-        .green { color: #10b981; }
-        .blue { color: #3b82f6; }
-        
-        .tag {
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 12px;
-            margin-right: 6px;
-            font-weight: 500;
-        }
-        
-        .category-health { background: #fef2f2; color: #dc2626; }
-        .category-learning { background: #eff6ff; color: #2563eb; }
-        .category-productivity { background: #f0fdf4; color: #16a34a; }
-        .category-social { background: #faf5ff; color: #9333ea; }
-        .category-mindfulness { background: #fffbeb; color: #d97706; }
-        
-        .recommendation-section {
-            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-            border: 1px solid #0ea5e9;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-        
-        .recommendation-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        
-        .recommendation-item {
-            background: white;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-left: 3px solid #0ea5e9;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .recommendation-item:hover {
-            background: #f8fafc;
-            transform: translateX(4px);
-        }
-        
-        .recommendation-title {
-            font-weight: 500;
-            margin-bottom: 4px;
-            font-size: 14px;
-        }
-        
-        .recommendation-stats {
-            display: flex;
-            gap: 12px;
-            font-size: 11px;
-            color: #6b7280;
-        }
-        
-        .trending-badge {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 8px;
-            font-size: 10px;
-            font-weight: 600;
-            margin-left: 6px;
-        }
-        
-        .popularity-bar {
-            width: 100%;
-            height: 4px;
-            background: #e5e7eb;
-            border-radius: 2px;
-            margin: 6px 0;
-            overflow: hidden;
-        }
-        
-        .popularity-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #0ea5e9, #0284c7);
-            border-radius: 2px;
-            transition: width 0.5s ease;
-        }
-        
-        .category-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-        }
-        
-        .category-tab {
-            flex-shrink: 0;
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: #f3f4f6;
-            color: #6b7280;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 13px;
-            font-weight: 500;
-        }
-        
-        .category-tab.active {
-            background: #3b82f6;
-            color: white;
-        }
-        
-        .category-tab:hover {
-            background: #e5e7eb;
-        }
-        
-        .category-tab.active:hover {
-            background: #2563eb;
-        }
-        
-        .weekly-challenge {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .weekly-challenge::before {
-            content: '🏆';
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            font-size: 60px;
-            opacity: 0.1;
-        }
-        
-        /* 알림 스타일 */
         .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 16px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            z-index: 10000;
-            animation: slideInRight 0.3s ease-out;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            max-width: 350px;
-            word-wrap: break-word;
+            position: fixed; top: 20px; right: 20px; padding: 16px 20px; border-radius: 12px;
+            font-weight: 600; z-index: 10000; animation: slideInRight 0.3s ease-out;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); max-width: 350px; word-wrap: break-word;
         }
+        .notification.success { background: #10b981; color: white; }
+        .notification.error { background: #ef4444; color: white; }
+        .notification.info { background: #3b82f6; color: white; }
         
-        .notification.success {
-            background: #10b981;
-            color: white;
-        }
-        
-        .notification.error {
-            background: #ef4444;
-            color: white;
-        }
-        
-        .notification.info {
-            background: #3b82f6;
-            color: white;
-        }
-        
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @keyframes slideOutRight {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-        
-        /* 숨김 클래스 */
-        .hidden {
-            display: none !important;
-        }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
     </style>
 </head>
 <body>
@@ -958,15 +256,12 @@
             <h1 class="auth-title">HabitFlow</h1>
             <p class="auth-subtitle">AI가 도와주는 습관 형성의 새로운 방법</p>
             
-            <!-- 로그인 폼 -->
             <div id="login-form">
                 <button class="auth-btn auth-btn-google" onclick="signInWithGoogle()">
                     🌐 Google로 빠른 시작
                 </button>
                 
-                <div class="auth-divider">
-                    <span>또는</span>
-                </div>
+                <div class="auth-divider"><span>또는</span></div>
                 
                 <form onsubmit="signInWithEmail(event)">
                     <div class="auth-input-group">
@@ -983,15 +278,12 @@
                 </div>
             </div>
             
-            <!-- 회원가입 폼 -->
             <div id="signup-form" class="hidden">
                 <button class="auth-btn auth-btn-google" onclick="signInWithGoogle()">
                     🌐 Google로 간편 가입
                 </button>
                 
-                <div class="auth-divider">
-                    <span>또는</span>
-                </div>
+                <div class="auth-divider"><span>또는</span></div>
                 
                 <form onsubmit="signUpWithEmail(event)">
                     <div class="auth-input-group">
@@ -1034,77 +326,28 @@
         <div class="container">
             <!-- 대시보드 뷰 -->
             <div id="dashboard-view" class="view active">
-                <!-- AI 코치 카드 -->
                 <div class="card ai-card">
-                    <div class="ai-badge">
-                        🤖 AI 코치 "하비"
-                    </div>
-                    
+                    <div class="ai-badge">🤖 AI 코치 "하비"</div>
                     <div class="ai-avatar">🧠</div>
-                    
-                    <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">
-                        개인 맞춤 AI 분석
-                    </h3>
-                    
+                    <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">개인 맞춤 AI 분석</h3>
                     <div style="background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px; margin: 12px 0;">
-                        <div style="font-size: 13px; margin-bottom: 6px; font-weight: 600;">
-                            📊 오늘의 AI 인사이트:
-                        </div>
-                        <div id="ai-message" style="font-size: 12px; opacity: 0.9;">
-                            습관 패턴을 분석 중입니다...
-                        </div>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
-                        <span style="font-size: 12px; opacity: 0.8;">성공 예측률:</span>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 60px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px;">
-                                <div id="success-rate-bar" style="width: 0%; height: 100%; background: #10b981; border-radius: 2px; transition: width 1s ease;"></div>
-                            </div>
-                            <span id="success-rate-text" style="font-size: 12px; font-weight: 600;">0%</span>
-                        </div>
+                        <div style="font-size: 13px; margin-bottom: 6px; font-weight: 600;">📊 오늘의 AI 인사이트:</div>
+                        <div id="ai-message" style="font-size: 12px; opacity: 0.9;">습관 패턴을 분석 중입니다...</div>
                     </div>
                 </div>
 
-                <!-- 추천 습관 섹션 -->
-                <div id="recommendations-section" class="recommendation-section" style="display: none;">
-                    <div class="recommendation-header">
-                        <h3 style="font-size: 16px; font-weight: 600; color: #0c4a6e;">
-                            🌟 맞춤 습관 추천
-                        </h3>
-                        <button class="btn btn-small btn-outline" onclick="toggleRecommendations()">
-                            접기
-                        </button>
-                    </div>
-                    <div id="recommendations-list">
-                        <!-- 추천 습관들이 여기에 표시됩니다 -->
-                    </div>
-                </div>
-
-                <!-- 오늘의 습관 -->
                 <div class="card">
                     <div class="section-header">
                         <h2 style="font-size: 18px; font-weight: 600;">🎯 오늘의 습관</h2>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="btn btn-small btn-outline" onclick="showRecommendations()">💡 추천</button>
-                            <button class="btn btn-small" onclick="showAddModal()">+ 추가</button>
-                        </div>
+                        <button class="btn btn-small" onclick="showAddModal()">+ 추가</button>
                     </div>
-                    
                     <div id="habits-list">
-                        <!-- 습관 목록이 여기에 표시됩니다 -->
-                    </div>
-                </div>
-
-                <!-- 통계 -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div id="completion-rate" class="stat-number green">0%</div>
-                        <div class="stat-label">오늘 달성률</div>
-                    </div>
-                    <div class="stat-card">
-                        <div id="max-streak" class="stat-number blue">0일</div>
-                        <div class="stat-label">최고 연속 기록</div>
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🎯</div>
+                            <p style="margin-bottom: 8px;">아직 습관이 없습니다</p>
+                            <p style="font-size: 14px; margin-bottom: 16px;">첫 번째 습관을 만들어보세요!</p>
+                            <button class="btn" onclick="showAddModal()">+ 습관 추가</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1116,9 +359,11 @@
                         <h2 style="font-size: 20px; font-weight: 600;">🎯 습관 관리</h2>
                         <button class="btn btn-small" onclick="showAddModal()">+ 새 습관</button>
                     </div>
-                    
                     <div id="all-habits-list">
-                        <!-- 모든 습관 목록이 여기에 표시됩니다 -->
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🔍</div>
+                            <p>등록된 습관이 없습니다</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1133,46 +378,26 @@
                             <button class="btn btn-small btn-danger" onclick="clearAllNotifications()">모두 삭제</button>
                         </div>
                     </div>
-                    
                     <div id="notifications-list">
-                        <!-- 알림 목록이 여기에 표시됩니다 -->
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🔔</div>
+                            <p style="margin-bottom: 8px;">받은 알림이 없습니다</p>
+                            <p style="font-size: 14px;">관리자가 발송한 알림이 여기에 표시됩니다!</p>
+                            <button class="btn btn-outline" onclick="loadNotificationsFromFirestore()" style="margin-top: 12px;">
+                                🔄 새로고침
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- 탐색 뷰 -->
             <div id="explore-view" class="view">
-                <!-- 주간 챌린지 -->
-                <div class="weekly-challenge">
-                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">
-                        🏆 이번 주 챌린지
-                    </h3>
-                    <p style="font-size: 13px; opacity: 0.9; margin-bottom: 12px;">
-                        "21일 물 2L 마시기" - 1,247명 참여 중
-                    </p>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 12px; opacity: 0.8;">참여율 87%</span>
-                        <button class="btn btn-small" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);">
-                            참여하기
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 카테고리 탭 -->
                 <div class="card">
                     <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 16px;">🔍 습관 탐색</h2>
-                    
-                    <div class="category-tabs">
-                        <div class="category-tab active" data-category="trending">🔥 인기</div>
-                        <div class="category-tab" data-category="health">🏃‍♂️ 건강</div>
-                        <div class="category-tab" data-category="learning">📚 학습</div>
-                        <div class="category-tab" data-category="productivity">💼 생산성</div>
-                        <div class="category-tab" data-category="social">👥 관계</div>
-                        <div class="category-tab" data-category="mindfulness">🧘‍♂️ 마음챙김</div>
-                    </div>
-                    
-                    <div id="category-recommendations">
-                        <!-- 카테고리별 추천이 여기에 표시됩니다 -->
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <p>추천 습관을 준비 중입니다</p>
                     </div>
                 </div>
             </div>
@@ -1182,11 +407,12 @@
                 <div class="card">
                     <div class="section-header">
                         <h2 style="font-size: 20px; font-weight: 600;">📊 활동 이력</h2>
-                        <button class="btn btn-small btn-danger" onclick="clearHistory()">이력 삭제</button>
                     </div>
-                    
                     <div id="history-list">
-                        <!-- 이력이 여기에 표시됩니다 -->
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📊</div>
+                            <p>활동 이력이 없습니다</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1195,34 +421,10 @@
             <div id="settings-view" class="view">
                 <div class="card">
                     <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 16px;">⚙️ 설정</h2>
-                    
-                    <div>
-                        <div style="padding: 16px; background: #f8fafc; border-radius: 8px; margin-bottom: 12px;">
-                            <h3 style="font-weight: 500; margin-bottom: 8px;">📊 통계 요약</h3>
-                            <p style="font-size: 14px; color: #6b7280;">총 습관: <span id="total-habits">0</span>개</p>
-                            <p style="font-size: 14px; color: #6b7280;">완료한 습관: <span id="completed-habits">0</span>개</p>
-                            <p style="font-size: 14px; color: #6b7280;">평균 연속 기록: <span id="avg-streak">0</span>일</p>
-                        </div>
-                        
-                        <div style="padding: 16px; background: #f8fafc; border-radius: 8px; margin-bottom: 12px;">
-                            <h3 style="font-weight: 500; margin-bottom: 8px;">🎯 AI 설정</h3>
-                            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                                <input type="checkbox" id="ai-notifications" checked>
-                                <span style="font-size: 14px;">AI 맞춤 알림 받기</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                                <input type="checkbox" id="pattern-analysis" checked>
-                                <span style="font-size: 14px;">패턴 분석 허용</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" id="habit-recommendations" checked>
-                                <span style="font-size: 14px;">맞춤 습관 추천 받기</span>
-                            </label>
-                        </div>
-                        
-                        <button class="btn btn-danger" onclick="clearAllData()" style="width: 100%;">
-                            🗑️ 모든 데이터 초기화
-                        </button>
+                    <div style="padding: 16px; background: #f8fafc; border-radius: 8px;">
+                        <h3 style="font-weight: 500; margin-bottom: 8px;">📊 통계 요약</h3>
+                        <p style="font-size: 14px; color: #6b7280;">총 습관: <span id="total-habits">0</span>개</p>
+                        <p style="font-size: 14px; color: #6b7280;">완료한 습관: <span id="completed-habits">0</span>개</p>
                     </div>
                 </div>
             </div>
@@ -1260,7 +462,7 @@
         </div>
     </div>
 
-    <!-- 습관 추가/수정 모달 -->
+    <!-- 습관 추가 모달 -->
     <div id="habit-modal" class="modal">
         <div class="modal-content">
             <h3 id="modal-title" style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">새 습관 추가</h3>
@@ -1276,19 +478,7 @@
                     <option value="health">🏃‍♂️ 건강</option>
                     <option value="learning">📚 학습</option>
                     <option value="productivity">💼 생산성</option>
-                    <option value="social">👥 관계</option>
-                    <option value="mindfulness">🧘‍♂️ 마음챙김</option>
                 </select>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">목표 일수</label>
-                <input type="number" id="habit-target" class="form-input" value="30" min="1" max="365">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">설명 (선택사항)</label>
-                <textarea id="habit-description" class="form-input" placeholder="이 습관에 대한 간단한 설명..." style="min-height: 60px; resize: vertical;"></textarea>
             </div>
             
             <div class="modal-actions">
@@ -1323,268 +513,8 @@
         let currentUser = null;
         let habits = [];
         let history = [];
-        let notifications = []; // 🔔 알림 배열 추가
-        let currentEditId = null;
-        let currentCategory = 'trending';
-
-        // 카테고리 정보
-        const categories = {
-            health: { name: '건강', emoji: '🏃‍♂️', class: 'category-health' },
-            learning: { name: '학습', emoji: '📚', class: 'category-learning' },
-            productivity: { name: '생산성', emoji: '💼', class: 'category-productivity' },
-            social: { name: '관계', emoji: '👥', class: 'category-social' },
-            mindfulness: { name: '마음챙김', emoji: '🧘‍♂️', class: 'category-mindfulness' }
-        };
-
-        // 샘플 알림 데이터
-        function initializeNotifications() {
-            notifications = [
-                {
-                    id: 1,
-                    title: "🎉 새로운 습관 완료!",
-                    message: "'매일 물 2L 마시기' 습관을 7일 연속으로 완료하셨습니다!",
-                    type: "achievement",
-                    timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30분 전
-                    isRead: false
-                },
-                {
-                    id: 2,
-                    title: "⏰ 습관 리마인더",
-                    message: "오늘의 습관을 완료할 시간입니다. 목표 달성까지 조금만 더!",
-                    type: "reminder",
-                    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2시간 전
-                    isRead: false
-                },
-                {
-                    id: 3,
-                    title: "🤖 AI 분석 완료",
-                    message: "이번 주 습관 패턴을 분석했습니다. 성공률이 15% 향상되었어요!",
-                    type: "system",
-                    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5), // 5시간 전
-                    isRead: true
-                },
-                {
-                    id: 4,
-                    title: "📈 주간 리포트",
-                    message: "이번 주 총 5개 습관을 완료하셨습니다. 지난주보다 20% 향상!",
-                    type: "habit",
-                    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1일 전
-                    isRead: true
-                },
-                {
-                    id: 5,
-                    title: "🏆 도전 과제 달성",
-                    message: "'21일 챌린지'에서 상위 10%에 진입하셨습니다!",
-                    type: "achievement",
-                    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2일 전
-                    isRead: false
-                }
-            ];
-        }
-
-        // 🔔 알림 관련 함수들
-        function renderNotifications() {
-            const container = document.getElementById('notifications-list');
-            
-            if (notifications.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🔔</div>
-                        <p style="margin-bottom: 8px;">받은 알림이 없습니다</p>
-                        <p style="font-size: 14px;">습관을 완료하면 알림이 도착해요!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // 최신 순으로 정렬
-            const sortedNotifications = [...notifications].sort((a, b) => 
-                new Date(b.timestamp) - new Date(a.timestamp)
-            );
-            
-            container.innerHTML = sortedNotifications.map(notification => `
-                <div class="notification-item ${!notification.isRead ? 'unread' : ''}" 
-                     onclick="markNotificationAsRead(${notification.id})">
-                    <div class="notification-header">
-                        <div>
-                            <div class="notification-title">${notification.title}</div>
-                            <span class="notification-type ${notification.type}">${getNotificationTypeLabel(notification.type)}</span>
-                        </div>
-                        <button class="notification-delete" onclick="deleteNotification(event, ${notification.id})">
-                            ✕
-                        </button>
-                    </div>
-                    <div class="notification-message">${notification.message}</div>
-                    <div class="notification-time">${formatNotificationTime(notification.timestamp)}</div>
-                </div>
-            `).join('');
-            
-            updateNotificationBadge();
-        }
-
-        function getNotificationTypeLabel(type) {
-            const labels = {
-                system: '시스템',
-                habit: '습관',
-                achievement: '성취',
-                reminder: '리마인더'
-            };
-            return labels[type] || '알림';
-        }
-
-        function formatNotificationTime(timestamp) {
-            const now = new Date();
-            const diff = now - new Date(timestamp);
-            const minutes = Math.floor(diff / (1000 * 60));
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-            if (minutes < 60) return `${minutes}분 전`;
-            if (hours < 24) return `${hours}시간 전`;
-            return `${days}일 전`;
-        }
-
-        function updateNotificationBadge() {
-            const unreadCount = notifications.filter(n => !n.isRead).length;
-            const badge = document.getElementById('notification-badge');
-            
-            if (unreadCount > 0) {
-                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
-                badge.style.display = 'flex';
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-
-        function markNotificationAsRead(notificationId) {
-            const notification = notifications.find(n => n.id === notificationId);
-            if (notification && !notification.isRead) {
-                notification.isRead = true;
-                renderNotifications();
-                // Firebase에 저장하는 로직 추가 예정
-            }
-        }
-
-        function deleteNotification(event, notificationId) {
-            event.stopPropagation();
-            
-            if (confirm('이 알림을 삭제하시겠습니까?')) {
-                notifications = notifications.filter(n => n.id !== notificationId);
-                renderNotifications();
-                showNotification('알림이 삭제되었습니다.', 'success');
-            }
-        }
-
-        function markAllAsRead() {
-            const unreadCount = notifications.filter(n => !n.isRead).length;
-            
-            if (unreadCount === 0) {
-                showNotification('읽지 않은 알림이 없습니다.', 'info');
-                return;
-            }
-            
-            notifications.forEach(n => n.isRead = true);
-            renderNotifications();
-            showNotification(`${unreadCount}개의 알림을 모두 읽음으로 표시했습니다.`, 'success');
-        }
-
-        function clearAllNotifications() {
-            if (notifications.length === 0) {
-                showNotification('삭제할 알림이 없습니다.', 'info');
-                return;
-            }
-            
-            if (confirm(`모든 알림을 삭제하시겠습니까?\n\n총 ${notifications.length}개의 알림이 삭제됩니다.`)) {
-                const deletedCount = notifications.length;
-                notifications = [];
-                renderNotifications();
-                showNotification(`${deletedCount}개의 알림이 모두 삭제되었습니다.`, 'success');
-            }
-        }
-
-        // 새 알림 추가 함수
-        function addNotification(title, message, type = 'system') {
-            const newNotification = {
-                id: Date.now(),
-                title,
-                message,
-                type,
-                timestamp: new Date(),
-                isRead: false
-            };
-            
-            notifications.unshift(newNotification);
-            
-            // 최대 50개 알림만 유지
-            if (notifications.length > 50) {
-                notifications = notifications.slice(0, 50);
-            }
-            
-            updateNotificationBadge();
-            
-            // 현재 알림 탭을 보고 있다면 즉시 업데이트
-            const currentView = document.querySelector('.view.active');
-            if (currentView && currentView.id === 'notifications-view') {
-                renderNotifications();
-            }
-        }
-
-        // 카테고리별 인기 습관 데이터베이스
-        const habitRecommendations = {
-            trending: [
-                { name: '매일 물 2L 마시기', category: 'health', users: 15420, successRate: 89, difficulty: 'easy', description: '하루에 물 2리터 마시기로 건강 개선' },
-                { name: '30분 독서하기', category: 'learning', users: 12890, successRate: 76, difficulty: 'easy', description: '매일 30분씩 책 읽는 습관 만들기' },
-                { name: '10분 명상하기', category: 'mindfulness', users: 11240, successRate: 82, difficulty: 'easy', description: '마음챙김과 스트레스 해소를 위한 명상' },
-                { name: '만보 걷기', category: 'health', users: 9870, successRate: 71, difficulty: 'medium', description: '하루 1만보 걷기로 체력 향상' },
-                { name: '일기 쓰기', category: 'productivity', users: 8450, successRate: 85, difficulty: 'easy', description: '하루를 돌아보는 5분 일기' }
-            ],
-            health: [
-                { name: '매일 물 2L 마시기', category: 'health', users: 15420, successRate: 89, difficulty: 'easy', description: '탈수 방지와 신진대사 촉진' },
-                { name: '만보 걷기', category: 'health', users: 9870, successRate: 71, difficulty: 'medium', description: '심혈관 건강과 체중 관리' },
-                { name: '30분 홈트레이닝', category: 'health', users: 7230, successRate: 68, difficulty: 'medium', description: '집에서 하는 효과적인 운동' },
-                { name: '7시간 수면', category: 'health', users: 6780, successRate: 78, difficulty: 'easy', description: '충분한 수면으로 컨디션 관리' },
-                { name: '스트레칭 15분', category: 'health', users: 5670, successRate: 83, difficulty: 'easy', description: '근육 이완과 유연성 향상' },
-                { name: '비타민 챙겨먹기', category: 'health', users: 4890, successRate: 91, difficulty: 'easy', description: '영양 보충으로 면역력 강화' }
-            ],
-            learning: [
-                { name: '30분 독서하기', category: 'learning', users: 12890, successRate: 76, difficulty: 'easy', description: '지식 습득과 어휘력 향상' },
-                { name: '영어 단어 10개 외우기', category: 'learning', users: 8940, successRate: 82, difficulty: 'easy', description: '꾸준한 영어 실력 향상' },
-                { name: '온라인 강의 1강 듣기', category: 'learning', users: 6780, successRate: 71, difficulty: 'medium', description: '새로운 스킬 습득' },
-                { name: '뉴스 기사 3개 읽기', category: 'learning', users: 5430, successRate: 88, difficulty: 'easy', description: '시사 상식과 사고력 향상' },
-                { name: 'TED 영상 1개 시청', category: 'learning', users: 3890, successRate: 85, difficulty: 'easy', description: '영어 듣기와 인사이트 습득' }
-            ],
-            productivity: [
-                { name: '일기 쓰기', category: 'productivity', users: 8450, successRate: 85, difficulty: 'easy', description: '자기 성찰과 목표 점검' },
-                { name: 'To-Do 리스트 작성', category: 'productivity', users: 7890, successRate: 91, difficulty: 'easy', description: '체계적인 일정 관리' },
-                { name: '스마트폰 사용 줄이기', category: 'productivity', users: 6240, successRate: 52, difficulty: 'hard', description: '디지털 디톡스와 집중력 향상' },
-                { name: '이메일 정리하기', category: 'productivity', users: 4780, successRate: 78, difficulty: 'easy', description: '효율적인 업무 환경 구축' },
-                { name: '포모도로 기법 사용', category: 'productivity', users: 4560, successRate: 74, difficulty: 'medium', description: '25분 집중 + 5분 휴식 사이클' }
-            ],
-            social: [
-                { name: '가족과 대화하기', category: 'social', users: 6780, successRate: 87, difficulty: 'easy', description: '가족 관계 개선과 소통' },
-                { name: '친구에게 연락하기', category: 'social', users: 5430, successRate: 73, difficulty: 'easy', description: '인간관계 유지와 강화' },
-                { name: '감사 인사 표현하기', category: 'social', users: 4890, successRate: 91, difficulty: 'easy', description: '긍정적 관계 형성' },
-                { name: '부모님께 안부 전화', category: 'social', users: 5670, successRate: 89, difficulty: 'easy', description: '효도와 가족 유대감 강화' },
-                { name: '동료와 점심 함께 먹기', category: 'social', users: 4560, successRate: 82, difficulty: 'easy', description: '직장 내 인간관계 개선' }
-            ],
-            mindfulness: [
-                { name: '10분 명상하기', category: 'mindfulness', users: 11240, successRate: 82, difficulty: 'easy', description: '마음의 평화와 집중력 향상' },
-                { name: '감사 일기 쓰기', category: 'mindfulness', users: 6780, successRate: 88, difficulty: 'easy', description: '긍정적 마인드셋 형성' },
-                { name: '호흡 운동 5분', category: 'mindfulness', users: 5430, successRate: 91, difficulty: 'easy', description: '스트레스 해소와 심신 안정' },
-                { name: '자연 속 산책', category: 'mindfulness', users: 4890, successRate: 76, difficulty: 'easy', description: '자연과의 교감으로 힐링' },
-                { name: '요가 15분', category: 'mindfulness', users: 4560, successRate: 79, difficulty: 'medium', description: '몸과 마음의 균형' }
-            ]
-        };
-
-        // AI 메시지
-        const aiMessages = [
-            "오늘 아침 8시에 습관을 실행하면 성공률이 23% 증가합니다! ⏰",
-            "주말 습관 실행률이 평일보다 34% 낮습니다. 알림을 설정해보세요! 📱",
-            "연속 3일 달성 시 뇌에서 도파민이 더 많이 분비됩니다! 🧠",
-            "물 마시기 습관과 운동 습관을 연결하면 성공률이 45% 증가합니다! 🔗",
-            "스트레스가 높은 날 습관 실패율이 67% 증가합니다. 명상을 추천드려요! 🧘‍♂️",
-            "현재 패턴으로 목표 달성 확률은 87%입니다. 훌륭하네요! 🎯"
-        ];
+        let notifications = [];
+        let notificationListener = null;
 
         // Firebase 초기화
         function initializeFirebase() {
@@ -1597,7 +527,6 @@
                 db = firebase.firestore();
                 googleProvider = new firebase.auth.GoogleAuthProvider();
                 
-                // 인증 상태 변화 감지
                 auth.onAuthStateChanged(function(user) {
                     if (user) {
                         currentUser = user;
@@ -1617,6 +546,124 @@
             }
         }
 
+        // 🔔 실시간 알림 수신 시스템
+        async function setupNotificationListener() {
+            if (!currentUser || !db) return;
+
+            try {
+                if (notificationListener) {
+                    notificationListener();
+                }
+
+                console.log('🔔 실시간 알림 리스너 설정 중...');
+
+                notificationListener = db.collection('notifications')
+                    .where('userId', '==', currentUser.uid)
+                    .where('isActive', '==', true)
+                    .orderBy('createdAt', 'desc')
+                    .onSnapshot(snapshot => {
+                        console.log('📡 알림 업데이트 감지:', snapshot.size, '개');
+                        
+                        snapshot.docChanges().forEach(change => {
+                            if (change.type === 'added') {
+                                const notificationData = {
+                                    id: change.doc.id,
+                                    ...change.doc.data()
+                                };
+                                
+                                handleNewNotification(notificationData);
+                            }
+                        });
+                        
+                        loadNotificationsFromFirestore();
+                    }, error => {
+                        console.error('❌ 알림 리스너 오류:', error);
+                    });
+                
+            } catch (error) {
+                console.error('❌ 알림 리스너 설정 실패:', error);
+            }
+        }
+
+        // 새 알림 처리
+        function handleNewNotification(notificationData) {
+            console.log('🔔 새 알림 수신:', notificationData.title);
+            
+            const newNotification = {
+                id: notificationData.id || Date.now(),
+                title: notificationData.title || '새 알림',
+                message: notificationData.message || '',
+                type: notificationData.type || 'system',
+                timestamp: notificationData.createdAt?.toDate() || new Date(),
+                isRead: false
+            };
+            
+            if (!notifications.find(n => n.id === newNotification.id)) {
+                notifications.unshift(newNotification);
+                
+                if (notifications.length > 50) {
+                    notifications = notifications.slice(0, 50);
+                }
+                
+                updateNotificationBadge();
+                
+                const currentView = document.querySelector('.view.active');
+                if (currentView && currentView.id === 'notifications-view') {
+                    renderNotifications();
+                }
+                
+                showNotification(`📱 ${newNotification.title}`, 'info');
+                
+                if (navigator.vibrate) {
+                    navigator.vibrate([200, 100, 200]);
+                }
+            }
+        }
+
+        // Firestore에서 알림 목록 로드
+        async function loadNotificationsFromFirestore() {
+            if (!currentUser || !db) return;
+
+            try {
+                const snapshot = await db.collection('notifications')
+                    .where('userId', '==', currentUser.uid)
+                    .where('isActive', '==', true)
+                    .orderBy('createdAt', 'desc')
+                    .limit(50)
+                    .get();
+                
+                const firestoreNotifications = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    title: doc.data().title || '알림',
+                    message: doc.data().message || '',
+                    type: doc.data().type || 'system',
+                    timestamp: doc.data().createdAt?.toDate() || new Date(),
+                    isRead: doc.data().isRead || false
+                }));
+                
+                const localNotificationIds = notifications.map(n => n.id);
+                const newFirestoreNotifications = firestoreNotifications.filter(fn => 
+                    !localNotificationIds.includes(fn.id)
+                );
+                
+                notifications = [...newFirestoreNotifications, ...notifications]
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .slice(0, 50);
+                
+                console.log('📱 Firestore 알림 로드 완료:', firestoreNotifications.length, '개');
+                
+                updateNotificationBadge();
+                
+                const currentView = document.querySelector('.view.active');
+                if (currentView && currentView.id === 'notifications-view') {
+                    renderNotifications();
+                }
+                
+            } catch (error) {
+                console.error('❌ Firestore 알림 로드 실패:', error);
+            }
+        }
+
         // 인증 관련 함수들
         async function signInWithGoogle() {
             try {
@@ -1631,15 +678,7 @@
             } catch (error) {
                 hideLoading();
                 console.error('Google 로그인 오류:', error);
-                
-                let errorMessage = 'Google 로그인에 실패했습니다.';
-                if (error.code === 'auth/popup-closed-by-user') {
-                    errorMessage = '로그인이 취소되었습니다.';
-                } else if (error.code === 'auth/popup-blocked') {
-                    errorMessage = '팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.';
-                }
-                
-                showNotification(errorMessage, 'error');
+                showNotification('Google 로그인에 실패했습니다.', 'error');
             }
         }
 
@@ -1656,28 +695,14 @@
 
             try {
                 showLoading('로그인 중...');
-                const result = await auth.signInWithEmailAndPassword(email, password);
+                await auth.signInWithEmailAndPassword(email, password);
                 showNotification('로그인 성공! 🎉', 'success');
                 hideLoading();
                 
             } catch (error) {
                 hideLoading();
                 console.error('이메일 로그인 오류:', error);
-                
-                let errorMessage = '로그인에 실패했습니다.';
-                switch (error.code) {
-                    case 'auth/user-not-found':
-                        errorMessage = '등록되지 않은 이메일입니다.';
-                        break;
-                    case 'auth/wrong-password':
-                        errorMessage = '비밀번호가 올바르지 않습니다.';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = '유효하지 않은 이메일 형식입니다.';
-                        break;
-                }
-                
-                showNotification(errorMessage, 'error');
+                showNotification('로그인에 실패했습니다.', 'error');
             }
         }
 
@@ -1693,48 +718,32 @@
                 return;
             }
 
-            if (password.length < 6) {
-                showNotification('비밀번호는 6자 이상이어야 합니다.', 'error');
-                return;
-            }
-
             try {
                 showLoading('계정을 생성하고 있습니다...');
                 const result = await auth.createUserWithEmailAndPassword(email, password);
                 const user = result.user;
                 
-                await user.updateProfile({
-                    displayName: name
-                });
-                
+                await user.updateProfile({ displayName: name });
                 await saveUserToFirestore(user, { displayName: name });
-                showNotification('회원가입 완료! 🎉 환영합니다!', 'success');
+                showNotification('회원가입 완료! 🎉', 'success');
                 hideLoading();
                 
             } catch (error) {
                 hideLoading();
                 console.error('회원가입 오류:', error);
-                
-                let errorMessage = '회원가입에 실패했습니다.';
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        errorMessage = '이미 사용중인 이메일입니다.';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = '유효하지 않은 이메일 형식입니다.';
-                        break;
-                    case 'auth/weak-password':
-                        errorMessage = '비밀번호가 너무 약합니다. 6자 이상 입력해주세요.';
-                        break;
-                }
-                
-                showNotification(errorMessage, 'error');
+                showNotification('회원가입에 실패했습니다.', 'error');
             }
         }
 
         async function logout() {
             try {
                 showLoading('로그아웃 중...');
+                
+                if (notificationListener) {
+                    notificationListener();
+                    notificationListener = null;
+                }
+                
                 await auth.signOut();
                 showNotification('로그아웃되었습니다.', 'success');
                 hideLoading();
@@ -1771,35 +780,13 @@
             try {
                 showLoading('사용자 데이터를 불러오는 중...');
                 
-                // 습관 데이터 로드
-                const habitsSnapshot = await db.collection('users').doc(currentUser.uid).collection('habits').get();
-                habits = habitsSnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
+                await setupNotificationListener();
+                await loadNotificationsFromFirestore();
                 
-                // 히스토리 데이터 로드
-                const historySnapshot = await db.collection('users').doc(currentUser.uid).collection('history')
-                    .orderBy('date', 'desc').limit(100).get();
-                history = historySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
+                console.log('✅ 사용자 데이터 로드 완료');
                 
-                // 알림 데이터 로드 (임시로 샘플 데이터 사용)
-                initializeNotifications();
-                
-                console.log('✅ 사용자 데이터 로드 완료:', { habits: habits.length, history: history.length, notifications: notifications.length });
-                
-                // UI 업데이트
                 updateUserHeader();
-                renderHabits();
-                renderAllHabits();
-                renderHistory();
-                renderNotifications(); // 🔔 알림 렌더링 추가
-                updateStats();
-                updateAIMessage();
-                showCategoryRecommendations('trending');
+                renderNotifications();
                 
                 hideLoading();
                 
@@ -1807,42 +794,6 @@
                 console.error('사용자 데이터 로드 오류:', error);
                 showNotification('데이터를 불러오는데 실패했습니다.', 'error');
                 hideLoading();
-            }
-        }
-
-        async function saveHabitToFirestore(habit) {
-            if (!currentUser || !db) return;
-
-            try {
-                const habitRef = db.collection('users').doc(currentUser.uid).collection('habits').doc(habit.id.toString());
-                await habitRef.set(habit);
-            } catch (error) {
-                console.error('습관 저장 오류:', error);
-                showNotification('습관 저장에 실패했습니다.', 'error');
-            }
-        }
-
-        async function deleteHabitFromFirestore(habitId) {
-            if (!currentUser || !db) return;
-
-            try {
-                await db.collection('users').doc(currentUser.uid).collection('habits').doc(habitId.toString()).delete();
-            } catch (error) {
-                console.error('습관 삭제 오류:', error);
-                showNotification('습관 삭제에 실패했습니다.', 'error');
-            }
-        }
-
-        async function saveHistoryToFirestore(historyItem) {
-            if (!currentUser || !db) return;
-
-            try {
-                await db.collection('users').doc(currentUser.uid).collection('history').add({
-                    ...historyItem,
-                    date: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            } catch (error) {
-                console.error('히스토리 저장 오류:', error);
             }
         }
 
@@ -1905,24 +856,177 @@
             }, 3000);
         }
 
-        // 초기화
-        function init() {
-            setupCategoryTabs();
-            initializeNotifications(); // 🔔 알림 초기화
+        // 알림 관련 함수들
+        function renderNotifications() {
+            const container = document.getElementById('notifications-list');
+            
+            if (notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔔</div>
+                        <p style="margin-bottom: 8px;">받은 알림이 없습니다</p>
+                        <p style="font-size: 14px;">관리자가 발송한 알림이 여기에 표시됩니다!</p>
+                        <button class="btn btn-outline" onclick="loadNotificationsFromFirestore()" style="margin-top: 12px;">
+                            🔄 새로고침
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const sortedNotifications = [...notifications].sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+            
+            container.innerHTML = sortedNotifications.map(notification => `
+                <div class="notification-item ${!notification.isRead ? 'unread' : ''}" 
+                     onclick="markNotificationAsRead('${notification.id}')">
+                    <div class="notification-header">
+                        <div>
+                            <div class="notification-title">${notification.title}</div>
+                            <span class="notification-type ${notification.type}">${getNotificationTypeLabel(notification.type)}</span>
+                        </div>
+                        <button class="notification-delete" onclick="deleteNotification(event, '${notification.id}')">
+                            ✕
+                        </button>
+                    </div>
+                    <div class="notification-message">${notification.message}</div>
+                    <div class="notification-time">${formatNotificationTime(notification.timestamp)}</div>
+                </div>
+            `).join('');
+            
+            updateNotificationBadge();
         }
 
-        // 카테고리 탭 이벤트 설정
-        function setupCategoryTabs() {
-            document.querySelectorAll('.category-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const category = this.dataset.category;
-                    showCategoryRecommendations(category);
-                    
-                    // 탭 활성화 업데이트
-                    document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
+        function getNotificationTypeLabel(type) {
+            const labels = {
+                system: '시스템',
+                habit: '습관',
+                achievement: '성취',
+                reminder: '리마인더'
+            };
+            return labels[type] || '알림';
+        }
+
+        function formatNotificationTime(timestamp) {
+            const now = new Date();
+            const diff = now - new Date(timestamp);
+            const minutes = Math.floor(diff / (1000 * 60));
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+            if (minutes < 60) return `${minutes}분 전`;
+            if (hours < 24) return `${hours}시간 전`;
+            return `${days}일 전`;
+        }
+
+        function updateNotificationBadge() {
+            const unreadCount = notifications.filter(n => !n.isRead).length;
+            const badge = document.getElementById('notification-badge');
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        async function markNotificationAsRead(notificationId) {
+            const notification = notifications.find(n => n.id === notificationId);
+            if (notification && !notification.isRead) {
+                notification.isRead = true;
+                
+                if (typeof notificationId === 'string') {
+                    try {
+                        await db.collection('notifications').doc(notificationId).update({
+                            isRead: true,
+                            readAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    } catch (error) {
+                        console.error('알림 읽음 처리 실패:', error);
+                    }
+                }
+                
+                renderNotifications();
+            }
+        }
+
+        async function deleteNotification(event, notificationId) {
+            event.stopPropagation();
+            
+            if (confirm('이 알림을 삭제하시겠습니까?')) {
+                notifications = notifications.filter(n => n.id !== notificationId);
+                
+                if (typeof notificationId === 'string') {
+                    try {
+                        await db.collection('notifications').doc(notificationId).update({
+                            isActive: false,
+                            deletedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    } catch (error) {
+                        console.error('알림 삭제 처리 실패:', error);
+                    }
+                }
+                
+                renderNotifications();
+                showNotification('알림이 삭제되었습니다.', 'success');
+            }
+        }
+
+        async function markAllAsRead() {
+            const unreadNotifications = notifications.filter(n => !n.isRead);
+            
+            if (unreadNotifications.length === 0) {
+                showNotification('읽지 않은 알림이 없습니다.', 'info');
+                return;
+            }
+            
+            notifications.forEach(n => n.isRead = true);
+            
+            const firestoreUpdatePromises = unreadNotifications
+                .filter(n => typeof n.id === 'string')
+                .map(n => db.collection('notifications').doc(n.id).update({
+                    isRead: true,
+                    readAt: firebase.firestore.FieldValue.serverTimestamp()
+                }));
+            
+            try {
+                await Promise.all(firestoreUpdatePromises);
+            } catch (error) {
+                console.error('일괄 읽음 처리 실패:', error);
+            }
+            
+            renderNotifications();
+            showNotification(`${unreadNotifications.length}개의 알림을 모두 읽음으로 표시했습니다.`, 'success');
+        }
+
+        async function clearAllNotifications() {
+            if (notifications.length === 0) {
+                showNotification('삭제할 알림이 없습니다.', 'info');
+                return;
+            }
+            
+            if (confirm(`모든 알림을 삭제하시겠습니까?\n\n총 ${notifications.length}개의 알림이 삭제됩니다.`)) {
+                const deletedCount = notifications.length;
+                
+                const firestoreDeletePromises = notifications
+                    .filter(n => typeof n.id === 'string')
+                    .map(n => db.collection('notifications').doc(n.id).update({
+                        isActive: false,
+                        deletedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }));
+                
+                try {
+                    await Promise.all(firestoreDeletePromises);
+                } catch (error) {
+                    console.error('일괄 삭제 처리 실패:', error);
+                }
+                
+                notifications = [];
+                renderNotifications();
+                showNotification(`${deletedCount}개의 알림이 모두 삭제되었습니다.`, 'success');
+            }
         }
 
         // 뷰 전환
@@ -1933,599 +1037,97 @@
             document.getElementById(viewName + '-view').classList.add('active');
             event.target.closest('.nav-item').classList.add('active');
             
-            if (viewName === 'habits') renderAllHabits();
-            if (viewName === 'notifications') renderNotifications(); // 🔔 알림 뷰 전환 시 렌더링
-            if (viewName === 'explore') showCategoryRecommendations(currentCategory);
-            if (viewName === 'history') renderHistory();
-            if (viewName === 'settings') updateSettings();
+            if (viewName === 'notifications') renderNotifications();
         }
 
-        // 추천 시스템
-        function showRecommendations() {
-            const section = document.getElementById('recommendations-section');
-            const userCategories = [...new Set(habits.map(h => h.category))];
-            
-            let recommendedHabits = [];
-            
-            if (userCategories.length > 0) {
-                userCategories.forEach(category => {
-                    const categoryHabits = habitRecommendations[category] || [];
-                    const filteredHabits = categoryHabits.filter(rh => 
-                        !habits.some(h => h.name.toLowerCase().includes(rh.name.toLowerCase().substring(0, 10)))
-                    );
-                    recommendedHabits.push(...filteredHabits.slice(0, 2));
-                });
-            } else {
-                recommendedHabits = habitRecommendations.trending.slice(0, 3);
-            }
-            
-            renderRecommendations(recommendedHabits.slice(0, 4));
-            section.style.display = 'block';
-            section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        function toggleRecommendations() {
-            document.getElementById('recommendations-section').style.display = 'none';
-        }
-
-        function renderRecommendations(recommendedHabits) {
-            const container = document.getElementById('recommendations-list');
-            
-            container.innerHTML = recommendedHabits.map(habit => `
-                <div class="recommendation-item" onclick="addRecommendedHabit('${habit.name}', '${habit.category}', '${habit.description}')">
-                    <div class="recommendation-title">
-                        ${categories[habit.category].emoji} ${habit.name}
-                        ${habit.users > 10000 ? '<span class="trending-badge">인기</span>' : ''}
-                    </div>
-                    <div style="font-size: 12px; color: #6b7280; margin-bottom: 6px;">
-                        ${habit.description}
-                    </div>
-                    <div class="recommendation-stats">
-                        <span>👥 ${habit.users.toLocaleString()}명 실행</span>
-                        <span>📈 성공률 ${habit.successRate}%</span>
-                        <span>⭐ ${habit.difficulty === 'easy' ? '쉬움' : habit.difficulty === 'medium' ? '보통' : '어려움'}</span>
-                    </div>
-                    <div class="popularity-bar">
-                        <div class="popularity-fill" style="width: ${habit.successRate}%"></div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function showCategoryRecommendations(category) {
-            currentCategory = category;
-            
-            const recommendations = habitRecommendations[category] || [];
-            const container = document.getElementById('category-recommendations');
-            
-            container.innerHTML = recommendations.map(habit => `
-                <div class="recommendation-item" onclick="addRecommendedHabit('${habit.name}', '${habit.category}', '${habit.description}')">
-                    <div class="recommendation-title">
-                        ${categories[habit.category].emoji} ${habit.name}
-                        ${habit.users > 10000 ? '<span class="trending-badge">HOT</span>' : ''}
-                        ${habit.successRate > 85 ? '<span class="trending-badge" style="background: #10b981;">추천</span>' : ''}
-                    </div>
-                    <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">
-                        ${habit.description}
-                    </div>
-                    <div class="recommendation-stats">
-                        <span>👥 ${habit.users.toLocaleString()}명</span>
-                        <span>📈 ${habit.successRate}% 성공률</span>
-                        <span>⭐ ${habit.difficulty === 'easy' ? '쉬움' : habit.difficulty === 'medium' ? '보통' : '어려움'}</span>
-                    </div>
-                    <div class="popularity-bar">
-                        <div class="popularity-fill" style="width: ${Math.min(habit.users / 200, 100)}%"></div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function addRecommendedHabit(name, category, description) {
-            if (habits.some(h => h.name.toLowerCase().includes(name.toLowerCase().substring(0, 10)))) {
-                showNotification('비슷한 습관이 이미 있습니다!', 'error');
-                return;
-            }
-            
-            const newHabit = {
-                id: Date.now(),
-                name,
-                category,
-                description,
-                target: 30,
-                streak: 0,
-                completed: false,
-                createdAt: new Date().toISOString()
-            };
-            
-            habits.push(newHabit);
-            await saveHabitToFirestore(newHabit);
-            addHistory(`💡 추천 습관 "${name}"을(를) 추가했습니다.`);
-            
-            // 🔔 새 습관 추가 알림
-            addNotification(
-                "🎯 새로운 습관 추가!",
-                `'${name}' 습관이 추가되었습니다. 오늘부터 시작해보세요!`,
-                "habit"
-            );
-            
-            renderHabits();
-            renderAllHabits();
-            updateStats();
-            
-            toggleRecommendations();
-            showSuccessAnimation('➕');
-            showNotification('습관이 추가되었습니다! 🎉', 'success');
-        }
-
-        // 습관 렌더링
-        function renderHabits() {
-            const container = document.getElementById('habits-list');
-            
-            if (habits.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🎯</div>
-                        <p style="margin-bottom: 8px;">아직 습관이 없습니다</p>
-                        <p style="font-size: 14px; margin-bottom: 16px;">AI 추천으로 시작해보세요!</p>
-                        <div style="display: flex; gap: 8px; justify-content: center;">
-                            <button class="btn btn-outline" onclick="showRecommendations()">💡 추천 보기</button>
-                            <button class="btn" onclick="showAddModal()">+ 직접 추가</button>
-                        </div>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = habits.map(habit => `
-                <div class="habit-item">
-                    <div class="habit-actions">
-                        <button class="btn btn-small" onclick="editHabit(${habit.id})">수정</button>
-                        <button class="btn btn-small btn-danger" onclick="deleteHabit(${habit.id})">삭제</button>
-                    </div>
-                    
-                    <div class="habit-content">
-                        <div class="checkbox ${habit.completed ? 'completed' : ''}" onclick="toggleHabit(${habit.id})">
-                            ${habit.completed ? '✓' : '○'}
-                        </div>
-                        <div style="flex: 1;">
-                            <h3 style="font-size: 14px; font-weight: 500; margin-bottom: 6px; ${habit.completed ? 'text-decoration: line-through; color: #6b7280;' : ''}">
-                                ${habit.name}
-                            </h3>
-                            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                                <span class="tag ${categories[habit.category].class}">
-                                    ${categories[habit.category].emoji} ${categories[habit.category].name}
-                                </span>
-                                <span style="font-size: 11px; color: #6b7280;">🔥 ${habit.streak}일 연속</span>
-                                <span style="font-size: 11px; color: #6b7280;">🎯 ${Math.round((habit.streak / habit.target) * 100)}%</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="ai-score">AI: ${calculateAIScore(habit)}점</div>
-                    
-                    ${getSmartInsight(habit)}
-                </div>
-            `).join('');
-        }
-
-        function renderAllHabits() {
-            const container = document.getElementById('all-habits-list');
-            
-            if (habits.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🔍</div>
-                        <p style="margin-bottom: 8px;">등록된 습관이 없습니다</p>
-                        <div style="display: flex; gap: 8px; justify-content: center;">
-                            <button class="btn btn-outline" onclick="switchView('explore')">🔍 탐색하기</button>
-                            <button class="btn" onclick="showAddModal()">+ 직접 추가</button>
-                        </div>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = habits.map(habit => `
-                <div class="habit-item">
-                    <div class="habit-actions">
-                        <button class="btn btn-small" onclick="editHabit(${habit.id})">수정</button>
-                        <button class="btn btn-small btn-danger" onclick="deleteHabit(${habit.id})">삭제</button>
-                    </div>
-                    
-                    <div style="padding-right: 80px;">
-                        <h3 style="font-size: 16px; font-weight: 500; margin-bottom: 8px;">
-                            ${habit.name}
-                        </h3>
-                        
-                        ${habit.description ? `<p style="font-size: 13px; color: #6b7280; margin-bottom: 8px;">${habit.description}</p>` : ''}
-                        
-                        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
-                            <span class="tag ${categories[habit.category].class}">
-                                ${categories[habit.category].emoji} ${categories[habit.category].name}
-                            </span>
-                            <span style="font-size: 11px; color: #6b7280;">목표: ${habit.target}일</span>
-                            <span class="ai-score">AI: ${calculateAIScore(habit)}점</span>
-                        </div>
-                        
-                        <div style="display: flex; gap: 16px; font-size: 13px; margin-bottom: 8px;">
-                            <span style="color: #10b981;">🔥 현재: ${habit.streak}일</span>
-                            <span style="color: #3b82f6;">📈 진행률: ${Math.round((habit.streak / habit.target) * 100)}%</span>
-                            <span style="color: ${habit.completed ? '#10b981' : '#6b7280'};">
-                                ${habit.completed ? '✅ 완료' : '⏳ 대기'}
-                            </span>
-                        </div>
-                        
-                        <div style="font-size: 11px; color: #6b7280;">
-                            생성일: ${new Date(habit.createdAt || Date.now()).toLocaleDateString('ko-KR')}
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderHistory() {
-            const container = document.getElementById('history-list');
-            
-            if (history.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📊</div>
-                        <p style="margin-bottom: 8px;">아직 활동 이력이 없습니다</p>
-                        <p style="font-size: 14px;">습관을 완료하면 이력이 쌓입니다!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = history.slice().reverse().slice(0, 50).map(item => `
-                <div class="history-item">
-                    <div class="history-date">${new Date(item.date?.toDate?.() || item.date || Date.now()).toLocaleString('ko-KR')}</div>
-                    <div class="history-action">${item.action}</div>
-                </div>
-            `).join('');
-        }
-
-        // 유틸리티 함수들
-        function calculateAIScore(habit) {
-            let score = 50;
-            score += Math.min(habit.streak * 2, 30);
-            const progressRate = habit.streak / habit.target;
-            score += progressRate * 20;
-            if (habit.completed) score += 10;
-            const categoryBonus = { health: 5, learning: 4, productivity: 3, social: 3, mindfulness: 4 };
-            score += categoryBonus[habit.category] || 0;
-            return Math.min(Math.round(score), 100);
-        }
-
-        function getSmartInsight(habit) {
-            const insights = [
-                `💡 오전 8시 실행 시 성공률 ${habit.streak + 15}% 증가 예상`,
-                `🎯 현재 패턴으로 ${Math.round(85 + habit.streak)}% 달성 확률`,
-                `⚡ 연속 ${habit.streak + 1}일 달성 시 습관 자동화 단계 진입`,
-                `🧠 이 시간대에 완료하면 집중력 ${Math.round(20 + habit.streak * 2)}% 향상`,
-                `📈 주간 패턴 분석: ${['월', '화', '수'][Math.floor(Math.random() * 3)]}요일 성공률 최고`
-            ];
-            const randomInsight = insights[Math.floor(Math.random() * insights.length)];
-            return `<div class="smart-insight">${randomInsight}</div>`;
-        }
-
-        async function toggleHabit(id) {
-            const habit = habits.find(h => h.id === id);
-            if (!habit) return;
-            
-            habit.completed = !habit.completed;
-            
-            if (habit.completed) {
-                habit.streak++;
-                addHistory(`✅ "${habit.name}" 습관을 완료했습니다! (${habit.streak}일 연속)`);
-                
-                // 🔔 습관 완료 알림 추가
-                addNotification(
-                    "🎉 습관 완료!",
-                    `'${habit.name}' 습관을 완료했습니다! ${habit.streak}일 연속 달성 중이에요!`,
-                    "achievement"
-                );
-                
-                // 🔔 연속 기록 달성 시 특별 알림
-                if (habit.streak % 7 === 0) {
-                    addNotification(
-                        "🔥 연속 기록 달성!",
-                        `'${habit.name}' 습관을 ${habit.streak}일 연속으로 완료하셨습니다! 정말 대단해요!`,
-                        "achievement"
-                    );
-                }
-                
-                showSuccessAnimation();
-                showNotification('습관 완료! 🎉', 'success');
-            } else {
-                if (habit.streak > 0) habit.streak--;
-                addHistory(`↩️ "${habit.name}" 습관 완료를 취소했습니다.`);
-            }
-            
-            await saveHabitToFirestore(habit);
-            renderHabits();
-            renderAllHabits();
-            updateStats();
-            updateAIMessage();
-        }
-
+        // 습관 관련 (간단 버전)
         function showAddModal() {
-            currentEditId = null;
-            document.getElementById('modal-title').textContent = '새 습관 추가';
-            document.getElementById('habit-name').value = '';
-            document.getElementById('habit-category').value = 'health';
-            document.getElementById('habit-target').value = '30';
-            document.getElementById('habit-description').value = '';
             document.getElementById('habit-modal').classList.add('show');
         }
 
-        function editHabit(id) {
-            const habit = habits.find(h => h.id === id);
-            if (!habit) return;
-            
-            currentEditId = id;
-            document.getElementById('modal-title').textContent = '습관 수정';
-            document.getElementById('habit-name').value = habit.name;
-            document.getElementById('habit-category').value = habit.category;
-            document.getElementById('habit-target').value = habit.target;
-            document.getElementById('habit-description').value = habit.description || '';
-            document.getElementById('habit-modal').classList.add('show');
+        function closeModal() {
+            document.getElementById('habit-modal').classList.remove('show');
         }
 
-        async function saveHabit() {
+        function saveHabit() {
             const name = document.getElementById('habit-name').value.trim();
-            const category = document.getElementById('habit-category').value;
-            const target = parseInt(document.getElementById('habit-target').value);
-            const description = document.getElementById('habit-description').value.trim();
             
             if (!name) {
                 showNotification('습관 이름을 입력해주세요.', 'error');
                 return;
             }
             
-            if (target < 1 || target > 365) {
-                showNotification('목표 일수는 1일 이상 365일 이하로 설정해주세요.', 'error');
-                return;
-            }
-            
-            if (currentEditId) {
-                const habit = habits.find(h => h.id === currentEditId);
-                if (habit) {
-                    habit.name = name;
-                    habit.category = category;
-                    habit.target = target;
-                    habit.description = description;
-                    await saveHabitToFirestore(habit);
-                    addHistory(`✏️ "${name}" 습관을 수정했습니다.`);
-                    
-                    // 🔔 습관 수정 알림
-                    addNotification(
-                        "✏️ 습관 수정됨",
-                        `'${name}' 습관이 수정되었습니다.`,
-                        "system"
-                    );
-                }
-            } else {
-                const newHabit = {
-                    id: Date.now(),
-                    name,
-                    category,
-                    target,
-                    description,
-                    streak: 0,
-                    completed: false,
-                    createdAt: new Date().toISOString()
-                };
-                habits.push(newHabit);
-                await saveHabitToFirestore(newHabit);
-                addHistory(`➕ "${name}" 습관을 추가했습니다.`);
-                
-                // 🔔 새 습관 추가 알림
-                addNotification(
-                    "🎯 새로운 습관 추가!",
-                    `'${name}' 습관이 추가되었습니다. 오늘부터 시작해보세요!`,
-                    "habit"
-                );
-            }
-            
-            renderHabits();
-            renderAllHabits();
-            updateStats();
-            closeModal();
             showNotification('습관이 저장되었습니다! ✅', 'success');
+            closeModal();
         }
 
-        async function deleteHabit(id) {
-            const habit = habits.find(h => h.id === id);
-            if (!habit) return;
-            
-            if (confirm(`"${habit.name}" 습관을 삭제하시겠습니까?\n\n연속 기록과 모든 데이터가 삭제됩니다.`)) {
-                habits = habits.filter(h => h.id !== id);
-                await deleteHabitFromFirestore(id);
-                addHistory(`🗑️ "${habit.name}" 습관을 삭제했습니다.`);
-                
-                // 🔔 습관 삭제 알림
-                addNotification(
-                    "🗑️ 습관 삭제됨",
-                    `'${habit.name}' 습관이 삭제되었습니다.`,
-                    "system"
-                );
-                
-                renderHabits();
-                renderAllHabits();
-                updateStats();
-                showNotification('습관이 삭제되었습니다.', 'success');
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('habit-modal').classList.remove('show');
-            currentEditId = null;
-        }
-
-        async function addHistory(action) {
-            const historyItem = {
-                action: action,
-                date: new Date().toISOString()
-            };
-            
-            history.unshift(historyItem);
-            
-            if (history.length > 100) {
-                history = history.slice(0, 100);
-            }
-            
-            await saveHistoryToFirestore(historyItem);
-        }
-
-        function updateStats() {
-            const totalHabits = habits.length;
-            const completedToday = habits.filter(h => h.completed).length;
-            const completionRate = totalHabits > 0 ? Math.round((completedToday / totalHabits) * 100) : 0;
-            const maxStreak = habits.length > 0 ? Math.max(...habits.map(h => h.streak)) : 0;
-            const avgStreak = habits.length > 0 ? Math.round(habits.reduce((sum, h) => sum + h.streak, 0) / habits.length) : 0;
-            
-            document.getElementById('completion-rate').textContent = completionRate + '%';
-            document.getElementById('max-streak').textContent = maxStreak + '일';
-            document.getElementById('total-habits').textContent = totalHabits;
-            document.getElementById('completed-habits').textContent = completedToday;
-            document.getElementById('avg-streak').textContent = avgStreak;
-            
-            const successRate = Math.min(completionRate + (maxStreak * 2), 100);
-            document.getElementById('success-rate-bar').style.width = successRate + '%';
-            document.getElementById('success-rate-text').textContent = successRate + '%';
-        }
-
-        function updateSettings() {
-            updateStats();
-        }
-
-        function updateAIMessage() {
-            const messageElement = document.getElementById('ai-message');
-            let message;
-            
-            if (habits.length === 0) {
-                message = "안녕하세요! 첫 번째 습관을 추가해서 AI 분석을 시작해보세요! 🚀";
-            } else {
-                const completedCount = habits.filter(h => h.completed).length;
-                const totalStreaks = habits.reduce((sum, h) => sum + h.streak, 0);
-                
-                if (completedCount === habits.length && habits.length > 0) {
-                    message = `🎉 오늘 모든 습관을 완료하셨네요! 완벽한 하루입니다!`;
-                } else if (totalStreaks > 20) {
-                    message = `🔥 총 ${totalStreaks}일의 연속 기록! 정말 대단한 일관성이에요!`;
-                } else {
-                    const randomMessage = aiMessages[Math.floor(Math.random() * aiMessages.length)];
-                    message = randomMessage;
+        // 디버그 도구
+        window.habitFlowDebug = {
+            testNotificationSystem: async () => {
+                if (!currentUser || !db) {
+                    console.log('❌ 로그인이 필요합니다');
+                    return;
                 }
-            }
-            
-            messageElement.textContent = message;
-        }
-
-        async function clearAllData() {
-            if (confirm('⚠️ 모든 데이터를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.\n\n- 모든 습관\n- 연속 기록\n- 활동 이력\n- 알림 기록\n\n정말로 삭제하시겠습니까?')) {
                 
-                if (!currentUser || !db) return;
+                console.log('🧪 실시간 알림 시스템 테스트 시작...');
+                
+                const testNotification = {
+                    userId: currentUser.uid,
+                    title: '🧪 테스트 알림',
+                    message: '실시간 알림 시스템이 정상 작동하고 있습니다!',
+                    type: 'system',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    isActive: true,
+                    isRead: false
+                };
                 
                 try {
-                    showLoading('데이터를 삭제하는 중...');
-                    
-                    // Firestore에서 모든 습관 삭제
-                    const habitsSnapshot = await db.collection('users').doc(currentUser.uid).collection('habits').get();
-                    const deleteHabitsPromises = habitsSnapshot.docs.map(doc => doc.ref.delete());
-                    await Promise.all(deleteHabitsPromises);
-                    
-                    // Firestore에서 모든 히스토리 삭제
-                    const historySnapshot = await db.collection('users').doc(currentUser.uid).collection('history').get();
-                    const deleteHistoryPromises = historySnapshot.docs.map(doc => doc.ref.delete());
-                    await Promise.all(deleteHistoryPromises);
-                    
-                    // 로컬 데이터 초기화
-                    habits = [];
-                    history = [];
-                    notifications = []; // 🔔 알림도 초기화
-                    
-                    renderHabits();
-                    renderAllHabits();
-                    renderHistory();
-                    renderNotifications(); // 🔔 알림 렌더링
-                    updateStats();
-                    updateAIMessage();
-                    
-                    hideLoading();
-                    showNotification('✅ 모든 데이터가 삭제되었습니다.', 'success');
-                    
+                    const docRef = await db.collection('notifications').add(testNotification);
+                    console.log('✅ 테스트 알림 발송됨:', docRef.id);
                 } catch (error) {
-                    console.error('데이터 삭제 오류:', error);
-                    hideLoading();
-                    showNotification('데이터 삭제에 실패했습니다.', 'error');
+                    console.error('❌ 테스트 알림 발송 실패:', error);
                 }
-            }
-        }
-
-        async function clearHistory() {
-            if (confirm('활동 이력을 모두 삭제하시겠습니까?')) {
+            },
+            
+            simulateAdminNotification: async (title, message, type = 'system') => {
+                if (!currentUser || !db) {
+                    console.log('❌ 로그인이 필요합니다');
+                    return;
+                }
                 
-                if (!currentUser || !db) return;
+                const adminNotification = {
+                    userId: currentUser.uid,
+                    title: title || '📢 관리자 공지',
+                    message: message || '관리자가 발송한 공지사항입니다.',
+                    type: type,
+                    senderName: 'HabitFlow 관리자',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    isActive: true,
+                    isRead: false
+                };
                 
                 try {
-                    showLoading('이력을 삭제하는 중...');
-                    
-                    const historySnapshot = await db.collection('users').doc(currentUser.uid).collection('history').get();
-                    const deletePromises = historySnapshot.docs.map(doc => doc.ref.delete());
-                    await Promise.all(deletePromises);
-                    
-                    history = [];
-                    renderHistory();
-                    
-                    hideLoading();
-                    showNotification('✅ 활동 이력이 삭제되었습니다.', 'success');
-                    
+                    const docRef = await db.collection('notifications').add(adminNotification);
+                    console.log('✅ 관리자 알림 시뮬레이션 완료:', docRef.id);
                 } catch (error) {
-                    console.error('이력 삭제 오류:', error);
-                    hideLoading();
-                    showNotification('이력 삭제에 실패했습니다.', 'error');
+                    console.error('❌ 관리자 알림 시뮬레이션 실패:', error);
                 }
+            },
+            
+            checkNotificationListener: () => {
+                console.log('🔔 알림 리스너 상태:', notificationListener ? '활성' : '비활성');
+                console.log('📱 현재 알림 개수:', notifications.length);
+                console.log('👤 현재 사용자:', currentUser?.email || '없음');
             }
-        }
-
-        function showSuccessAnimation(emoji = '🎉') {
-            const emojis = [emoji, '✨', '🔥', '💪', '🌟'];
-            const selectedEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-            
-            const animation = document.createElement('div');
-            animation.innerHTML = selectedEmoji;
-            animation.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                font-size: 64px;
-                z-index: 9999;
-                animation: successBounce 0.8s ease-out;
-                pointer-events: none;
-            `;
-            
-            document.body.appendChild(animation);
-            setTimeout(() => animation.remove(), 800);
-            
-            if (navigator.vibrate) {
-                navigator.vibrate([100, 50, 100]);
-            }
-        }
+        };
 
         // 이벤트 리스너
         document.addEventListener('DOMContentLoaded', function() {
-            // Firebase 초기화
             if (typeof firebase !== 'undefined') {
                 initializeFirebase();
             } else {
                 showNotification('Firebase 연결에 실패했습니다.', 'error');
             }
-            
-            // 기본 초기화
-            init();
         });
 
         // 모달 이벤트
@@ -2534,119 +1136,6 @@
                 closeModal();
             }
         });
-
-        // 키보드 이벤트
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
-                toggleRecommendations();
-            }
-            if (e.key === 'Enter' && document.getElementById('habit-modal').classList.contains('show')) {
-                e.preventDefault();
-                saveHabit();
-            }
-        });
-
-        // 자동 업데이트
-        setInterval(updateAIMessage, 45000);
-
-        // 🔔 주기적 알림 체크 (실제 서비스에서는 서버에서 푸시 알림으로 처리)
-        setInterval(() => {
-            const now = new Date();
-            const hour = now.getHours();
-            
-            // 오전 9시와 오후 6시에 리마인더 알림
-            if ((hour === 9 || hour === 18) && Math.random() < 0.1) { // 10% 확률로 테스트
-                const incompleteHabits = habits.filter(h => !h.completed);
-                if (incompleteHabits.length > 0) {
-                    addNotification(
-                        "⏰ 습관 리마인더",
-                        `아직 완료하지 않은 습관이 ${incompleteHabits.length}개 있어요. 지금 시작해보세요!`,
-                        "reminder"
-                    );
-                }
-            }
-        }, 60000); // 1분마다 체크
-
-        // 페이지 언로드 시 데이터 동기화
-        window.addEventListener('beforeunload', function() {
-            // 마지막 활동 시간 업데이트
-            if (currentUser && db) {
-                db.collection('users').doc(currentUser.uid).update({
-                    lastActiveAt: firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(console.error);
-            }
-        });
-
-        // 디버그 도구 (콘솔에만 출력)
-        window.habitFlowDebug = {
-            getCurrentUser: () => currentUser,
-            getHabits: () => habits,
-            getHistory: () => history,
-            getNotifications: () => notifications, // 🔔 알림 디버그 추가
-            getRecommendations: (category) => habitRecommendations[category || 'trending'],
-            addTestHabit: () => {
-                const testHabits = [
-                    { name: '테스트 물 마시기', category: 'health' },
-                    { name: '테스트 독서', category: 'learning' },
-                    { name: '테스트 명상', category: 'mindfulness' }
-                ];
-                const testHabit = testHabits[Math.floor(Math.random() * testHabits.length)];
-                
-                const newHabit = {
-                    id: Date.now(),
-                    name: testHabit.name,
-                    category: testHabit.category,
-                    target: 30,
-                    description: '테스트용 습관입니다',
-                    streak: Math.floor(Math.random() * 10),
-                    completed: Math.random() > 0.5,
-                    createdAt: new Date().toISOString()
-                };
-                
-                habits.push(newHabit);
-                saveHabitToFirestore(newHabit);
-                renderHabits();
-                renderAllHabits();
-                updateStats();
-                console.log('🧪 테스트 습관 추가됨');
-            },
-            addTestNotification: () => { // 🔔 테스트 알림 추가 함수
-                const testNotifications = [
-                    { title: "🧪 테스트 알림", message: "이것은 테스트 알림입니다.", type: "system" },
-                    { title: "🎯 테스트 습관", message: "테스트 습관이 완료되었습니다!", type: "habit" },
-                    { title: "🏆 테스트 성취", message: "테스트 성취를 달성했습니다!", type: "achievement" },
-                    { title: "⏰ 테스트 리마인더", message: "테스트 리마인더입니다.", type: "reminder" }
-                ];
-                const testNotif = testNotifications[Math.floor(Math.random() * testNotifications.length)];
-                addNotification(testNotif.title, testNotif.message, testNotif.type);
-                console.log('🔔 테스트 알림 추가됨');
-            },
-            clearAll: () => clearAllData(),
-            testFirestore: async () => {
-                if (!currentUser || !db) {
-                    console.log('❌ 사용자가 로그인되지 않음');
-                    return;
-                }
-                
-                try {
-                    const testDoc = await db.collection('users').doc(currentUser.uid).get();
-                    console.log('✅ Firestore 연결 성공:', testDoc.exists);
-                    console.log('사용자 데이터:', testDoc.data());
-                } catch (error) {
-                    console.error('❌ Firestore 연결 실패:', error);
-                }
-            },
-            showPopularHabits: () => {
-                console.log('🔥 가장 인기 있는 습관들:');
-                Object.keys(habitRecommendations).forEach(category => {
-                    console.log(`\n📂 ${category}:`);
-                    habitRecommendations[category].slice(0, 3).forEach(h => {
-                        console.log(`  • ${h.name} (${h.users.toLocaleString()}명, ${h.successRate}% 성공률)`);
-                    });
-                });
-            }
-        };
     </script>
 </body>
 </html>
