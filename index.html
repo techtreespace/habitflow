@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HabitFlow - AI가 도와주는 습관 형성의 새로운 방법</title>
-    <meta name="description" content="15,000명의 데이터로 학습한 AI가 당신만의 습관 형성 전략을 제시합니다. 21일이면 충분합니다.">
-    <meta name="keywords" content="습관형성, AI코치, 자기계발, 습관관리, 21일챌린지">
     
-    <!-- Open Graph -->
-    <meta property="og:title" content="HabitFlow - AI 습관 코치">
-    <meta property="og:description" content="AI가 분석한 당신만의 습관 형성 전략. 지금 시작하세요!">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=630&fit=crop">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
     <style>
         * {
@@ -96,6 +94,51 @@
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
         
+        /* 사용자 프로필 */
+        .user-profile {
+            display: none;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-profile.show {
+            display: flex;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #e2e8f0;
+            color: #718096;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: #f8fafc;
+            color: #333;
+        }
+        
         /* 히어로 섹션 */
         .hero {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -106,23 +149,6 @@
             position: relative;
             overflow: hidden;
             padding-top: 80px;
-        }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="400" cy="700" r="120" fill="url(%23a)"/></svg>');
-            animation: float 20s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(30px, -30px) rotate(120deg); }
-            66% { transform: translate(-20px, 20px) rotate(240deg); }
         }
         
         .hero-container {
@@ -178,9 +204,7 @@
             margin-top: 2rem;
         }
         
-        .btn-primary {
-            background: white;
-            color: #667eea;
+        .btn-primary, .btn-secondary {
             padding: 1rem 2rem;
             border: none;
             border-radius: 30px;
@@ -192,6 +216,11 @@
             display: inline-block;
         }
         
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+        
         .btn-primary:hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
@@ -200,15 +229,7 @@
         .btn-secondary {
             background: rgba(255, 255, 255, 0.1);
             color: white;
-            padding: 1rem 2rem;
             border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
         }
         
         .btn-secondary:hover {
@@ -234,10 +255,6 @@
             margin: 0 auto;
         }
         
-        .phone-mockup:hover {
-            transform: rotateY(-10deg) rotateX(2deg);
-        }
-        
         .phone-screen {
             width: 100%;
             height: 100%;
@@ -259,11 +276,6 @@
         .app-header {
             text-align: center;
             margin-bottom: 2rem;
-        }
-        
-        .app-header h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
         }
         
         .habit-cards {
@@ -299,7 +311,7 @@
             border-color: #10b981;
         }
         
-        /* 기본 섹션 스타일 */
+        /* 기본 레이아웃 */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -322,241 +334,6 @@
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
-        }
-        
-        /* 인터랙티브 데모 섹션 */
-        .demo-section {
-            padding: 5rem 0;
-            background: linear-gradient(135deg, #1a202c, #2d3748);
-            color: white;
-        }
-        
-        .interactive-demo-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .demo-wrapper {
-            width: 100%;
-        }
-        
-        .demo-header-embed {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .demo-header-embed h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        
-        .demo-header-embed p {
-            opacity: 0.8;
-            font-size: 1rem;
-        }
-        
-        .demo-progress-container {
-            margin-bottom: 2rem;
-        }
-        
-        .demo-progress-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
-            margin-bottom: 1rem;
-            overflow: hidden;
-        }
-        
-        .demo-progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            transition: width 0.5s ease;
-            border-radius: 3px;
-            width: 20%;
-        }
-        
-        .demo-step-indicator {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
-        
-        .step-dot {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .step-dot.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            transform: scale(1.1);
-        }
-        
-        .step-dot.completed {
-            background: #10b981;
-            color: white;
-        }
-        
-        .demo-main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            align-items: flex-start;
-        }
-        
-        .demo-phone {
-            background: #000;
-            border-radius: 25px;
-            padding: 15px;
-            margin: 0 auto;
-            width: 280px;
-            height: 500px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        .demo-phone-screen {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 20px;
-            height: 100%;
-            padding: 1.5rem;
-            color: white;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .demo-description {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 1.5rem;
-            height: fit-content;
-        }
-        
-        .demo-step-content h4 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: white;
-        }
-        
-        .demo-step-content p {
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-        
-        .demo-controls {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .demo-btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-        
-        .demo-btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-        
-        .demo-btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-        
-        .demo-btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .demo-btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .demo-habit-item {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .demo-habit-item:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateX(3px);
-        }
-        
-        .demo-habit-check {
-            width: 24px;
-            height: 24px;
-            border: 2px solid white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            font-size: 0.8rem;
-        }
-        
-        .demo-habit-check.completed {
-            background: #10b981;
-            border-color: #10b981;
-        }
-        
-        .demo-ai-message {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 1rem;
-            margin: 1rem 0;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        @keyframes demo-pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        .demo-pulse {
-            animation: demo-pulse 2s infinite;
-        }
-        
-        @keyframes demo-success {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        
-        .demo-success-animation {
-            animation: demo-success 0.6s ease-out;
         }
         
         /* 특징 섹션 */
@@ -612,365 +389,49 @@
             line-height: 1.6;
         }
         
-        /* 요금제 섹션 */
-        .pricing-section {
+        /* 회사 소개 섹션 */
+        .about-section {
             padding: 5rem 0;
-            background: #f8fafc;
-        }
-        
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            margin-top: 4rem;
-            max-width: 1000px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .pricing-card {
             background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border: 2px solid #e2e8f0;
-            transition: all 0.3s ease;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
         }
         
-        .pricing-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-        
-        .pricing-card-popular {
-            border-color: #667eea;
-            transform: scale(1.05);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .pricing-card-popular:hover {
-            transform: scale(1.05) translateY(-5px);
-        }
-        
-        .popular-badge {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #ff6b6b;
-            color: white;
-            padding: 0.5rem 1.5rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-        
-        .pricing-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .pricing-header h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #1a202c;
-        }
-        
-        .pricing-card-popular .pricing-header h3 {
-            color: white;
-        }
-        
-        .price {
-            display: flex;
-            align-items: baseline;
-            justify-content: center;
-            margin-bottom: 0.5rem;
-        }
-        
-        .currency {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #718096;
-        }
-        
-        .pricing-card-popular .currency {
-            color: rgba(255, 255, 255, 0.8);
-        }
-        
-        .amount {
-            font-size: 3rem;
-            font-weight: 700;
-            color: #1a202c;
-            margin: 0 0.2rem;
-        }
-        
-        .pricing-card-popular .amount {
-            color: white;
-        }
-        
-        .period {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #718096;
-        }
-        
-        .pricing-card-popular .period {
-            color: rgba(255, 255, 255, 0.8);
-        }
-        
-        .price-description {
-            color: #718096;
-            font-size: 1rem;
-        }
-        
-        .pricing-card-popular .price-description {
-            color: rgba(255, 255, 255, 0.9);
-        }
-        
-        .pricing-features {
-            flex: 1;
-            margin-bottom: 2rem;
-        }
-        
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            margin-bottom: 1rem;
-            font-size: 1rem;
-        }
-        
-        .feature-item .check {
-            color: #10b981;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-        
-        .pricing-card-popular .feature-item .check {
-            color: #10b981;
-        }
-        
-        .pricing-button {
-            margin-top: auto;
-        }
-        
-        .btn-pricing {
-            width: 100%;
-            padding: 1rem 2rem;
-            border-radius: 25px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .btn-pricing-free {
-            background: #f7fafc;
-            color: #4a5568;
-            border: 2px solid #e2e8f0;
-        }
-        
-        .btn-pricing-free:hover {
-            background: #edf2f7;
-            border-color: #cbd5e0;
-        }
-        
-        .btn-pricing-premium {
-            background: white;
-            color: #667eea;
-            border: 2px solid white;
-        }
-        
-        .btn-pricing-premium:hover {
-            background: #f7fafc;
-            transform: translateY(-2px);
-        }
-        
-        .btn-pricing-enterprise {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: 2px solid transparent;
-        }
-        
-        .btn-pricing-enterprise:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-        
-        .pricing-faq {
-            margin-top: 4rem;
-            text-align: center;
-        }
-        
-        .pricing-faq h3 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 2rem;
-            color: #1a202c;
-        }
-        
-        .faq-grid {
+        .about-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
-            margin-top: 2rem;
+            margin-top: 4rem;
         }
         
-        .faq-item-small {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            text-align: left;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-        
-        .faq-item-small strong {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #1a202c;
-            font-size: 1rem;
-        }
-        
-        .original-price {
-            font-size: 1.2rem;
-            color: #718096;
-            text-decoration: line-through;
-            margin-right: 0.5rem;
-        }
-        
-        .pricing-card-popular .original-price {
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
-        .discount-badge {
-            background: #ff6b6b;
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin: 0.5rem 0;
-            display: inline-block;
-        }
-        
-        .limited-offer {
-            margin-top: 0.5rem;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
-        }
-        
-        /* FAQ 탭 시스템 */
-        .faq-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 3rem;
-            flex-wrap: wrap;
-        }
-        
-        .faq-tab {
-            padding: 0.8rem 1.5rem;
-            border: 2px solid #e2e8f0;
-            background: white;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: #4a5568;
-        }
-        
-        .faq-tab.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-color: transparent;
-        }
-        
-        .faq-tab:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .faq-category {
-            display: none;
-        }
-        
-        .faq-category.active {
-            display: block;
-        }
-        
-        /* 통계 섹션 */
-        .stats-section {
-            background: linear-gradient(135deg, #1a202c, #2d3748);
-            color: white;
-            padding: 5rem 0;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 3rem;
+        .about-item {
             text-align: center;
-        }
-        
-        .stat-card {
             padding: 2rem;
         }
         
-        .stat-card .number {
-            font-size: 3rem;
-            font-weight: 700;
+        .about-icon {
+            width: 80px;
+            height: 80px;
             background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: block;
-            margin-bottom: 0.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 2rem;
+            color: white;
         }
         
-        .stat-card .label {
-            font-size: 1.1rem;
-            opacity: 0.8;
+        .about-item h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1a202c;
         }
         
-        /* 회사 소개 섹션 */
-    <section id="about" class="about-section">
-        <div class="container">
-            <h2 class="section-title fade-in">HabitFlow를 만든 이유</h2>
-            <p class="section-subtitle fade-in">우리의 미션은 AI 기술로 모든 사람이 쉽게 습관을 만들 수 있도록 돕는 것입니다</p>
-            
-            <div class="about-grid">
-                <div class="about-item fade-in">
-                    <div class="about-icon">🎯</div>
-                    <h3>우리의 미션</h3>
-                    <p>습관 형성이 어려운 이유를 AI로 분석하고, 개인에게 최적화된 솔루션을 제공하여 누구나 성공할 수 있도록 돕습니다.</p>
-                </div>
-                
-                <div class="about-item fade-in">
-                    <div class="about-icon">📊</div>
-                    <h3>데이터 기반 접근</h3>
-                    <p>15,000명의 실제 사용자 데이터를 분석하여 89%의 정확도로 성공률을 예측하는 AI 시스템을 개발했습니다.</p>
-                </div>
-                
-                <div class="about-item fade-in">
-                    <div class="about-icon">🚀</div>
-                    <h3>지속적인 혁신</h3>
-                    <p>사용자 피드백을 바탕으로 매주 새로운 기능을 추가하고, AI 알고리즘을 지속적으로 개선하고 있습니다.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-        
+        .about-item p {
+            color: #718096;
+            line-height: 1.6;
+        }
+
         /* CTA 섹션 */
         .cta-section {
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -992,61 +453,6 @@
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
-        }
-        
-        /* FAQ 섹션 */
-        .faq-section {
-            padding: 5rem 0;
-            background: white;
-        }
-        
-        .faq-container {
-            max-width: 800px;
-            margin: 0 auto;
-            margin-top: 3rem;
-        }
-        
-        .faq-item {
-            margin-bottom: 1.5rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .faq-question {
-            background: #f8fafc;
-            padding: 1.5rem;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.3s ease;
-        }
-        
-        .faq-question:hover {
-            background: #e2e8f0;
-        }
-        
-        .faq-answer {
-            padding: 0 1.5rem;
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .faq-answer.open {
-            max-height: 200px;
-            padding: 1.5rem;
-        }
-        
-        .faq-toggle {
-            font-size: 1.2rem;
-            transition: transform 0.3s ease;
-        }
-        
-        .faq-toggle.open {
-            transform: rotate(45deg);
         }
         
         /* 푸터 */
@@ -1094,35 +500,7 @@
             color: #a0aec0;
         }
         
-        /* 스크롤 애니메이션 */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease;
-        }
-        
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        /* 애니메이션 */
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-        
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @keyframes slideOutRight {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-        
-        /* 로그인/회원가입 모달 */
+        /* 로그인 모달 */
         .auth-modal {
             display: none;
             position: fixed;
@@ -1133,7 +511,6 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(5px);
-            animation: fadeIn 0.3s ease;
         }
         
         .auth-modal.show {
@@ -1149,7 +526,6 @@
             max-width: 450px;
             max-height: 90vh;
             overflow-y: auto;
-            animation: slideInUp 0.3s ease;
             position: relative;
         }
         
@@ -1239,10 +615,6 @@
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
         
-        .google-icon {
-            font-size: 1.2rem;
-        }
-        
         .auth-divider {
             text-align: center;
             margin: 1.5rem 0;
@@ -1313,10 +685,6 @@
             text-decoration: none;
         }
         
-        .auth-terms a:hover {
-            text-decoration: underline;
-        }
-        
         /* 로딩 오버레이 */
         .loading-overlay {
             display: none;
@@ -1358,20 +726,36 @@
             100% { transform: rotate(360deg); }
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        /* 환경 안내 */
+        .environment-notice {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #fbbf24;
+            color: #92400e;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            display: none;
         }
         
-        @keyframes slideInUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        .environment-notice.show {
+            display: block;
+        }
+        
+        /* 스크롤 애니메이션 */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
         
         /* 모바일 반응형 */
@@ -1404,70 +788,8 @@
                 height: 500px;
             }
             
-            .hero-stats {
-                justify-content: center;
-            }
-            
             .features-grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .pricing-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .pricing-card-popular {
-                transform: none;
-            }
-            
-            .pricing-card-popular:hover {
-                transform: translateY(-5px);
-            }
-            
-            .faq-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .about-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            /* 데모 섹션 모바일 */
-            .demo-main-content {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .demo-phone {
-                width: 250px;
-                height: 450px;
-                margin: 0 auto;
-            }
-            
-            .interactive-demo-container {
-                padding: 1rem;
-                margin: 0 1rem;
-            }
-            
-            .demo-step-indicator {
-                gap: 0.5rem;
-            }
-            
-            .step-dot {
-                width: 35px;
-                height: 35px;
-                font-size: 0.9rem;
-            }
-            
-            .demo-controls {
-                flex-direction: column;
-                gap: 0.8rem;
-            }
-            
-            .demo-btn {
-                width: 100%;
-                text-align: center;
             }
         }
     </style>
@@ -1479,12 +801,19 @@
             <div class="logo">🧠 HabitFlow</div>
             <ul class="nav-links">
                 <li><a href="#features">특징</a></li>
-                <li><a href="#demo">데모</a></li>
-                <li><a href="#pricing">요금제</a></li>
                 <li><a href="#about">소개</a></li>
                 <li><a href="#contact">문의</a></li>
             </ul>
-            <a href="./app.html" class="cta-button" onclick="openAuthModal(); return false;">지금 시작하기</a>
+            
+            <!-- 로그인 전 버튼 -->
+            <button class="cta-button" id="auth-trigger" onclick="openAuthModal()">지금 시작하기</button>
+            
+            <!-- 로그인 후 사용자 프로필 -->
+            <div class="user-profile" id="user-profile">
+                <div class="user-avatar" id="user-avatar"></div>
+                <span class="user-name" id="user-name"></span>
+                <button class="logout-btn" onclick="logout()">로그아웃</button>
+            </div>
         </div>
     </nav>
 
@@ -1511,7 +840,7 @@
                 </div>
                 
                 <div class="hero-buttons">
-                    <a href="./app.html" class="btn-primary">무료로 시작하기 🚀</a>
+                    <button class="btn-primary" onclick="openAuthModal()">무료로 시작하기 🚀</button>
                     <button class="btn-secondary" onclick="showDemo()">데모 보기 ▶</button>
                 </div>
             </div>
@@ -1564,69 +893,6 @@
         </div>
     </section>
 
-    <!-- 인터랙티브 데모 섹션 -->
-    <section id="demo" class="demo-section">
-        <div class="container">
-            <h2 class="section-title fade-in" style="color: white; margin-bottom: 2rem;">🎮 HabitFlow 인터랙티브 데모</h2>
-            <p class="section-subtitle fade-in" style="color: rgba(255,255,255,0.8); margin-bottom: 4rem;">AI 습관 코치의 놀라운 기능을 직접 체험해보세요</p>
-            
-            <!-- 인터랙티브 데모 임베드 -->
-            <div class="interactive-demo-container fade-in">
-                <div class="demo-wrapper">
-                    <div class="demo-header-embed">
-                        <h3>🎯 5단계 AI 코치 체험</h3>
-                        <p>실제 앱과 동일한 경험을 제공합니다</p>
-                    </div>
-                    
-                    <div class="demo-embed-content">
-                        <div class="demo-progress-container">
-                            <div class="demo-progress-bar">
-                                <div class="demo-progress-fill" id="demo-progress"></div>
-                            </div>
-                            <div class="demo-step-indicator">
-                                <span class="step-dot active" data-step="1">1</span>
-                                <span class="step-dot" data-step="2">2</span>
-                                <span class="step-dot" data-step="3">3</span>
-                                <span class="step-dot" data-step="4">4</span>
-                                <span class="step-dot" data-step="5">5</span>
-                            </div>
-                        </div>
-                        
-                        <div class="demo-main-content">
-                            <!-- 휴대폰 시뮬레이터 -->
-                            <div class="demo-phone">
-                                <div class="demo-phone-screen" id="demo-phone-screen">
-                                    <!-- 동적으로 업데이트되는 화면 -->
-                                </div>
-                            </div>
-                            
-                            <!-- 데모 설명 -->
-                            <div class="demo-description">
-                                <div class="demo-step-content" id="demo-step-content">
-                                    <!-- 단계별 설명 내용 -->
-                                </div>
-                                
-                                <div class="demo-controls">
-                                    <button class="demo-btn demo-btn-secondary" onclick="prevDemoStep()" id="demo-prev-btn" style="display: none;">이전</button>
-                                    <button class="demo-btn demo-btn-primary" onclick="nextDemoStep()" id="demo-next-btn">시작하기 🚀</button>
-                                    <button class="demo-btn demo-btn-secondary" onclick="resetDemo()" id="demo-reset-btn">처음부터 다시</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 2rem;">
-                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                            <a href="./app.html" class="btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">🚀 실제 앱 체험하기</a>
-                            <button class="btn-secondary" onclick="openFullDemo()" style="font-size: 1.1rem; padding: 1rem 2rem;">🔍 전체화면 데모</button>
-                        </div>
-                        <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 1rem;">💳 신용카드 불필요 · 📱 모든 기기 지원 · ⏱️ 30초만에 시작</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- 특징 섹션 -->
     <section class="features" id="features">
         <div class="container">
@@ -1665,7 +931,7 @@
                 </div>
                 
                 <div class="feature-card fade-in">
-                    <div class="feature-icon">🌐</div>
+                    <div class="feature-icon">🌍</div>
                     <h3>커뮤니티 챌린지</h3>
                     <p>전국 수천 명과 함께하는 21일 챌린지로 혼자가 아닌 함께 성장하세요.</p>
                 </div>
@@ -1673,297 +939,40 @@
         </div>
     </section>
 
-    <!-- 요금제 섹션 -->
-    <section class="pricing-section" id="pricing">
+    <!-- 회사 소개 섹션 -->
+    <section id="about" class="about-section">
         <div class="container">
-            <h2 class="section-title fade-in">나에게 맞는 플랜을 선택하세요</h2>
-            <p class="section-subtitle fade-in">모든 플랜에서 AI 코치 기본 기능을 제공합니다</p>
+            <h2 class="section-title fade-in">HabitFlow를 만든 이유</h2>
+            <p class="section-subtitle fade-in">우리의 미션은 AI 기술로 모든 사람이 쉽게 습관을 만들 수 있도록 돕는 것입니다</p>
             
-            <div class="pricing-grid">
-                <!-- 무료 플랜 -->
-                <div class="pricing-card fade-in">
-                    <div class="pricing-header">
-                        <h3>시작하기</h3>
-                        <div class="price">
-                            <span class="currency">₩</span>
-                            <span class="amount">0</span>
-                            <span class="period">/월</span>
-                        </div>
-                        <p class="price-description">습관 형성을 시작해보세요</p>
-                    </div>
-                    
-                    <div class="pricing-features">
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>커뮤니티 챌린지</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>우선 고객지원</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>최대 3개 습관</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>기본 AI 분석</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>일간 리포트</span>
-                        </div>
-                    </div>
-                    
-                    <div class="pricing-button">
-                        <a href="./app.html" class="btn-pricing btn-pricing-free">시작하기</a>
-                    </div>
+            <div class="about-grid">
+                <div class="about-item fade-in">
+                    <div class="about-icon">🎯</div>
+                    <h3>우리의 미션</h3>
+                    <p>습관 형성이 어려운 이유를 AI로 분석하고, 개인에게 최적화된 솔루션을 제공하여 누구나 성공할 수 있도록 돕습니다.</p>
                 </div>
                 
-                <!-- 프리미엄 플랜 (추천) -->
-                <div class="pricing-card pricing-card-popular fade-in">
-                    <div class="popular-badge">가장 인기</div>
-                    <div class="pricing-header">
-                        <h3>프리미엄</h3>
-                        <div class="price">
-                            <span class="original-price">₩4,900</span>
-                            <span class="currency">₩</span>
-                            <span class="amount">2,900</span>
-                            <span class="period">/월</span>
-                        </div>
-                        <div class="discount-badge">🔥 얼리버드 40% 할인</div>
-                        <p class="price-description">첫 1000명 한정! 평생 할인가</p>
-                    </div>
-                    
-                    <div class="pricing-features">
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>커뮤니티 챌린지</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>우선 고객지원</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>무제한 습관</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>고급 AI 분석</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>상세 주간/월간 리포트</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>개인화 추천</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>습관 연결 분석</span>
-                        </div>
-                    </div>
-                    
-                    <div class="pricing-button">
-                        <a href="./app.html" class="btn-pricing btn-pricing-premium">지금 가입하고 평생할인 🔥</a>
-                        <div class="limited-offer">⏰ 497명 남음 (1000명 한정)</div>
-                    </div>
+                <div class="about-item fade-in">
+                    <div class="about-icon">📊</div>
+                    <h3>데이터 기반 접근</h3>
+                    <p>15,000명의 실제 사용자 데이터를 분석하여 89%의 정확도로 성공률을 예측하는 AI 시스템을 개발했습니다.</p>
                 </div>
                 
-                <!-- 프로 플랜 -->
-                <div class="pricing-card fade-in">
-                    <div class="pricing-header">
-                        <h3>문의하기</h3>
-                        <div class="price">
-                            <span class="currency">₩</span>
-                            <span class="amount">49,000</span>
-                            <span class="period">/월</span>
-                        </div>
-                        <p class="price-description">팀과 기업을 위한 솔루션</p>
-                    </div>
-                    
-                    <div class="pricing-features">
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>전담 고객지원</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>팀 관리 대시보드</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>무제한 습관</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>고급 AI 분석</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>팀 성과 분석</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>API 연동</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="check">✓</span>
-                            <span>맞춤형 교육</span>
-                        </div>
-                    </div>
-                    
-                    <div class="pricing-button">
-                        <a href="#contact" class="btn-pricing btn-pricing-enterprise">문의하기</a>
-                    </div>
+                <div class="about-item fade-in">
+                    <div class="about-icon">🚀</div>
+                    <h3>지속적인 혁신</h3>
+                    <p>사용자 피드백을 바탕으로 매주 새로운 기능을 추가하고, AI 알고리즘을 지속적으로 개선하고 있습니다.</p>
                 </div>
             </div>
-            
-    <!-- 통합 FAQ 섹션 -->
-    <section class="faq-section" id="faq">
+        </div>
+    </section>
+
+    <!-- CTA 섹션 -->
+    <section class="cta-section">
         <div class="container">
-            <h2 class="section-title fade-in">자주 묻는 질문</h2>
-            <p class="section-subtitle fade-in">궁금한 점이 있으시면 언제든 문의해주세요</p>
-            
-            <!-- FAQ 카테고리 탭 -->
-            <div class="faq-tabs fade-in">
-                <button class="faq-tab active" onclick="switchFAQTab('pricing')">💰 요금/결제</button>
-                <button class="faq-tab" onclick="switchFAQTab('service')">🔧 서비스</button>
-                <button class="faq-tab" onclick="switchFAQTab('technical')">📱 기술/앱</button>
-            </div>
-            
-            <div class="faq-container">
-                <!-- 요금/결제 FAQ -->
-                <div class="faq-category active" id="faq-pricing">
-                    <div class="faq-item fade-in">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            <span>🔥 얼리버드 할인은 언제까지 유지되나요?</span>
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            <div>
-                                첫 1000명 가입자에게만 제공되는 평생 할인입니다. 한 번 가입하시면 서비스 이용 기간 동안 계속 월 2,900원으로 이용하실 수 있습니다.
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item fade-in">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            <span>💰 무료 버전으로도 충분한가요?</span>
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            <div>
-                                무료 버전으로도 3개의 습관 관리와 기본 AI 분석을 사용할 수 있어 대부분의 사용자에게 충분합니다. 더 많은 습관이나 고급 기능이 필요하시다면 언제든 업그레이드하실 수 있습니다.
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item fade-in">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            <span>📅 언제든 취소할 수 있나요?</span>
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            <div>
-                                네, 언제든지 구독을 취소할 수 있으며 데이터는 안전하게 보관됩니다. 취소 후에도 무료 플랜으로 계속 이용 가능합니다.
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item fade-in">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            <span>🔄 플랜을 중간에 변경할 수 있나요?</span>
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            <div>
-                                언제든지 업그레이드/다운그레이드 가능하며, 차액은 일할 계산됩니다. 얼리버드 할인 혜택은 유지됩니다.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 서비스 FAQ -->
-                <div class="faq-category" id="faq-service">
-                    <div class="faq-item fade-in">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            <span>🤖 AI는 정말 정확한가요?</span>
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            <div>
-                                15,000명의 사용자 데이터를 학습한 AI가 89%의 정확도로 성공률을 예측합니다. 개인의 패턴, 요일별 성향, 시간대별 활동량 등을 종합 분석하여 최적의 시간과 방법을 제안드립니다.
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item fade-in">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            <span>⏰ 21일이면 정말 습관이 만들어지나요?</span>
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            <div>
-                                연구에 따르면 평균 66일이 소요되지만, AI가 개인에게 최적화된 방법을 제안하여 21일 내 기본적인 습관 정착이 가능합니다. 89%의 사용자가 21일 챌린지를 성공적으로 완료했습니다.
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item fade-in">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            <span>🔒 개인정보는 안전한가요?</span>
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            <div>
-                                모든 데이터는 암호화되어 저장되며, 개인정보 보호법을 준수합니다. AI 분석에 사용되는 데이터는 익명화 처리되어 개인을 식별할 수 없습니다.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 기술/앱 FAQ -->
-                <div class="faq-category" id="faq-technical">
-                    <div class="faq-item fade-in">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            <span>📱 모든 기기에서 사용할 수 있나요?</span>
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            <div>
-                                네! 웹브라우저, iOS, Android 모든 기기에서 사용 가능하며, 클라우드 동기화로 어디서나 동일한 데이터를 확인할 수 있습니다.
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item fade-in">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            <span>🌐 인터넷 연결 없이도 사용할 수 있나요?</span>
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            <div>
-                                기본적인 습관 체크는 오프라인에서도 가능하며, 인터넷 연결 시 자동으로 동기화됩니다. AI 분석 기능은 인터넷 연결이 필요합니다.
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item fade-in">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            <span>🔔 알림은 어떻게 설정하나요?</span>
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            <div>
-                                AI가 당신의 패턴을 분석해서 최적의 타이밍에만 알림을 보냅니다. 원하지 않는 시간대는 설정에서 제외할 수 있습니다.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <h2>지금 바로 시작하세요!</h2>
+            <p>21일 후 완전히 달라진 당신을 만나보세요. AI가 도와주는 습관 형성의 새로운 경험을 시작하세요.</p>
+            <button class="btn-primary" onclick="openAuthModal()">무료로 시작하기 🚀</button>
         </div>
     </section>
 
@@ -1981,7 +990,7 @@
                     <div class="auth-subtitle">AI 습관 코치와 함께 변화를 시작하세요</div>
                     
                     <button class="auth-btn auth-btn-google" onclick="signInWithGoogle()">
-                        <span class="google-icon">🌐</span>
+                        <span>🌐</span>
                         Google로 빠른 시작
                     </button>
                     
@@ -2009,7 +1018,7 @@
                     <div class="auth-subtitle">21일 후 완전히 달라진 당신을 만나보세요</div>
                     
                     <button class="auth-btn auth-btn-google" onclick="signInWithGoogle()">
-                        <span class="google-icon">🌐</span>
+                        <span>🌐</span>
                         Google로 간편 가입
                     </button>
                     
@@ -2048,6 +1057,12 @@
         <div class="loading-text">AI가 당신을 분석하고 있습니다...</div>
     </div>
 
+    <!-- 환경 안내 -->
+    <div id="environmentNotice" class="environment-notice">
+        <strong>⚠️ 개발 환경 안내:</strong> 이 페이지는 로컬 서버나 실제 웹사이트에서 Firebase 인증이 정상 작동합니다. Claude Artifacts 환경에서는 일부 기능이 제한됩니다.
+        <button onclick="hideEnvironmentNotice()" style="float: right; background: none; border: none; color: #92400e; cursor: pointer;">&times;</button>
+    </div>
+
     <!-- 푸터 -->
     <footer class="footer" id="contact">
         <div class="container">
@@ -2056,8 +1071,7 @@
                     <h3>🧠 HabitFlow</h3>
                     <p style="color: #a0aec0; margin-top: 1rem;">AI가 도와주는 습관 형성의 새로운 방법. 당신의 변화를 응원합니다.</p>
                     <div style="margin-top: 1rem;">
-                        <span style="color: #a0aec0;">📧 contact@habitflow.co.kr</span><br>
-                     <!--   <span style="color: #a0aec0;">📞 02-518-9777</span> -->
+                        <span style="color: #a0aec0;">📧 contact@habitflow.co.kr</span>
                     </div>
                 </div>
                 
@@ -2065,8 +1079,7 @@
                     <h3>제품</h3>
                     <ul>
                         <li><a href="#features">주요 기능</a></li>
-                        <li><a href="#demo">데모</a></li>
-                        <li><a href="./app.html">시작하기기</a></li>
+                        <li><a href="./app.html">시작하기</a></li>
                         <li><a href="#faq">FAQ</a></li>
                     </ul>
                 </div>
@@ -2077,7 +1090,6 @@
                         <li><a href="#about">회사 소개</a></li>
                         <li><a href="#team">팀</a></li>
                         <li><a href="#careers">채용</a></li>
-                        <li><a href="#press">보도자료</a></li>
                     </ul>
                 </div>
                 
@@ -2085,7 +1097,6 @@
                     <h3>지원</h3>
                     <ul>
                         <li><a href="#help">도움말</a></li>
-                        <li><a href="#faq">FAQ</a></li>
                         <li><a href="#contact">문의하기</a></li>
                         <li><a href="#privacy">개인정보처리방침</a></li>
                     </ul>
@@ -2099,6 +1110,78 @@
     </footer>
 
     <script>
+        // 전역 변수
+        let currentUser = null;
+        let auth = null;
+        let db = null;
+        let googleProvider = null;
+        let isEnvironmentSupported = true;
+
+        // Firebase 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZVYENK7H96qe2Jrt1Wtf6AS2QaPcy4rg",
+            authDomain: "habitflow-e1e56.firebaseapp.com",
+            projectId: "habitflow-e1e56",
+            storageBucket: "habitflow-e1e56.firebasestorage.app",
+            messagingSenderId: "480767149947",
+            appId: "1:480767149947:web:13ee354d310963dd82dfde",
+            measurementId: "G-FHQPMRBX50"
+        };
+
+        // 환경 확인
+        function checkEnvironment() {
+            const protocol = window.location.protocol;
+            const isLocalhost = window.location.hostname === 'localhost' || 
+                               window.location.hostname === '127.0.0.1' ||
+                               window.location.hostname === '';
+            
+            if (protocol === 'file:' || (!isLocalhost && protocol !== 'https:')) {
+                isEnvironmentSupported = false;
+                document.getElementById('environmentNotice').classList.add('show');
+                console.warn('Firebase Auth는 HTTPS 또는 localhost에서만 지원됩니다.');
+            }
+        }
+
+        // Firebase 초기화
+        function initializeFirebase() {
+            if (typeof firebase === 'undefined') {
+                console.error('Firebase SDK가 로드되지 않았습니다.');
+                showErrorMessage('Firebase 연결에 실패했습니다.');
+                return false;
+            }
+
+            try {
+                if (firebase.apps.length === 0) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                
+                auth = firebase.auth();
+                db = firebase.firestore();
+                googleProvider = new firebase.auth.GoogleAuthProvider();
+                
+                // 인증 상태 변화 감지
+                auth.onAuthStateChanged(function(user) {
+                    if (user) {
+                        currentUser = user;
+                        updateUIForLoggedInUser(user);
+                        console.log('✅ 사용자 로그인됨:', user.email);
+                    } else {
+                        currentUser = null;
+                        updateUIForLoggedOutUser();
+                        console.log('사용자 로그아웃됨');
+                    }
+                });
+                
+                console.log('✅ Firebase 초기화 완료');
+                showSuccessMessage('Firebase 연결 완료! 🔥');
+                return true;
+            } catch (error) {
+                console.error('Firebase 초기화 오류:', error);
+                showErrorMessage('Firebase 초기화 실패: ' + error.message);
+                return false;
+            }
+        }
+
         // 네비게이션 스크롤 효과
         window.addEventListener('scroll', function() {
             const navbar = document.getElementById('navbar');
@@ -2123,471 +1206,441 @@
             });
         }, observerOptions);
 
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
+        // 페이지 로드 후 애니메이션 관찰자 설정
+        function setupAnimations() {
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        }
 
         // 부드러운 스크롤
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                const targetId = this.getAttribute('href');
+                if (targetId && targetId !== '#') {
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
                 }
             });
         });
 
-        // FAQ 탭 전환 함수
-        function switchFAQTab(category) {
-            // 모든 탭 비활성화
-            document.querySelectorAll('.faq-tab').forEach(tab => {
-                tab.classList.remove('active');
+        // UI 업데이트 함수들
+        function updateUIForLoggedInUser(user) {
+            const authTrigger = document.getElementById('auth-trigger');
+            const userProfile = document.getElementById('user-profile');
+            const userAvatar = document.getElementById('user-avatar');
+            const userName = document.getElementById('user-name');
+
+            authTrigger.style.display = 'none';
+            userProfile.classList.add('show');
+            
+            const displayName = user.displayName || user.email.split('@')[0];
+            const initial = displayName.charAt(0).toUpperCase();
+            
+            userAvatar.textContent = initial;
+            userName.textContent = displayName;
+
+            // 버튼 텍스트 변경
+            const heroButtons = document.querySelectorAll('.hero-buttons button, .cta-section button');
+            heroButtons.forEach(btn => {
+                if (btn.textContent.includes('무료로 시작하기')) {
+                    btn.textContent = '앱으로 이동 🚀';
+                    btn.onclick = () => redirectToApp();
+                }
             });
-            
-            // 모든 FAQ 카테고리 숨기기
-            document.querySelectorAll('.faq-category').forEach(cat => {
-                cat.classList.remove('active');
-            });
-            
-            // 선택된 탭 활성화
-            event.target.classList.add('active');
-            
-            // 선택된 카테고리 표시
-            document.getElementById(`faq-${category}`).classList.add('active');
         }
 
-        // FAQ 토글
-        function toggleFAQ(element) {
-            const answer = element.nextElementSibling;
-            const toggle = element.querySelector('.faq-toggle');
-            
-            if (answer.classList.contains('open')) {
-                answer.classList.remove('open');
-                toggle.textContent = '+';
-                toggle.classList.remove('open');
-                element.style.background = '#f8fafc';
-            } else {
-                answer.classList.add('open');
-                toggle.textContent = '−';
-                toggle.classList.add('open');
-                element.style.background = '#e2e8f0';
-            }
+        function updateUIForLoggedOutUser() {
+            const authTrigger = document.getElementById('auth-trigger');
+            const userProfile = document.getElementById('user-profile');
+
+            authTrigger.style.display = 'inline-block';
+            userProfile.classList.remove('show');
+
+            // 버튼 텍스트 복원
+            const heroButtons = document.querySelectorAll('.hero-buttons button, .cta-section button');
+            heroButtons.forEach(btn => {
+                if (btn.textContent.includes('앱으로 이동')) {
+                    btn.textContent = '무료로 시작하기 🚀';
+                    btn.onclick = () => openAuthModal();
+                }
+            });
         }
 
-        // 인터랙티브 데모 기능
-        let currentDemoStep = 1;
-        const totalDemoSteps = 5;
-        
-        // 데모 화면 템플릿
-        const demoScreenTemplates = {
-            1: `
-                <div style="text-align: center; padding: 2rem 1rem;">
-                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">🤖</div>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">안녕하세요!</h3>
-                    <div class="demo-ai-message">
-                        <div style="font-size: 0.9rem; margin-bottom: 0.5rem;">AI 코치 "하비"입니다</div>
-                        <div style="font-size: 0.8rem; opacity: 0.8;">당신만의 습관 형성을 도와드릴게요!</div>
-                    </div>
-                    <div style="background: rgba(16, 185, 129, 0.2); border-radius: 10px; padding: 1rem; margin-top: 1rem;">
-                        <div style="font-size: 0.7rem; opacity: 0.9;">✨ 15,000명의 성공 데이터로 학습한 AI</div>
-                        <div style="font-size: 0.7rem; opacity: 0.9;">📊 89% 정확도의 성공률 예측</div>
-                    </div>
-                </div>
-            `,
-            2: `
-                <div style="padding: 1.5rem;">
-                    <div style="text-align: center; margin-bottom: 1.5rem;">
-                        <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">🎯 첫 번째 습관</h3>
-                        <div style="font-size: 0.8rem; opacity: 0.8;">AI 추천 습관</div>
-                    </div>
-                    
-                    <div class="demo-habit-item demo-pulse" onclick="selectDemoHabit(this)">
-                        <div class="demo-habit-check">○</div>
-                        <div>
-                            <div style="font-weight: 600; font-size: 0.8rem;">물 2L 마시기</div>
-                            <div style="font-size: 0.6rem; opacity: 0.7;">💧 성공률 94% | 쉬움</div>
-                        </div>
-                    </div>
-                    
-                    <div class="demo-ai-message">
-                        <div style="font-size: 0.7rem; font-weight: 600; margin-bottom: 0.5rem;">💡 AI 추천 이유</div>
-                        <div style="font-size: 0.6rem;">당신과 비슷한 패턴의 사용자들이 가장 성공한 습관이에요!</div>
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 1rem;">
-                        <div style="font-size: 0.7rem; color: rgba(255,255,255,0.7);">습관을 클릭해서 선택하세요</div>
-                    </div>
-                </div>
-            `,
-            3: `
-                <div style="padding: 1.5rem;">
-                    <div style="text-align: center; margin-bottom: 1.5rem;">
-                        <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">🧠 AI 분석 중...</h3>
-                        <div style="font-size: 0.8rem; opacity: 0.8;">개인화 조언 생성</div>
-                    </div>
-                    
-                    <div class="demo-habit-item">
-                        <div class="demo-habit-check">○</div>
-                        <div>
-                            <div style="font-weight: 600; font-size: 0.8rem;">물 2L 마시기</div>
-                            <div style="font-size: 0.6rem; opacity: 0.7;">💧 AI 점수: 계산 중...</div>
-                        </div>
-                    </div>
-                    
-                    <div class="demo-ai-message">
-                        <div style="font-size: 0.7rem; font-weight: 600; margin-bottom: 0.5rem;">🎯 AI 개인화 조언</div>
-                        <div style="font-size: 0.6rem; border-right: 2px solid white; overflow: hidden; white-space: nowrap; animation: typing 2s steps(30, end);">
-                            오전 8시에 시작하면 성공률 23% 증가!
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 1rem; padding: 0.8rem; background: rgba(16, 185, 129, 0.2); border-radius: 8px;">
-                        <div style="font-size: 0.6rem; text-align: center; opacity: 0.9;">
-                            📊 예상 성공률: <strong>87%</strong>
-                        </div>
-                    </div>
-                </div>
-            `,
-            4: `
-                <div style="padding: 1.5rem;">
-                    <div style="text-align: center; margin-bottom: 1.5rem;">
-                        <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">✅ 습관 실행</h3>
-                        <div style="font-size: 0.8rem; opacity: 0.8;">오늘의 목표</div>
-                    </div>
-                    
-                    <div class="demo-habit-item" onclick="completeDemoHabit()">
-                        <div class="demo-habit-check" id="demo-main-check">○</div>
-                        <div>
-                            <div style="font-weight: 600; font-size: 0.8rem;">물 2L 마시기</div>
-                            <div style="font-size: 0.6rem; opacity: 0.7;" id="demo-habit-status">💧 0일 연속 | AI: 50점</div>
-                        </div>
-                    </div>
-                    
-                    <div class="demo-ai-message">
-                        <div style="font-size: 0.7rem; font-weight: 600; margin-bottom: 0.5rem;">💡 실행 팁</div>
-                        <div style="font-size: 0.6rem;">물병을 항상 가까이 두고, 2시간마다 알림을 설정하세요!</div>
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 1rem;">
-                        <button onclick="completeDemoHabit()" style="background: #10b981; color: white; border: none; padding: 0.6rem 1rem; border-radius: 15px; font-weight: 600; cursor: pointer; font-size: 0.7rem;">
-                            습관 완료하기! 🎯
-                        </button>
-                    </div>
-                </div>
-            `,
-            5: `
-                <div style="padding: 1.5rem; text-align: center;">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
-                    <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">축하합니다!</h3>
-                    
-                    <div class="demo-habit-item">
-                        <div class="demo-habit-check completed demo-success-animation">✓</div>
-                        <div>
-                            <div style="font-weight: 600; font-size: 0.8rem;">물 2L 마시기</div>
-                            <div style="font-size: 0.6rem; opacity: 0.7;">🔥 1일 연속 | AI: 75점</div>
-                        </div>
-                    </div>
-                    
-                    <div class="demo-ai-message">
-                        <div style="font-size: 0.7rem; font-weight: 600; margin-bottom: 0.5rem;">🏆 성취 해금!</div>
-                        <div style="font-size: 0.6rem;">첫 번째 습관 완료! 21일 더 하면 자동화됩니다.</div>
-                    </div>
-                    
-                    <div style="margin-top: 1.5rem; display: flex; gap: 0.8rem; justify-content: center;">
-                        <div style="background: rgba(16, 185, 129, 0.2); padding: 0.8rem; border-radius: 10px; flex: 1;">
-                            <div style="font-size: 0.6rem; opacity: 0.8;">오늘 완료율</div>
-                            <div style="font-size: 1rem; font-weight: 700;">100%</div>
-                        </div>
-                        <div style="background: rgba(59, 130, 246, 0.2); padding: 0.8rem; border-radius: 10px; flex: 1;">
-                            <div style="font-size: 0.6rem; opacity: 0.8;">연속 기록</div>
-                            <div style="font-size: 1rem; font-weight: 700;">1일</div>
-                        </div>
-                    </div>
-                </div>
-            `
-        };
-        
-        // 데모 단계별 설명 내용
-        const demoStepDescriptions = {
-            1: {
-                title: "AI 코치 \"하비\" 만나기",
-                description: "HabitFlow의 AI 코치 \"하비\"가 당신을 맞이합니다. 15,000명의 데이터로 학습한 하비는 당신만의 습관 패턴을 분석합니다."
-            },
-            2: {
-                title: "개인화된 습관 추천",
-                description: "AI가 당신의 성향과 라이프스타일을 분석해서 성공 가능성이 높은 습관만 추천해드립니다. 첫 번째 습관을 선택해보세요!"
-            },
-            3: {
-                title: "실시간 AI 분석",
-                description: "하비가 당신의 패턴을 분석하고 개인화된 조언을 제공합니다. 언제, 어떻게 실행하면 성공률이 높은지 알려드려요."
-            },
-            4: {
-                title: "스마트한 습관 실행",
-                description: "이제 습관을 실행하고 체크해보세요! 매번 완료할 때마다 AI 점수가 상승하고 연속 기록이 쌓입니다."
-            },
-            5: {
-                title: "성공 달성과 지속적 성장",
-                description: "축하합니다! 첫 번째 습관을 완료했습니다. 21일 후에는 자동화된 습관이 될 거예요."
-            }
-        };
-        
-        // 데모 화면 업데이트 함수
-        function updateDemoScreen() {
-            const screen = document.getElementById('demo-phone-screen');
-            const stepContent = document.getElementById('demo-step-content');
-            const progress = document.getElementById('demo-progress');
-            
-            if (screen) {
-                screen.innerHTML = demoScreenTemplates[currentDemoStep];
-            }
-            
-            if (stepContent) {
-                const stepData = demoStepDescriptions[currentDemoStep];
-                stepContent.innerHTML = `
-                    <h4>${stepData.title}</h4>
-                    <p>${stepData.description}</p>
-                `;
-            }
-            
-            // 프로그레스 바 업데이트
-            if (progress) {
-                const progressPercentage = (currentDemoStep / totalDemoSteps) * 100;
-                progress.style.width = progressPercentage + '%';
-            }
-            
-            // 단계 표시기 업데이트
-            document.querySelectorAll('.step-dot').forEach((dot, index) => {
-                dot.classList.remove('active', 'completed');
-                if (index + 1 === currentDemoStep) {
-                    dot.classList.add('active');
-                } else if (index + 1 < currentDemoStep) {
-                    dot.classList.add('completed');
-                }
-            });
-            
-            // 버튼 상태 업데이트
-            const prevBtn = document.getElementById('demo-prev-btn');
-            const nextBtn = document.getElementById('demo-next-btn');
-            
-            if (prevBtn) {
-                prevBtn.style.display = currentDemoStep > 1 ? 'block' : 'none';
-            }
-            
-            if (nextBtn) {
-                if (currentDemoStep === totalDemoSteps) {
-                    nextBtn.textContent = '완료! 🎉';
-                    nextBtn.onclick = resetDemo;
-                } else if (currentDemoStep === 1) {
-                    nextBtn.textContent = '시작하기 🚀';
-                } else {
-                    nextBtn.textContent = '다음 단계';
-                }
-            }
-        }
-        
-        // 다음 단계로 이동
-        function nextDemoStep() {
-            if (currentDemoStep < totalDemoSteps) {
-                currentDemoStep++;
-                updateDemoScreen();
-                
-                // 특별 효과
-                if (currentDemoStep === 3) {
-                    setTimeout(() => {
-                        const screen = document.getElementById('demo-phone-screen');
-                        if (screen) {
-                            const typingElement = screen.querySelector('[style*="animation: typing"]');
-                            if (typingElement) {
-                                typingElement.style.width = '0';
-                                setTimeout(() => {
-                                    typingElement.style.width = '100%';
-                                }, 100);
-                            }
-                        }
-                    }, 500);
-                }
-            } else {
-                resetDemo();
-            }
-        }
-        
-        // 이전 단계로 이동
-        function prevDemoStep() {
-            if (currentDemoStep > 1) {
-                currentDemoStep--;
-                updateDemoScreen();
-            }
-        }
-        
-        // 데모 리셋
-        function resetDemo() {
-            currentDemoStep = 1;
-            updateDemoScreen();
-        }
-        
-        // 습관 선택 함수
-        function selectDemoHabit(element) {
-            // 모든 습관 아이템에서 pulse 클래스 제거
-            document.querySelectorAll('.demo-habit-item').forEach(item => {
-                item.classList.remove('demo-pulse');
-                item.style.background = 'rgba(255, 255, 255, 0.15)';
-            });
-            
-            // 선택된 습관 강조
-            element.style.background = 'rgba(16, 185, 129, 0.3)';
-            
-            // 체크 표시
-            const check = element.querySelector('.demo-habit-check');
-            check.textContent = '✓';
-            check.classList.add('completed');
-            
-            // 성공 피드백
-            showDemoNotification('습관이 선택되었습니다! 🎯');
-            
-            // 자동으로 다음 단계로 이동
+        // 앱으로 리다이렉트
+        function redirectToApp() {
+            showLoading('앱으로 이동 중...');
             setTimeout(() => {
-                nextDemoStep();
-            }, 1500);
+                // 실제 앱 URL로 변경 필요
+                window.open('./app.html', '_blank');
+            }, 1000);
         }
-        
-        // 습관 완료 함수
-        function completeDemoHabit() {
-            const check = document.getElementById('demo-main-check');
-            const status = document.getElementById('demo-habit-status');
-            
-            if (check) {
-                check.textContent = '✓';
-                check.classList.add('completed', 'demo-success-animation');
+
+        // 모달 관리
+        function openAuthModal() {
+            if (currentUser) {
+                redirectToApp();
+                return;
+            }
+
+            if (!isEnvironmentSupported) {
+                showErrorMessage('현재 환경에서는 Firebase 인증이 지원되지 않습니다. HTTPS 서버나 localhost에서 테스트해주세요.');
+                return;
+            }
+
+            if (!auth) {
+                showErrorMessage('Firebase가 아직 초기화되지 않았습니다. 잠시 후 다시 시도해주세요.');
+                return;
+            }
+
+            document.getElementById('authModal').classList.add('show');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('show');
+        }
+
+        function switchToSignup() {
+            document.getElementById('loginForm').classList.remove('active');
+            document.getElementById('signupForm').classList.add('active');
+            document.getElementById('authTitle').textContent = '새로운 습관, 새로운 당신! 🌟';
+        }
+
+        function switchToLogin() {
+            document.getElementById('signupForm').classList.remove('active');
+            document.getElementById('loginForm').classList.add('active');
+            document.getElementById('authTitle').textContent = 'HabitFlow에 오신 것을 환영합니다! 🎉';
+        }
+
+        // 인증 함수들
+        async function signInWithGoogle() {
+            if (!auth || !googleProvider) {
+                showErrorMessage('Firebase가 아직 초기화되지 않았습니다.');
+                return;
+            }
+
+            try {
+                showLoading('Google 계정으로 로그인 중...');
+                const result = await auth.signInWithPopup(googleProvider);
+                const user = result.user;
                 
-                if (status) {
-                    status.textContent = '🔥 1일 연속 | AI: 75점';
+                await saveUserToFirestore(user);
+                
+                showSuccessMessage('로그인 성공! 🎉');
+                closeAuthModal();
+                hideLoading();
+                
+                setTimeout(() => {
+                    redirectToApp();
+                }, 1500);
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Google 로그인 오류:', error);
+                
+                let errorMessage = 'Google 로그인에 실패했습니다.';
+                if (error.code === 'auth/popup-closed-by-user') {
+                    errorMessage = '로그인이 취소되었습니다.';
+                } else if (error.code === 'auth/popup-blocked') {
+                    errorMessage = '팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.';
+                } else if (error.code === 'auth/operation-not-supported-in-this-environment') {
+                    errorMessage = '현재 환경에서는 Google 로그인이 지원되지 않습니다. 이메일 로그인을 사용해주세요.';
                 }
                 
-                showDemoNotification('습관 완료! 🎉');
-                
-                // 다음 단계로 자동 이동
-                setTimeout(() => {
-                    nextDemoStep();
-                }, 1500);
+                showErrorMessage(errorMessage);
             }
         }
-        
-        // 데모 알림 표시
-        function showDemoNotification(message) {
+
+        async function signInWithEmail(event) {
+            event.preventDefault();
+
+            if (!auth) {
+                showErrorMessage('Firebase가 아직 초기화되지 않았습니다.');
+                return;
+            }
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showErrorMessage('이메일과 비밀번호를 입력해주세요.');
+                return;
+            }
+
+            try {
+                showLoading('로그인 중...');
+                const result = await auth.signInWithEmailAndPassword(email, password);
+                
+                showSuccessMessage('로그인 성공! 🎉');
+                closeAuthModal();
+                hideLoading();
+                
+                setTimeout(() => {
+                    redirectToApp();
+                }, 1500);
+                
+            } catch (error) {
+                hideLoading();
+                console.error('이메일 로그인 오류:', error);
+                
+                let errorMessage = '로그인에 실패했습니다.';
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        errorMessage = '등록되지 않은 이메일입니다.';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage = '비밀번호가 올바르지 않습니다.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = '유효하지 않은 이메일 형식입니다.';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = '너무 많은 시도입니다. 잠시 후 다시 시도해주세요.';
+                        break;
+                    case 'auth/network-request-failed':
+                        errorMessage = '네트워크 연결을 확인해주세요.';
+                        break;
+                }
+                
+                showErrorMessage(errorMessage);
+            }
+        }
+
+        async function signUpWithEmail(event) {
+            event.preventDefault();
+
+            if (!auth) {
+                showErrorMessage('Firebase가 아직 초기화되지 않았습니다.');
+                return;
+            }
+            
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            if (!name || !email || !password) {
+                showErrorMessage('모든 필드를 입력해주세요.');
+                return;
+            }
+
+            if (password.length < 6) {
+                showErrorMessage('비밀번호는 6자 이상이어야 합니다.');
+                return;
+            }
+
+            try {
+                showLoading('계정을 생성하고 있습니다...');
+                const result = await auth.createUserWithEmailAndPassword(email, password);
+                const user = result.user;
+                
+                await user.updateProfile({
+                    displayName: name
+                });
+                
+                await saveUserToFirestore(user, { displayName: name });
+                
+                showSuccessMessage('회원가입 완료! 🎉 환영합니다!');
+                closeAuthModal();
+                hideLoading();
+                
+                setTimeout(() => {
+                    redirectToApp();
+                }, 1500);
+                
+            } catch (error) {
+                hideLoading();
+                console.error('회원가입 오류:', error);
+                
+                let errorMessage = '회원가입에 실패했습니다.';
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage = '이미 사용중인 이메일입니다.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = '유효하지 않은 이메일 형식입니다.';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage = '비밀번호가 너무 약합니다. 6자 이상 입력해주세요.';
+                        break;
+                    case 'auth/network-request-failed':
+                        errorMessage = '네트워크 연결을 확인해주세요.';
+                        break;
+                }
+                
+                showErrorMessage(errorMessage);
+            }
+        }
+
+        // Firestore 저장
+        async function saveUserToFirestore(user, additionalData = {}) {
+            if (!db) return;
+
+            try {
+                const userData = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName || additionalData.displayName || user.email.split('@')[0],
+                    photoURL: user.photoURL || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    habits: [],
+                    stats: {
+                        totalHabits: 0,
+                        completedHabits: 0,
+                        maxStreak: 0,
+                        avgStreak: 0
+                    }
+                };
+                
+                await db.collection('users').doc(user.uid).set(userData, { merge: true });
+                console.log('✅ 사용자 정보 Firestore 저장 완료');
+                
+            } catch (error) {
+                console.error('Firestore 저장 오류:', error);
+            }
+        }
+
+        // 로그아웃
+        async function logout() {
+            if (!auth) {
+                showErrorMessage('인증 시스템이 초기화되지 않았습니다.');
+                return;
+            }
+
+            try {
+                showLoading('로그아웃 중...');
+                await auth.signOut();
+                showSuccessMessage('로그아웃되었습니다.');
+                hideLoading();
+            } catch (error) {
+                hideLoading();
+                console.error('로그아웃 오류:', error);
+                showErrorMessage('로그아웃에 실패했습니다.');
+            }
+        }
+
+        // 유틸리티 함수들
+        function showLoading(message = 'AI가 당신을 분석하고 있습니다...') {
+            const overlay = document.getElementById('loadingOverlay');
+            const text = overlay.querySelector('.loading-text');
+            text.textContent = message;
+            overlay.classList.add('show');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('show');
+        }
+
+        function showSuccessMessage(message) {
+            showNotification(message, 'success');
+        }
+
+        function showErrorMessage(message) {
+            showNotification(message, 'error');
+        }
+
+        function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
-            notification.textContent = message;
+            
+            let bgColor = '#3b82f6';
+            if (type === 'success') bgColor = '#10b981';
+            else if (type === 'error') bgColor = '#ef4444';
+            else if (type === 'warning') bgColor = '#f59e0b';
+            
             notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: #10b981;
+                background: ${bgColor};
                 color: white;
                 padding: 1rem 1.5rem;
                 border-radius: 10px;
                 font-weight: 600;
                 z-index: 10000;
                 animation: slideInRight 0.3s ease-out;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                max-width: 350px;
+                word-wrap: break-word;
             `;
+            notification.textContent = message;
             
             document.body.appendChild(notification);
             
             setTimeout(() => {
                 notification.style.animation = 'slideOutRight 0.3s ease-in';
-                setTimeout(() => notification.remove(), 300);
-            }, 2000);
-        }
-        
-        // 전체화면 데모 열기
-        function openFullDemo() {
-            window.open('./interactive_demo.html', 'HabitFlowDemo', 'width=1200,height=800,scrollbars=yes,resizable=yes');
-        }
-        
-        // 데모 표시 함수 (기존 버튼용) - 인터랙티브 데모 섹션으로 스크롤
-        function showDemo() {
-            const demoSection = document.getElementById('demo');
-            if (demoSection) {
-                demoSection.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-                
-                // 스크롤 후 데모 시작 안내
                 setTimeout(() => {
-                    showDemoNotification('🎯 아래에서 인터랙티브 데모를 체험해보세요!');
-                }, 1000);
-            }
-        }
-        
-        // 페이지 로드 완료 후 초기 애니메이션
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                document.querySelectorAll('.fade-in').forEach((el, index) => {
-                    setTimeout(() => {
-                        if (el.getBoundingClientRect().top < window.innerHeight) {
-                            el.classList.add('visible');
-                        }
-                    }, index * 100);
-                });
-            }, 500);
-            
-            // 데모 초기화
-            updateDemoScreen();
-        });
-
-        // 카운터 애니메이션
-        function animateCounters() {
-            const counters = document.querySelectorAll('.stat-card .number');
-            counters.forEach(counter => {
-                const target = counter.textContent;
-                const numericValue = target.replace(/[^\d]/g, '');
-                if (numericValue) {
-                    let current = 0;
-                    const increment = parseInt(numericValue) / 50;
-                    const timer = setInterval(() => {
-                        current += increment;
-                        if (current >= numericValue) {
-                            counter.textContent = target;
-                            clearInterval(timer);
-                        } else {
-                            counter.textContent = Math.floor(current).toLocaleString();
-                        }
-                    }, 30);
-                }
-            });
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, type === 'warning' ? 5000 : 3000);
         }
 
-        // 통계 섹션이 보이면 카운터 애니메이션 실행
-        const statsSection = document.querySelector('.stats-section');
-        const statsObserver = new IntersectionObserver(function(entries) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCounters();
-                    statsObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.5 });
-
-        if (statsSection) {
-            statsObserver.observe(statsSection);
+        function showDemo() {
+            showNotification('🎯 데모 기능은 곧 추가될 예정입니다!', 'info');
         }
 
-        // 단계 표시기 클릭 이벤트
+        function hideEnvironmentNotice() {
+            document.getElementById('environmentNotice').classList.remove('show');
+        }
+
+        // 이벤트 리스너
         document.addEventListener('DOMContentLoaded', function() {
-            // 단계 표시기 클릭 이벤트 추가
-            document.querySelectorAll('.step-dot').forEach((dot, index) => {
-                dot.addEventListener('click', function() {
-                    currentDemoStep = index + 1;
-                    updateDemoScreen();
+            console.log('🚀 HabitFlow 완성본 로드 완료!');
+            
+            // 환경 확인
+            checkEnvironment();
+            
+            // 스크롤 애니메이션 설정
+            setupAnimations();
+            
+            // Firebase 초기화
+            if (typeof firebase !== 'undefined') {
+                initializeFirebase();
+            } else {
+                console.error('Firebase SDK가 로드되지 않았습니다.');
+                showErrorMessage('Firebase 로딩에 실패했습니다.');
+            }
+
+            // 모달 외부 클릭시 닫기
+            const authModal = document.getElementById('authModal');
+            if (authModal) {
+                authModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeAuthModal();
+                    }
                 });
-            });
+            }
         });
 
-        console.log('🚀 HabitFlow 랜딩페이지 로드 완료!');
-        console.log('🎯 CTO가 개발한 마케팅 최적화 랜딩페이지');
+        // ESC 키로 모달 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAuthModal();
+                hideLoading();
+            }
+        });
+
+        // 애니메이션 CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
