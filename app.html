@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>습관 트래커 - AI 기반 습관 관리</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -1054,7 +1054,12 @@
         };
 
         // 앱 렌더링
-        ReactDOM.render(React.createElement(HabitTracker), document.getElementById('root'));
+        try {
+            ReactDOM.render(React.createElement(HabitTracker), document.getElementById('root'));
+        } catch (error) {
+            console.error('앱 렌더링 실패:', error);
+            document.getElementById('root').innerHTML = '<div style="padding: 20px; text-align: center;"><h2>앱 로딩 중 오류가 발생했습니다</h2><p>브라우저를 새로고침해주세요.</p></div>';
+        }
         
         // 로딩 화면 제거 (앱 렌더링 후)
         setTimeout(() => {
@@ -1066,7 +1071,7 @@
                     loadingElement.remove();
                 }, 500);
             }
-        }, 100);
+        }, 1000);
     </script>
 </body>
 </html>
