@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>습관 트래커 - AI 기반 습관 관리</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Firebase SDK v9 (최신 버전) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <!-- Tailwind CSS (프로덕션용) -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK v9 (안정 버전) -->
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <style>
         body {
             margin: 0;
@@ -85,19 +87,21 @@
 
         // Firebase 초기화 (에러 핸들링 추가)
         let auth, firestore, googleProvider;
+        let isFirebaseAvailable = false;
         
         try {
             firebase.initializeApp(firebaseConfig);
             auth = firebase.auth();
             firestore = firebase.firestore();
             googleProvider = new firebase.auth.GoogleAuthProvider();
+            isFirebaseAvailable = true;
             console.log('Firebase 초기화 성공');
         } catch (error) {
-            console.error('Firebase 초기화 실패:', error);
-            // Firebase 없이도 앱이 작동하도록 폴백
+            console.warn('Firebase 초기화 실패 - 로컬 모드로 실행:', error);
             auth = null;
             firestore = null;
             googleProvider = null;
+            isFirebaseAvailable = false;
         }
 
         const { useState, useEffect } = React;
@@ -204,18 +208,48 @@
 
             // Firebase 인증 상태 감지
             useEffect(() => {
-                if (!auth) {
+                if (!isFirebaseAvailable) {
                     // Firebase가 없으면 로그인 없이 로컬 모드로 실행
-                    setUser({ uid: 'local-user', displayName: '로컬 사용자' });
+                    setUser({ uid: 'local-user', displayName: '로컬 사용자', email: 'local@habitflow.com' });
                     setLoading(false);
                     // 로컬 스토리지에서 습관 데이터 로드
                     const savedHabits = localStorage.getItem('habitflow-habits');
                     if (savedHabits) {
                         try {
-                            setHabits(JSON.parse(savedHabits));
+                            const parsedHabits = JSON.parse(savedHabits);
+                            setHabits(parsedHabits);
                         } catch (e) {
                             console.error('로컬 데이터 로드 실패:', e);
+                            // 기본 습관 하나 추가
+                            const defaultHabit = [{
+                                id: 'default-1',
+                                title: '매일 물 2L 마시기',
+                                category: '건강',
+                                streak: 0,
+                                completedToday: false,
+                                completedDates: [],
+                                color: 'bg-blue-500',
+                                icon: '💧',
+                                createdAt: new Date().toDateString()
+                            }];
+                            setHabits(defaultHabit);
+                            localStorage.setItem('habitflow-habits', JSON.stringify(defaultHabit));
                         }
+                    } else {
+                        // 기본 습관 하나 추가
+                        const defaultHabit = [{
+                            id: 'default-1',
+                            title: '매일 물 2L 마시기',
+                            category: '건강',
+                            streak: 0,
+                            completedToday: false,
+                            completedDates: [],
+                            color: 'bg-blue-500',
+                            icon: '💧',
+                            createdAt: new Date().toDateString()
+                        }];
+                        setHabits(defaultHabit);
+                        localStorage.setItem('habitflow-habits', JSON.stringify(defaultHabit));
                     }
                     return;
                 }
@@ -375,7 +409,7 @@
             }
 
             // Firebase가 없거나 로컬 모드인 경우 바로 앱 실행
-            if (!user && auth) {
+            if (!user && isFirebaseAvailable) {
                 return (
                     <div className="fixed inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 flex items-center justify-center p-4">
                         <div className="bg-white rounded-2xl p-8 w-full max-w-sm text-center">
@@ -1112,12 +1146,30 @@
             );
         };
 
-        // 앱 렌더링
+        // React 18 호환 렌더링
         try {
-            ReactDOM.render(React.createElement(HabitTracker), document.getElementById('root'));
+            const container = document.getElementById('root');
+            if (typeof ReactDOM.createRoot !== 'undefined') {
+                // React 18 방식
+                const root = ReactDOM.createRoot(container);
+                root.render(React.createElement(HabitTracker));
+            } else {
+                // React 17 방식 (폴백)
+                ReactDOM.render(React.createElement(HabitTracker), container);
+            }
+            console.log('앱 렌더링 성공');
         } catch (error) {
             console.error('앱 렌더링 실패:', error);
-            document.getElementById('root').innerHTML = '<div style="padding: 20px; text-align: center;"><h2>앱 로딩 중 오류가 발생했습니다</h2><p>브라우저를 새로고침해주세요.</p></div>';
+            document.getElementById('root').innerHTML = `
+                <div style="padding: 40px; text-align: center; font-family: Arial, sans-serif;">
+                    <div style="font-size: 4em; margin-bottom: 20px;">🎯</div>
+                    <h2 style="color: #374151; margin-bottom: 16px;">HabitFlow</h2>
+                    <p style="color: #6b7280; margin-bottom: 20px;">앱 로딩 중 오류가 발생했습니다</p>
+                    <button onclick="location.reload()" style="background: #3b82f6; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer;">
+                        새로고침
+                    </button>
+                </div>
+            `;
         }
         
         // 로딩 화면 제거 (앱 렌더링 후)
