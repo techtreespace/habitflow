@@ -1,1856 +1,863 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>습관 트래커 - AI 기반 습관 관리</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Tailwind CSS (프로덕션용) -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    
-    <!-- Firebase SDK v9 (안정 버전) -->
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-    <style>
-        body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+import { useState, useEffect } from 'react';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs } from 'firebase/firestore';
+
+// 환경에서 제공되는 Firebase 구성 전역 변수
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+// Firebase 앱 및 서비스 변수 선언
+let app, auth, db;
+
+// Firebase 초기화 및 사용자 인증 유틸리티 함수
+const initFirebase = async () => {
+    try {
+        if (!app) {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            console.log('Firebase initialized successfully.');
+
+            // 커스텀 토큰으로 로그인하거나 익명으로 로그인
+            if (initialAuthToken) {
+                await signInWithCustomToken(auth, initialAuthToken);
+                console.log('Signed in with custom token.');
+            } else {
+                await signInAnonymously(auth);
+                console.log('Signed in anonymously.');
+            }
         }
-        
-        /* 로딩 화면 스타일 */
-        #loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            color: white;
-        }
-        
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .loading-text {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: 600;
-        }
-        
-        /* 앱이 로드된 후 로딩 화면 숨김 */
-        #root:not(:empty) ~ #loading {
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
-    
-    <!-- 로딩 화면 -->
-    <div id="loading">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">습관 트래커</div>
-        <div style="font-size: 14px; opacity: 0.8; margin-top: 10px;">로딩 중...</div>
-    </div>
-    
-    <script type="text/babel">
-        // Firebase 설정
-        const firebaseConfig = {
-            apiKey: "AIzaSyCZVYENK7H96qe2Jrt1Wtf6AS2QaPcy4rg",
-            authDomain: "habitflow-e1e56.firebaseapp.com",
-            projectId: "habitflow-e1e56",
-            storageBucket: "habitflow-e1e56.firebasestorage.app",
-            messagingSenderId: "480767149947",
-            appId: "1:480767149947:web:13ee354d310963dd82dfde",
-            measurementId: "G-FHQPMRBX50"
-        };
+    } catch (error) {
+        console.error('Firebase initialization failed:', error);
+    }
+};
 
-        // Firebase 초기화 (에러 핸들링 추가)
-        let auth, firestore, googleProvider;
-        let isFirebaseAvailable = false;
-        
-        try {
-            firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            firestore = firebase.firestore();
-            googleProvider = new firebase.auth.GoogleAuthProvider();
-            isFirebaseAvailable = true;
-            console.log('Firebase 초기화 성공');
-        } catch (error) {
-            console.warn('Firebase 초기화 실패 - 로컬 모드로 실행:', error);
-            auth = null;
-            firestore = null;
-            googleProvider = null;
-            isFirebaseAvailable = false;
-        }
+const getUserId = () => auth?.currentUser?.uid;
 
-        const { useState, useEffect } = React;
-        
-        // 아이콘 컴포넌트들
-        const Plus = () => (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-        );
+// 메인 습관 트래커 컴포넌트
+export default function App() {
+    // 상태 관리 변수들
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [isAuthReady, setIsAuthReady] = useState(false);
+    const [habits, setHabits] = useState([]);
+    const [activeTab, setActiveTab] = useState('today');
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [isSignupMode, setIsSignupMode] = useState(false);
+    const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+    const [signupForm, setSignupForm] = useState({ email: '', password: '', confirmPassword: '' });
+    const [showAddForm, setShowAddForm] = useState(false);
+    const [newHabit, setNewHabit] = useState({
+        title: '',
+        category: '건강',
+        color: 'bg-blue-500',
+        icon: '🎯'
+    });
+    const [showDateModal, setShowDateModal] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [showSnackbar, setShowSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [habitToDelete, setHabitToDelete] = useState(null);
 
-        const Trophy = () => (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-                <path d="M4 22h16"></path>
-                <path d="M10 14.66V17c0 .55.47.98.97 1.21C11.56 18.75 12.26 19 13 19c.74 0 1.44-.25 2.03-.79.5-.23.97-.66.97-1.21v-2.34"></path>
-            </svg>
-        );
+    const today = new Date().toDateString();
 
-        const BarChart3 = () => (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 3v18h18"></path>
-                <path d="M18 17V9"></path>
-                <path d="M13 17V5"></path>
-                <path d="M8 17v-3"></path>
-            </svg>
-        );
+    const showMessage = (message) => {
+        setSnackbarMessage(message);
+        setShowSnackbar(true);
+        setTimeout(() => setShowSnackbar(false), 3000);
+    };
 
-        const Settings = () => (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.07a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
-        );
-
-        const Target = () => (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <circle cx="12" cy="12" r="6"></circle>
-                <circle cx="12" cy="12" r="2"></circle>
-            </svg>
-        );
-
-        const TrendingUp = () => (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="22,7 13.5,15.5 8.5,10.5 2,17"></polyline>
-                <polyline points="16,7 22,7 22,13"></polyline>
-            </svg>
-        );
-
-        const Calendar = () => (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-        );
-
-        const CheckCircle2 = () => (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="m9 12 2 2 4-4"></path>
-            </svg>
-        );
-
-        const Circle = () => (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"></circle>
-            </svg>
-        );
-
-        const Trash2 = () => (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 6h18"></path>
-                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-            </svg>
-        );
-
-        const HabitTracker = () => {
-            // 사용자 인증 상태
-            const [user, setUser] = useState(null);
-            const [loading, setLoading] = useState(true);
-            const [showLoginModal, setShowLoginModal] = useState(false);
-            const [loginForm, setLoginForm] = useState({ email: '', password: '' });
-            const [signupForm, setSignupForm] = useState({ email: '', password: '', confirmPassword: '' });
-            const [isSignupMode, setIsSignupMode] = useState(false);
-            
-            const [habits, setHabits] = useState([]);
-            
-            const [activeTab, setActiveTab] = useState('today');
-            const [showAddForm, setShowAddForm] = useState(false);
-            const [showRecommendations, setShowRecommendations] = useState(false);
-            const [showDateModal, setShowDateModal] = useState(false);
-            const [selectedDate, setSelectedDate] = useState(null);
-            const [newHabit, setNewHabit] = useState({
-                title: '',
-                category: '건강',
-                color: 'bg-blue-500',
-                icon: '🎯'
+    // Firebase 인증 상태 리스너 및 초기화
+    useEffect(() => {
+        initFirebase().then(() => {
+            const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+                setUser(currentUser);
+                setLoading(false);
+                setIsAuthReady(true);
             });
+            return () => unsubscribe();
+        });
+    }, []);
 
-            // Firebase 인증 상태 감지
-            useEffect(() => {
-                if (!isFirebaseAvailable) {
-                    // Firebase가 없으면 로그인 없이 로컬 모드로 실행
-                    setUser({ uid: 'local-user', displayName: '로컬 사용자', email: 'local@habitflow.com' });
-                    setLoading(false);
-                    // 로컬 스토리지에서 습관 데이터 로드
-                    const savedHabits = localStorage.getItem('habitflow-habits');
-                    if (savedHabits) {
-                        try {
-                            const parsedHabits = JSON.parse(savedHabits);
-                            setHabits(parsedHabits);
-                        } catch (e) {
-                            console.error('로컬 데이터 로드 실패:', e);
-                            // 기본 습관 하나 추가
-                            const defaultHabit = [{
-                                id: 'default-1',
-                                title: '매일 물 2L 마시기',
-                                category: '건강',
-                                streak: 0,
-                                completedToday: false,
-                                completedDates: [],
-                                color: 'bg-blue-500',
-                                icon: '💧',
-                                createdAt: new Date().toDateString()
-                            }];
-                            setHabits(defaultHabit);
-                            localStorage.setItem('habitflow-habits', JSON.stringify(defaultHabit));
-                        }
-                    } else {
-                        // 기본 습관 하나 추가
-                        const defaultHabit = [{
-                            id: 'default-1',
-                            title: '매일 물 2L 마시기',
-                            category: '건강',
-                            streak: 0,
-                            completedToday: false,
-                            completedDates: [],
-                            color: 'bg-blue-500',
-                            icon: '💧',
-                            createdAt: new Date().toDateString()
-                        }];
-                        setHabits(defaultHabit);
-                        localStorage.setItem('habitflow-habits', JSON.stringify(defaultHabit));
-                    }
-                    return;
-                }
-                
-                const unsubscribe = auth.onAuthStateChanged((user) => {
-                    setUser(user);
-                    setLoading(false);
-                    if (user) {
-                        loadUserHabits(user.uid);
-                    } else {
-                        setHabits([]);
-                    }
-                });
-                return unsubscribe;
-            }, []);
+    // Firestore 데이터 리스너
+    useEffect(() => {
+        if (isAuthReady && user) {
+            const userId = getUserId();
+            if (userId) {
+                const habitsCollectionRef = collection(db, 'artifacts', appId, 'users', userId, 'habits');
+                const q = query(habitsCollectionRef);
 
-            // 사용자 습관 데이터 로드
-            const loadUserHabits = async (userId) => {
-                if (!firestore) return;
-                try {
-                    const habitsRef = firestore.collection('users').doc(userId).collection('habits');
-                    const snapshot = await habitsRef.get();
+                const unsubscribe = onSnapshot(q, (snapshot) => {
                     const userHabits = snapshot.docs.map(doc => ({
                         id: doc.id,
-                        ...doc.data()
+                        ...doc.data(),
+                        completedDates: doc.data().completedDates || []
                     }));
                     setHabits(userHabits);
-                } catch (error) {
-                    console.error('습관 데이터 로드 실패:', error);
-                }
-            };
+                }, (error) => {
+                    console.error('Error fetching habits:', error);
+                    showMessage('습관 데이터를 불러오는 데 실패했습니다.');
+                });
 
-            // 습관 데이터 저장 (Firebase 또는 로컬)
-            const saveHabitToFirestore = async (habit) => {
-                if (!user) return;
-                
-                if (!firestore || user.uid === 'local-user') {
-                    // 로컬 스토리지에 저장
-                    const currentHabits = habits.filter(h => h.id !== habit.id);
-                    const updatedHabits = [...currentHabits, habit];
-                    localStorage.setItem('habitflow-habits', JSON.stringify(updatedHabits));
-                    return habit.id || Date.now().toString();
-                }
-                
-                try {
-                    const habitsRef = firestore.collection('users').doc(user.uid).collection('habits');
-                    if (habit.id && typeof habit.id === 'string') {
-                        await habitsRef.doc(habit.id).set(habit);
-                        return habit.id;
-                    } else {
-                        const docRef = await habitsRef.add(habit);
-                        return docRef.id;
-                    }
-                } catch (error) {
-                    console.error('습관 저장 실패:', error);
-                    // Firebase 실패 시 로컬 저장으로 폴백
-                    const habitId = habit.id || Date.now().toString();
-                    const updatedHabit = { ...habit, id: habitId };
-                    const currentHabits = habits.filter(h => h.id !== habitId);
-                    const updatedHabits = [...currentHabits, updatedHabit];
-                    localStorage.setItem('habitflow-habits', JSON.stringify(updatedHabits));
-                    return habitId;
-                }
-            };
-
-            // 구글 로그인
-            const signInWithGoogle = async () => {
-                if (!auth || !googleProvider) {
-                    alert('Firebase 인증을 사용할 수 없습니다. 로컬 모드로 계속 사용하세요.');
-                    return;
-                }
-                try {
-                    await auth.signInWithPopup(googleProvider);
-                    setShowLoginModal(false);
-                } catch (error) {
-                    console.error('구글 로그인 실패:', error);
-                    alert('구글 로그인에 실패했습니다.');
-                }
-            };
-
-            // 이메일 로그인
-            const signInWithEmail = async (e) => {
-                e.preventDefault();
-                if (!auth) {
-                    alert('Firebase 인증을 사용할 수 없습니다. 로컬 모드로 계속 사용하세요.');
-                    return;
-                }
-                try {
-                    await auth.signInWithEmailAndPassword(loginForm.email, loginForm.password);
-                    setShowLoginModal(false);
-                    setLoginForm({ email: '', password: '' });
-                } catch (error) {
-                    console.error('이메일 로그인 실패:', error);
-                    alert('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
-                }
-            };
-
-            // 이메일 회원가입
-            const signUpWithEmail = async (e) => {
-                e.preventDefault();
-                if (!auth) {
-                    alert('Firebase 인증을 사용할 수 없습니다. 로컬 모드로 계속 사용하세요.');
-                    return;
-                }
-                if (signupForm.password !== signupForm.confirmPassword) {
-                    alert('비밀번호가 일치하지 않습니다.');
-                    return;
-                }
-                try {
-                    await auth.createUserWithEmailAndPassword(signupForm.email, signupForm.password);
-                    setShowLoginModal(false);
-                    setSignupForm({ email: '', password: '', confirmPassword: '' });
-                } catch (error) {
-                    console.error('회원가입 실패:', error);
-                    alert('회원가입에 실패했습니다.');
-                }
-            };
-
-            // 로그아웃
-            const signOut = async () => {
-                if (!auth) return;
-                try {
-                    await auth.signOut();
-                } catch (error) {
-                    console.error('로그아웃 실패:', error);
-                }
-            };
-
-            const today = new Date().toDateString();
-            const currentDate = new Date();
-            const currentMonth = currentDate.getMonth();
-            const currentYear = currentDate.getFullYear();
-            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-            const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
-
-            // 추천 습관
-            const recommendedHabits = [
-                { title: '하루 2L 물 마시기', category: '건강', icon: '💧', color: 'bg-blue-500' },
-                { title: '매일 30분 산책', category: '운동', icon: '🚶‍♂️', color: 'bg-green-500' },
-                { title: '독서 30분', category: '학습', icon: '📚', color: 'bg-purple-500' },
-                { title: '명상 10분', category: '자기계발', icon: '🧘‍♀️', color: 'bg-indigo-500' },
-                { title: '일찍 잠자리에 들기', category: '건강', icon: '🛏️', color: 'bg-red-500' }
-            ];
-
-            // 로그인이 필요한 경우
-            if (loading) {
-                return (
-                    <div className="fixed inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 flex items-center justify-center">
-                        <div className="text-white text-center">
-                            <div className="loading-spinner mb-4"></div>
-                            <div className="text-lg font-bold">HabitFlow</div>
-                            <div className="text-sm opacity-80">로딩 중...</div>
-                        </div>
-                    </div>
-                );
+                return () => unsubscribe();
             }
+        } else if (isAuthReady && !user) {
+            // 로컬 스토리지 모드
+            setLoading(false);
+            const savedHabits = localStorage.getItem('habitflow-habits');
+            if (savedHabits) {
+                try {
+                    setHabits(JSON.parse(savedHabits));
+                } catch (e) {
+                    console.error('Failed to load local data:', e);
+                    setHabits([]);
+                }
+            } else {
+                setHabits([]);
+            }
+        }
+    }, [isAuthReady, user]);
 
-            // Firebase가 없거나 로컬 모드인 경우 바로 앱 실행
-            if (!user && isFirebaseAvailable) {
-                return (
-                    <div className="fixed inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-2xl p-8 w-full max-w-sm text-center">
-                            <div className="mb-6">
-                                <div className="text-4xl mb-2">🎯</div>
-                                <h1 className="text-2xl font-bold text-gray-900 mb-2">HabitFlow</h1>
-                                <p className="text-gray-600">AI 기반 습관 관리</p>
-                            </div>
-                            
-                            <div className="space-y-3">
-                                <button
-                                    onClick={signInWithGoogle}
-                                    className="w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-xl font-medium hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2"
-                                >
-                                    <span>🌐</span>
-                                    <span>구글로 시작하기</span>
-                                </button>
-                                
-                                <button
-                                    onClick={() => setShowLoginModal(true)}
-                                    className="w-full bg-blue-500 text-white py-3 px-4 rounded-xl font-medium hover:bg-blue-600 transition-colors"
-                                >
-                                    이메일로 시작하기
-                                </button>
-                            </div>
-                            
-                            <p className="text-xs text-gray-500 mt-4">
-                                계정을 만들면 모든 기기에서 습관을 동기화할 수 있어요
-                            </p>
-                        </div>
-                        
-                        {/* 이메일 로그인 모달 */}
-                        {showLoginModal && (
-                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                                <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-lg font-bold">
-                                            {isSignupMode ? '회원가입' : '로그인'}
-                                        </h3>
-                                        <button 
-                                            onClick={() => {
-                                                setShowLoginModal(false);
-                                                setIsSignupMode(false);
-                                            }}
-                                            className="text-gray-400 hover:text-gray-600"
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                    
-                                    {!isSignupMode ? (
-                                        <form onSubmit={signInWithEmail} className="space-y-4">
-                                            <div>
-                                                <label className="block text-sm font-medium mb-2">이메일</label>
-                                                <input
-                                                    type="email"
-                                                    value={loginForm.email}
-                                                    onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
-                                                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                                                    placeholder="your@email.com"
-                                                    required
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium mb-2">비밀번호</label>
-                                                <input
-                                                    type="password"
-                                                    value={loginForm.password}
-                                                    onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                                                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                                                    placeholder="비밀번호"
-                                                    required
-                                                />
-                                            </div>
-                                            <button
-                                                type="submit"
-                                                className="w-full bg-blue-500 text-white py-3 rounded-xl font-medium hover:bg-blue-600 transition-colors"
-                                            >
-                                                로그인
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setIsSignupMode(true)}
-                                                className="w-full text-blue-500 text-sm hover:underline"
-                                            >
-                                                계정이 없나요? 회원가입
-                                            </button>
-                                        </form>
-                                    ) : (
-                                        <form onSubmit={signUpWithEmail} className="space-y-4">
-                                            <div>
-                                                <label className="block text-sm font-medium mb-2">이메일</label>
-                                                <input
-                                                    type="email"
-                                                    value={signupForm.email}
-                                                    onChange={(e) => setSignupForm(prev => ({ ...prev, email: e.target.value }))}
-                                                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                                                    placeholder="your@email.com"
-                                                    required
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium mb-2">비밀번호</label>
-                                                <input
-                                                    type="password"
-                                                    value={signupForm.password}
-                                                    onChange={(e) => setSignupForm(prev => ({ ...prev, password: e.target.value }))}
-                                                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                                                    placeholder="비밀번호 (6자 이상)"
-                                                    required
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium mb-2">비밀번호 확인</label>
-                                                <input
-                                                    type="password"
-                                                    value={signupForm.confirmPassword}
-                                                    onChange={(e) => setSignupForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                                                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                                                    placeholder="비밀번호 확인"
-                                                    required
-                                                />
-                                            </div>
-                                            <button
-                                                type="submit"
-                                                className="w-full bg-green-500 text-white py-3 rounded-xl font-medium hover:bg-green-600 transition-colors"
-                                            >
-                                                회원가입
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setIsSignupMode(false)}
-                                                className="w-full text-blue-500 text-sm hover:underline"
-                                            >
-                                                이미 계정이 있나요? 로그인
-                                            </button>
-                                        </form>
-                                    )}
-                                </div>
-                            </div>
+    // Firebase 데이터 조작 함수
+    const saveHabit = async (habit) => {
+        const userId = getUserId();
+        if (userId) {
+            try {
+                const docRef = habit.id
+                    ? doc(db, 'artifacts', appId, 'users', userId, 'habits', habit.id)
+                    : collection(db, 'artifacts', appId, 'users', userId, 'habits');
+
+                if (habit.id) {
+                    await setDoc(docRef, habit, { merge: true });
+                } else {
+                    const newDocRef = await addDoc(docRef, habit);
+                    habit.id = newDocRef.id;
+                }
+                showMessage('습관이 성공적으로 저장되었습니다.');
+                return habit.id;
+            } catch (error) {
+                console.error('Error saving habit:', error);
+                showMessage('습관 저장에 실패했습니다.');
+                return null;
+            }
+        } else {
+            // 로컬 스토리지 대체
+            const updatedHabits = habit.id
+                ? habits.map(h => h.id === habit.id ? habit : h)
+                : [...habits, { ...habit, id: Date.now().toString() }];
+            setHabits(updatedHabits);
+            localStorage.setItem('habitflow-habits', JSON.stringify(updatedHabits));
+            showMessage('습관이 로컬에 저장되었습니다.');
+            return habit.id || Date.now().toString();
+        }
+    };
+
+    const deleteHabit = async (id) => {
+        const userId = getUserId();
+        if (userId) {
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'users', userId, 'habits', id);
+                await deleteDoc(docRef);
+                showMessage('습관이 삭제되었습니다.');
+            } catch (error) {
+                console.error('Error deleting habit:', error);
+                showMessage('습관 삭제에 실패했습니다.');
+            }
+        } else {
+            // 로컬 스토리지 대체
+            const updatedHabits = habits.filter(h => h.id !== id);
+            setHabits(updatedHabits);
+            localStorage.setItem('habitflow-habits', JSON.stringify(updatedHabits));
+            showMessage('습관이 로컬에서 삭제되었습니다.');
+        }
+    };
+
+    const toggleHabitCompletion = async (habitId, date) => {
+        const habit = habits.find(h => h.id === habitId);
+        if (!habit) return;
+
+        const isCompleted = habit.completedDates.includes(date);
+        const updatedDates = isCompleted
+            ? habit.completedDates.filter(d => d !== date)
+            : [...habit.completedDates, date];
+
+        const updatedHabit = {
+            ...habit,
+            completedDates: updatedDates
+        };
+
+        const newId = await saveHabit(updatedHabit);
+        if (newId) {
+            const updatedHabitList = habits.map(h => h.id === habitId ? { ...updatedHabit, id: newId } : h);
+            setHabits(updatedHabitList);
+        }
+    };
+
+    // UI 렌더링 함수
+    const renderHabitCard = (habit) => {
+        const isCompleted = habit.completedDates?.includes(today);
+        const cardClasses = `
+            flex items-center justify-between p-4 bg-white rounded-xl shadow-md cursor-pointer
+            transform transition-transform duration-200 hover:scale-[1.02]
+            ${isCompleted ? 'border border-green-500' : 'border border-transparent'}
+        `;
+
+        return (
+            <div key={habit.id} className={cardClasses}>
+                <div className="flex items-center space-x-4">
+                    <div className={`w-12 h-12 flex items-center justify-center rounded-full ${habit.color} text-white text-2xl`}>
+                        {habit.icon}
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="font-semibold text-gray-900">{habit.title}</span>
+                        <span className="text-sm text-gray-500">{habit.category}</span>
+                    </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <button
+                        onClick={(e) => { e.stopPropagation(); toggleHabitCompletion(habit.id, today); }}
+                        className="p-2 rounded-full text-gray-500 hover:text-green-600 transition-colors"
+                    >
+                        {isCompleted ? (
+                            <svg className="w-6 h-6 text-green-500" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 15L6 12l1.41-1.41L11 14.17l5.59-5.59L18 10l-7 7z" />
+                            </svg>
+                        ) : (
+                            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                            </svg>
                         )}
+                    </button>
+                    <button
+                        onClick={() => {
+                            setHabitToDelete(habit);
+                            setShowDeleteModal(true);
+                        }}
+                        className="p-2 rounded-full text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        );
+    };
+
+    const renderTodayTab = () => {
+        const sortedHabits = [...habits].sort((a, b) => {
+            const aCompleted = a.completedDates?.includes(today);
+            const bCompleted = b.completedDates?.includes(today);
+            if (aCompleted && !bCompleted) return -1;
+            if (!aCompleted && bCompleted) return 1;
+            return 0;
+        });
+
+        return (
+            <div className="pb-20 space-y-4">
+                <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-bold text-gray-900">오늘의 습관</h2>
+                    <button
+                        onClick={() => setShowAddForm(true)}
+                        className="flex items-center justify-center p-2 text-sm bg-blue-600 text-white rounded-full shadow-lg transition-transform hover:scale-105"
+                    >
+                        <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>새 습관</span>
+                    </button>
+                </div>
+                {sortedHabits.length > 0 ? (
+                    sortedHabits.map(habit => renderHabitCard(habit))
+                ) : (
+                    <div className="bg-white rounded-xl p-6 text-center text-gray-500 shadow-md">
+                        <p>오늘의 습관이 없습니다. 새로운 습관을 추가해보세요!</p>
                     </div>
-                );
-            }
+                )}
+            </div>
+        );
+    };
 
-            // 습관 완료/미완료 토글
-            const toggleHabit = async (habitId) => {
-                const updatedHabits = habits.map(habit => {
-                    if (habit.id === habitId) {
-                        const wasCompleted = habit.completedToday;
-                        const newCompletedDates = wasCompleted 
-                            ? habit.completedDates.filter(date => date !== today)
-                            : [...habit.completedDates, today];
-                        
-                        const newStreak = wasCompleted 
-                            ? Math.max(0, habit.streak - 1)
-                            : habit.streak + 1;
+    const renderStatsTab = () => {
+        const getCompletionRate = () => {
+            const totalCompletions = habits.reduce((acc, habit) => acc + (habit.completedDates ? habit.completedDates.length : 0), 0);
+            const totalPossible = habits.length * 30; // 30일 기간 기준
+            return totalPossible > 0 ? Math.round((totalCompletions / totalPossible) * 100) : 0;
+        };
 
-                        const updatedHabit = {
-                            ...habit,
-                            completedToday: !wasCompleted,
-                            completedDates: newCompletedDates,
-                            streak: newStreak
-                        };
-                        
-                        // Firebase에 저장
-                        saveHabitToFirestore(updatedHabit);
-                        return updatedHabit;
-                    }
-                    return habit;
-                });
-                
-                setHabits(updatedHabits);
-            };
+        const completionRate = getCompletionRate();
 
-            // 습관 추가
-            const addHabit = async () => {
-                if (!newHabit.title.trim()) return;
-
-                const habit = {
-                    title: newHabit.title,
-                    category: newHabit.category,
-                    color: newHabit.color,
-                    icon: newHabit.icon,
-                    streak: 0,
-                    completedToday: false,
-                    completedDates: [],
-                    createdAt: new Date().toDateString()
-                };
-
-                try {
-                    const docId = await saveHabitToFirestore(habit);
-                    const newHabitWithId = { ...habit, id: docId };
-                    setHabits(prev => [...prev, newHabitWithId]);
-                    setNewHabit({ title: '', category: '건강', color: 'bg-blue-500', icon: '🎯' });
-                    setShowAddForm(false);
-                } catch (error) {
-                    console.error('습관 추가 실패:', error);
-                }
-            };
-
-            // 추천 습관 추가
-            const addRecommendedHabit = async (recommendedHabit) => {
-                const habit = {
-                    title: recommendedHabit.title,
-                    category: recommendedHabit.category,
-                    icon: recommendedHabit.icon,
-                    color: recommendedHabit.color,
-                    streak: 0,
-                    completedToday: false,
-                    completedDates: [],
-                    createdAt: new Date().toDateString()
-                };
-
-                try {
-                    const docId = await saveHabitToFirestore(habit);
-                    const newHabitWithId = { ...habit, id: docId };
-                    setHabits(prev => [...prev, newHabitWithId]);
-                    setShowRecommendations(false);
-                } catch (error) {
-                    console.error('추천 습관 추가 실패:', error);
-                }
-            };
-
-            // 습관 삭제
-            const deleteHabit = async (habitId) => {
-                try {
-                    if (user) {
-                        await firestore.collection('users').doc(user.uid).collection('habits').doc(habitId).delete();
-                    }
-                    setHabits(prev => prev.filter(habit => habit.id !== habitId));
-                } catch (error) {
-                    console.error('습관 삭제 실패:', error);
-                }
-            };
-
-            // 전체 성공률 계산
-            const totalSuccessRate = habits.length > 0 
-                ? Math.round((habits.filter(h => h.completedToday).length / habits.length) * 100)
-                : 0;
-
-            // 날짜별 성취도 계산
-            const getDateAchievement = (dateString) => {
-                const targetDate = new Date(dateString);
-                const existingHabits = habits.filter(habit => {
-                    const createdDate = new Date(habit.createdAt);
-                    return createdDate <= targetDate;
-                });
-                
-                if (existingHabits.length === 0) return { rate: 0, completed: 0, total: 0 };
-                
-                const completed = existingHabits.filter(habit => 
-                    habit.completedDates.includes(dateString)
-                ).length;
-                
-                return {
-                    rate: Math.round((completed / existingHabits.length) * 100),
-                    completed,
-                    total: existingHabits.length
-                };
-            };
-
-            // 성취도 색상 클래스
-            const getAchievementColorClass = (rate) => {
-                if (rate === 0) return 'bg-gray-50 text-gray-600';
-                if (rate <= 25) return 'bg-blue-50 text-blue-700';
-                if (rate <= 50) return 'bg-blue-100 text-blue-800';
-                if (rate <= 75) return 'bg-blue-200 text-blue-900';
-                return 'bg-gradient-to-br from-blue-400 to-purple-400 text-white';
-            };
-
-            // 날짜 클릭 핸들러
-            const handleDateClick = (day) => {
-                const clickedDate = new Date(currentYear, currentMonth, day);
-                const dateString = clickedDate.toDateString();
-                setSelectedDate({
-                    date: clickedDate,
-                    dateString: dateString,
-                    day: day,
-                    achievement: getDateAchievement(dateString)
-                });
-                setShowDateModal(true);
-            };
-
-            // 탭별 콘텐츠 렌더링
-            const renderContent = () => {
-                switch(activeTab) {
-                    case 'today':
-                        return renderTodayTab();
-                    case 'habits':
-                        return renderHabitsTab();
-                    case 'stats':
-                        return renderStatsTab();
-                    case 'calendar':
-                        return renderCalendarTab();
-                    case 'settings':
-                        return renderSettingsTab();
-                    default:
-                        return renderTodayTab();
-                }
-            };
-
-            // 오늘 탭
-            const renderTodayTab = () => (
-                <div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">오늘의 현황</h2>
-                    
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="bg-white rounded-xl p-4">
-                            <h3 className="font-medium text-gray-900 mb-4">프로필</h3>
-                            <div className="flex items-center space-x-4 mb-4">
-                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                                    {user.photoURL ? (
-                                        <img src={user.photoURL} alt="프로필" className="w-full h-full rounded-full" />
-                                    ) : (
-                                        <span className="text-2xl">👤</span>
-                                    )}
-                                </div>
-                                <div>
-                                    <p className="font-medium text-gray-900">{user.displayName || '사용자'}님</p>
-                                    <p className="text-sm text-gray-500">{user.email}</p>
-                                </div>
+        return (
+            <div className="pb-20 space-y-6">
+                <h2 className="text-xl font-bold text-gray-900">통계</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white rounded-xl p-4 shadow-md">
+                        <div className="flex items-center text-gray-500 mb-2">
+                            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M3 3v18h18"></path>
+                                <path d="M18 17V9"></path>
+                                <path d="M13 17V5"></path>
+                                <path d="M8 17v-3"></path>
+                            </svg>
+                            <h3 className="text-lg font-semibold">습관 달성률</h3>
+                        </div>
+                        <div className="flex justify-center items-center h-24">
+                            <div className="relative w-24 h-24">
+                                <svg className="w-full h-full transform -rotate-90">
+                                    <circle className="text-gray-200" strokeWidth="8" stroke="currentColor" fill="transparent" r="40" cx="48" cy="48"></circle>
+                                    <circle
+                                        className="text-blue-500"
+                                        strokeWidth="8"
+                                        strokeDasharray={2 * Math.PI * 40}
+                                        strokeDashoffset={(2 * Math.PI * 40) * (100 - completionRate) / 100}
+                                        strokeLinecap="round"
+                                        stroke="currentColor"
+                                        fill="transparent"
+                                        r="40"
+                                        cx="48"
+                                        cy="48"
+                                    ></circle>
+                                </svg>
+                                <span className="absolute inset-0 flex items-center justify-center text-2xl font-bold text-gray-800">{completionRate}%</span>
                             </div>
-                            <button 
-                                onClick={signOut}
-                                className="w-full bg-red-50 text-red-700 py-2 px-4 rounded-lg hover:bg-red-100 transition-colors"
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl p-4 shadow-md">
+                        <div className="flex items-center text-gray-500 mb-2">
+                            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="22,7 13.5,15.5 8.5,10.5 2,17"></polyline>
+                                <polyline points="16,7 22,7 22,13"></polyline>
+                            </svg>
+                            <h3 className="text-lg font-semibold">최고 연속 달성</h3>
+                        </div>
+                        <div className="mt-4 text-center">
+                            <span className="text-4xl font-bold text-blue-600">
+                                {habits.reduce((max, h) => Math.max(max, h.streak || 0), 0)}
+                            </span>
+                            <span className="text-xl text-gray-500">일</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white rounded-xl p-4 shadow-md">
+                    <div className="flex items-center text-gray-500 mb-2">
+                        <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <circle cx="12" cy="12" r="6"></circle>
+                            <circle cx="12" cy="12" r="2"></circle>
+                        </svg>
+                        <h3 className="text-lg font-semibold">습관별 달성률</h3>
+                    </div>
+                    <ul className="space-y-3 mt-4">
+                        {habits.map(habit => {
+                            const totalDays = habit.completedDates?.length || 0;
+                            const rate = Math.round((totalDays / 30) * 100);
+                            return (
+                                <li key={habit.id} className="flex items-center space-x-2">
+                                    <span className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-lg ${habit.color}`}>{habit.icon}</span>
+                                    <div className="flex-1">
+                                        <p className="font-medium text-gray-900 truncate">{habit.title}</p>
+                                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden mt-1">
+                                            <div
+                                                className={`h-full ${habit.color.replace('-500', '-600')} rounded-full`}
+                                                style={{ width: `${rate}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                    <span className="font-bold text-gray-600">{rate}%</span>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
+            </div>
+        );
+    };
+
+    const renderCalendarTab = () => {
+        const today = new Date();
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).getDay();
+        const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+        const days = [];
+        for (let i = 0; i < firstDayOfMonth; i++) days.push(null);
+        for (let i = 1; i <= daysInMonth; i++) days.push(i);
+
+        const getAchievementColor = (date) => {
+            const dateString = new Date(today.getFullYear(), today.getMonth(), date).toDateString();
+            const completedHabits = habits.filter(h => h.completedDates?.includes(dateString)).length;
+            const totalHabits = habits.length;
+            const completionRate = totalHabits > 0 ? (completedHabits / totalHabits) : 0;
+
+            if (completionRate === 0) return 'bg-gray-50';
+            if (completionRate <= 0.2) return 'bg-blue-50';
+            if (completionRate <= 0.5) return 'bg-blue-100';
+            if (completionRate <= 0.8) return 'bg-blue-200';
+            return 'bg-gradient-to-br from-blue-400 to-purple-400';
+        };
+
+        const renderCalendarDays = () => days.map((day, index) => {
+            const isToday = new Date(today.getFullYear(), today.getMonth(), day).toDateString() === new Date().toDateString();
+            return (
+                <div
+                    key={index}
+                    className={`flex items-center justify-center p-2 rounded-lg cursor-pointer transition-all duration-200
+                        ${day ? getAchievementColor(day) : ''}
+                        ${isToday ? 'border-2 border-blue-500' : ''}`}
+                    onClick={() => day && setShowDateModal(new Date(today.getFullYear(), today.getMonth(), day))}
+                >
+                    {day}
+                </div>
+            );
+        });
+
+        return (
+            <div className="pb-20 space-y-6">
+                <h2 className="text-xl font-bold text-gray-900">캘린더</h2>
+                <div className="bg-white rounded-xl p-4 shadow-md">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3 text-center">
+                        {today.getFullYear()}년 {today.getMonth() + 1}월
+                    </h3>
+                    <div className="grid grid-cols-7 gap-1 text-center text-sm font-semibold text-gray-500 mb-2">
+                        {['일', '월', '화', '수', '목', '금', '토'].map(day => <span key={day}>{day}</span>)}
+                    </div>
+                    <div className="grid grid-cols-7 gap-1 text-sm">
+                        {renderCalendarDays()}
+                    </div>
+                </div>
+                <div className="bg-white rounded-xl p-4 shadow-md">
+                    <h3 className="font-medium text-gray-900 mb-3">성취도 범례</h3>
+                    <div className="flex items-center space-x-2">
+                        <div className="flex space-x-1">
+                            <div className="w-4 h-4 bg-gray-50 rounded border border-gray-200"></div>
+                            <div className="w-4 h-4 bg-blue-50 rounded"></div>
+                            <div className="w-4 h-4 bg-blue-100 rounded"></div>
+                            <div className="w-4 h-4 bg-blue-200 rounded"></div>
+                            <div className="w-4 h-4 bg-gradient-to-br from-blue-400 to-purple-400 rounded"></div>
+                        </div>
+                        <span className="text-sm text-gray-600">0% → 100%</span>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const renderSettingsTab = () => (
+        <div className="pb-20">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">설정</h2>
+            <div className="space-y-4">
+                <div className="bg-white rounded-xl p-4 shadow-md">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">계정</h3>
+                    {user ? (
+                        <>
+                            <p className="text-gray-600 truncate">{user.email || user.displayName || '이메일 없음'}</p>
+                            <button
+                                onClick={signOutUser}
+                                className="mt-4 w-full bg-red-500 text-white font-semibold py-2 rounded-lg hover:bg-red-600 transition-colors"
                             >
                                 로그아웃
                             </button>
-                            <button className="w-full bg-gray-50 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors">
-                                프로필 편집
-                            </button>
-                        </div>
-                        
-                        <div className="bg-white rounded-xl p-4">
-                            <h3 className="font-medium text-gray-900 mb-4">알림</h3>
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-gray-700">습관 리마인더</span>
-                                    <div className="w-12 h-6 bg-blue-500 rounded-full relative cursor-pointer">
-                                        <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-gray-700">성과 알림</span>
-                                    <div className="w-12 h-6 bg-gray-300 rounded-full relative cursor-pointer">
-                                        <div className="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div className="bg-white rounded-xl p-4">
-                            <h3 className="font-medium text-gray-900 mb-4">데이터</h3>
-                            <div className="space-y-2">
-                                <button className="w-full text-left py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <span className="text-gray-700">데이터 내보내기</span>
-                                </button>
-                                <button className="w-full text-left py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <span className="text-gray-700">데이터 백업</span>
-                                </button>
-                                <button 
-                                    onClick={async () => {
-                                        if (confirm('정말로 모든 습관 데이터를 삭제하시겠습니까?')) {
-                                            try {
-                                                const habitsRef = firestore.collection('users').doc(user.uid).collection('habits');
-                                                const snapshot = await habitsRef.get();
-                                                const batch = firestore.batch();
-                                                snapshot.docs.forEach(doc => batch.delete(doc.ref));
-                                                await batch.commit();
-                                                setHabits([]);
-                                                alert('모든 습관 데이터가 삭제되었습니다.');
-                                            } catch (error) {
-                                                console.error('데이터 삭제 실패:', error);
-                                                alert('데이터 삭제에 실패했습니다.');
-                                            }
-                                        }
-                                    }}
-                                    className="w-full text-left py-2 px-3 rounded-lg hover:bg-red-50 transition-colors"
-                                >
-                                    <span className="text-red-600">모든 데이터 삭제</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div className="bg-white rounded-xl p-4">
-                            <h3 className="font-medium text-gray-900 mb-4">앱 정보</h3>
-                            <div className="space-y-2 text-sm text-gray-600">
-                                <div className="flex justify-between">
-                                    <span>버전</span>
-                                    <span>2.0.0</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>개발자</span>
-                                    <span>HabitFlow 팀</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>사용자 ID</span>
-                                    <span className="text-xs">{user.uid.substring(0, 8)}...</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            return (
-                <div className="max-w-md mx-auto bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 min-h-screen">
-                    {/* 헤더 */}
-                    <div className="text-white p-6 pb-8">
-                        <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                                    {user.photoURL ? (
-                                        <img src={user.photoURL} alt="프로필" className="w-full h-full rounded-full" />
-                                    ) : (
-                                        <span className="text-lg">👤</span>
-                                    )}
-                                </div>
-                                <div>
-                                    <p className="text-white/80 text-sm">안녕하세요!</p>
-                                    <p className="text-white font-medium">{user.displayName || '사용자'}님</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <button 
-                                    onClick={signOut}
-                                    className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                                    title="로그아웃"
-                                >
-                                    <span className="text-sm">🚪</span>
-                                </button>
-                                <button className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
-                                    <Settings />
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div className="text-center mb-6">
-                            <h1 className="text-lg font-bold mb-2 leading-tight">
-                                오늘 아침 8시에 습관을 실행하면 성공률이 23% 증가합니다!
-                            </h1>
-                        </div>
-                        
-                        <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="text-white/80">성공 예측률:</span>
-                                <span className="text-white font-bold text-lg">{totalSuccessRate}%</span>
-                            </div>
-                            <div className="w-full bg-white/20 rounded-full h-2">
-                                <div 
-                                    className="bg-white h-2 rounded-full transition-all duration-500"
-                                    style={{ width: `${totalSuccessRate}%` }}
-                                ></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 메인 콘텐츠 */}
-                    <div className="bg-gray-50 rounded-t-3xl flex-1 min-h-screen">
-                        <div className="p-6">
-                            {renderContent()}
-                        </div>
-
-                        {/* AI 인사이트 (오늘 탭에만 표시) */}
-                        {activeTab === 'today' && (
-                            <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-md px-6">
-                                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4">
-                                    <div className="flex items-center space-x-2 mb-3">
-                                        <span className="text-xl">🤖</span>
-                                        <span className="font-medium text-purple-900">AI 인사이트</span>
-                                    </div>
-                                    <p className="text-sm text-purple-700 mb-2">
-                                        {habits.length === 0 
-                                            ? `안녕하세요 ${user.displayName || '사용자'}님! 첫 번째 습관을 만들어보세요.`
-                                            : totalSuccessRate === 100 
-                                            ? "완벽해요! 모든 습관을 완료했습니다. 🎉"
-                                            : totalSuccessRate >= 50
-                                            ? "좋은 진행상황이에요! 꾸준히 이어가세요."
-                                            : "오늘 더 노력해볼까요? 한 가지씩 차근차근 해보세요."
-                                        }
-                                    </p>
-                                    {habits.length > 0 && (
-                                        <div className="text-xs text-purple-600">
-                                            성공률: {totalSuccessRate}% • 총 {habits.length}개 습관 • 클라우드 동기화됨
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* 나머지 모달들은 그대로 유지 */}
-                        {/* 습관 추가 모달 */}
-                        {showAddForm && (
-                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                                <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
-                                    <h3 className="text-lg font-bold mb-4">새 습관 추가</h3>
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-2">습관명</label>
-                                            <input
-                                                type="text"
-                                                value={newHabit.title}
-                                                onChange={(e) => setNewHabit(prev => ({ ...prev, title: e.target.value }))}
-                                                className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                                                placeholder="예: 매일 30분 운동하기"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-2">카테고리</label>
-                                            <select
-                                                value={newHabit.category}
-                                                onChange={(e) => setNewHabit(prev => ({ ...prev, category: e.target.value }))}
-                                                className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                                            >
-                                                <option value="건강">건강</option>
-                                                <option value="운동">운동</option>
-                                                <option value="학습">학습</option>
-                                                <option value="업무">업무</option>
-                                                <option value="자기계발">자기계발</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-2">아이콘</label>
-                                            <select
-                                                value={newHabit.icon}
-                                                onChange={(e) => setNewHabit(prev => ({ ...prev, icon: e.target.value }))}
-                                                className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                                            >
-                                                <option value="💧">💧 물</option>
-                                                <option value="🏃‍♂️">🏃‍♂️ 운동</option>
-                                                <option value="📚">📚 독서</option>
-                                                <option value="💼">💼 업무</option>
-                                                <option value="🎯">🎯 목표</option>
-                                                <option value="🌱">🌱 성장</option>
-                                                <option value="✨">✨ 변화</option>
-                                                <option value="🔥">🔥 열정</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="flex space-x-3 mt-6">
-                                        <button
-                                            onClick={() => setShowAddForm(false)}
-                                            className="flex-1 px-4 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
-                                        >
-                                            취소
-                                        </button>
-                                        <button
-                                            onClick={addHabit}
-                                            className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-colors"
-                                        >
-                                            추가
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* 추천 습관 모달 */}
-                        {showRecommendations && (
-                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                                <div className="bg-white rounded-2xl w-full max-w-sm" style={{maxHeight: '80vh'}}>
-                                    <div className="flex items-center justify-between p-6 pb-4 border-b border-gray-100">
-                                        <h3 className="text-lg font-bold">추천 습관</h3>
-                                        <button 
-                                            onClick={() => setShowRecommendations(false)}
-                                            className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
-                                        >
-                                            <span className="text-xl">✕</span>
-                                        </button>
-                                    </div>
-                                    
-                                    <div className="overflow-y-auto p-6 pt-4" style={{maxHeight: 'calc(80vh - 80px)'}}>
-                                        <div className="space-y-3">
-                                            {recommendedHabits.map((habit, index) => (
-                                                <div key={index} className="border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition-colors">
-                                                    <div className="flex items-center space-x-3 mb-2">
-                                                        <span className="text-2xl">{habit.icon}</span>
-                                                        <div className="flex-1">
-                                                            <h4 className="font-medium text-gray-900">{habit.title}</h4>
-                                                            <p className="text-sm text-gray-500">{habit.category}</p>
-                                                        </div>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => addRecommendedHabit(habit)}
-                                                        className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
-                                                    >
-                                                        습관 추가하기
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <div className="h-4"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* 날짜별 상세 모달 */}
-                        {showDateModal && selectedDate && (
-                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                                <div className="bg-white rounded-2xl w-full max-w-sm" style={{maxHeight: '80vh'}}>
-                                    <div className="flex items-center justify-between p-6 pb-4 border-b border-gray-100">
-                                        <div>
-                                            <h3 className="text-lg font-bold">
-                                                {selectedDate.date.getMonth() + 1}월 {selectedDate.day}일
-                                            </h3>
-                                            <p className="text-sm text-gray-500">
-                                                성취도: {selectedDate.achievement.completed}/{selectedDate.achievement.total} 
-                                                ({selectedDate.achievement.rate}%)
-                                            </p>
-                                        </div>
-                                        <button 
-                                            onClick={() => setShowDateModal(false)}
-                                            className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
-                                        >
-                                            <span className="text-xl">✕</span>
-                                        </button>
-                                    </div>
-                                    
-                                    <div className="overflow-y-auto p-6 pt-4" style={{maxHeight: 'calc(80vh - 120px)'}}>
-                                        {(() => {
-                                            const targetDate = selectedDate.date;
-                                            const existingHabits = habits.filter(habit => {
-                                                const createdDate = new Date(habit.createdAt);
-                                                return createdDate <= targetDate;
-                                            });
-                                            
-                                            if (existingHabits.length === 0) {
-                                                return (
-                                                    <div className="text-center py-8">
-                                                        <div className="text-4xl mb-3">📝</div>
-                                                        <p className="text-gray-500">이 날에는 등록된 습관이 없었습니다</p>
-                                                    </div>
-                                                );
-                                            }
-                                            
-                                            return (
-                                                <div className="space-y-3">
-                                                    {existingHabits.map(habit => {
-                                                        const isCompleted = habit.completedDates.includes(selectedDate.dateString);
-                                                        
-                                                        return (
-                                                            <div key={habit.id} className="bg-gray-50 rounded-xl p-4">
-                                                                <div className="flex items-center justify-between">
-                                                                    <div className="flex items-center space-x-3 flex-1">
-                                                                        <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${
-                                                                            isCompleted
-                                                                                ? `${habit.color} border-transparent text-white`
-                                                                                : 'border-gray-300 bg-white text-gray-400'
-                                                                        }`}>
-                                                                            {isCompleted ? <CheckCircle2 /> : <Circle />}
-                                                                        </div>
-                                                                        <div className="flex-1">
-                                                                            <h4 className={`font-medium ${isCompleted ? 'line-through opacity-70' : ''}`}>
-                                                                                {habit.title}
-                                                                            </h4>
-                                                                            <p className="text-sm text-gray-500">{habit.category}</p>
-                                                                        </div>
-                                                                    </div>
-                                                                    <span className="text-xl">{habit.icon}</span>
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            );
-                                        })()}
-                                        <div className="h-4"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* 하단 네비게이션 */}
-                        <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md">
-                            <div className="bg-white border-t border-gray-200 px-2 py-2">
-                                <div className="flex justify-around items-center">
-                                    <button 
-                                        onClick={() => setActiveTab('today')}
-                                        className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                                            activeTab === 'today' ? 'text-blue-500 bg-blue-50' : 'text-gray-400 hover:text-gray-600'
-                                        }`}
-                                    >
-                                        <BarChart3 />
-                                        <span className="text-xs font-medium">대시보드</span>
-                                    </button>
-                                    
-                                    <button 
-                                        onClick={() => setActiveTab('habits')}
-                                        className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                                            activeTab === 'habits' ? 'text-blue-500 bg-blue-50' : 'text-gray-400 hover:text-gray-600'
-                                        }`}
-                                    >
-                                        <Target />
-                                        <span className="text-xs font-medium">습관</span>
-                                    </button>
-                                    
-                                    <button 
-                                        onClick={() => setActiveTab('stats')}
-                                        className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                                            activeTab === 'stats' ? 'text-blue-500 bg-blue-50' : 'text-gray-400 hover:text-gray-600'
-                                        }`}
-                                    >
-                                        <TrendingUp />
-                                        <span className="text-xs font-medium">통계</span>
-                                    </button>
-                                    
-                                    <button 
-                                        onClick={() => setActiveTab('calendar')}
-                                        className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                                            activeTab === 'calendar' ? 'text-blue-500 bg-blue-50' : 'text-gray-400 hover:text-gray-600'
-                                        }`}
-                                    >
-                                        <Calendar />
-                                        <span className="text-xs font-medium">달력</span>
-                                    </button>
-                                    
-                                    <button 
-                                        onClick={() => setActiveTab('settings')}
-                                        className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                                            activeTab === 'settings' ? 'text-blue-500 bg-blue-50' : 'text-gray-400 hover:text-gray-600'
-                                        }`}
-                                    >
-                                        <Settings />
-                                        <span className="text-xs font-medium">설정</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        // React 18 호환 렌더링
-        try {
-            const container = document.getElementById('root');
-            if (typeof ReactDOM.createRoot !== 'undefined') {
-                // React 18 방식
-                const root = ReactDOM.createRoot(container);
-                root.render(React.createElement(HabitTracker));
-            } else {
-                // React 17 방식 (폴백)
-                ReactDOM.render(React.createElement(HabitTracker), container);
-            }
-            console.log('앱 렌더링 성공');
-        } catch (error) {
-            console.error('앱 렌더링 실패:', error);
-            document.getElementById('root').innerHTML = `
-                <div style="padding: 40px; text-align: center; font-family: Arial, sans-serif;">
-                    <div style="font-size: 4em; margin-bottom: 20px;">🎯</div>
-                    <h2 style="color: #374151; margin-bottom: 16px;">HabitFlow</h2>
-                    <p style="color: #6b7280; margin-bottom: 20px;">앱 로딩 중 오류가 발생했습니다</p>
-                    <button onclick="location.reload()" style="background: #3b82f6; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer;">
-                        새로고침
-                    </button>
-                </div>
-            `;
-        }
-        
-        // 로딩 화면 제거 (앱 렌더링 후)
-        setTimeout(() => {
-            const loadingElement = document.getElementById('loading');
-            if (loadingElement) {
-                loadingElement.style.opacity = '0';
-                loadingElement.style.transition = 'opacity 0.5s ease';
-                setTimeout(() => {
-                    loadingElement.remove();
-                }, 500);
-            }
-        }, 1000);
-    </script>
-</body>
-</html>
-                        </div>
-                        
-                        <div className="bg-white rounded-xl p-4">
-                            <h3 className="font-medium text-gray-900 mb-4">알림</h3>
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-gray-700">습관 리마인더</span>
-                                    <div className="w-12 h-6 bg-blue-500 rounded-full relative cursor-pointer">
-                                        <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-gray-700">성과 알림</span>
-                                    <div className="w-12 h-6 bg-gray-300 rounded-full relative cursor-pointer">
-                                        <div className="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div className="bg-white rounded-xl p-4">
-                            <h3 className="font-medium text-gray-900 mb-4">데이터</h3>
-                            <div className="space-y-2">
-                                <button className="w-full text-left py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <span className="text-gray-700">데이터 내보내기</span>
-                                </button>
-                                <button className="w-full text-left py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <span className="text-gray-700">데이터 백업</span>
-                                </button>
-                                <button className="w-full text-left py-2 px-3 rounded-lg hover:bg-red-50 transition-colors">
-                                    <span className="text-red-600">모든 데이터 삭제</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div className="bg-white rounded-xl p-4">
-                            <h3 className="font-medium text-gray-900 mb-4">앱 정보</h3>
-                            <div className="space-y-2 text-sm text-gray-600">
-                                <div className="flex justify-between">
-                                    <span>버전</span>
-                                    <span>1.0.0</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>개발자</span>
-                                    <span>습관 트래커 팀</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            return (
-                <div className="max-w-md mx-auto bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 min-h-screen">
-                    {/* 헤더 */}
-                    <div className="text-white p-6 pb-8">
-                        <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                                    {user.photoURL ? (
-                                        <img src={user.photoURL} alt="프로필" className="w-full h-full rounded-full" />
-                                    ) : (
-                                        <span className="text-lg">👤</span>
-                                    )}
-                                </div>
-                                <div>
-                                    <p className="text-white/80 text-sm">안녕하세요!</p>
-                                    <p className="text-white font-medium">{user.displayName || '사용자'}님</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <button 
-                                    onClick={signOut}
-                                    className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                                    title="로그아웃"
-                                >
-                                    <span className="text-sm">🚪</span>
-                                </button>
-                                <button className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
-                                    <Settings />
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div className="text-center mb-6">
-                            <h1 className="text-lg font-bold mb-2 leading-tight">
-                                오늘 아침 8시에 습관을 실행하면 성공률이 23% 증가합니다!
-                            </h1>
-                        </div>
-                        
-                        <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="text-white/80">성공 예측률:</span>
-                                <span className="text-white font-bold text-lg">{totalSuccessRate}%</span>
-                            </div>
-                            <div className="w-full bg-white/20 rounded-full h-2">
-                                <div 
-                                    className="bg-white h-2 rounded-full transition-all duration-500"
-                                    style={{ width: `${totalSuccessRate}%` }}
-                                ></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 메인 콘텐츠 */}
-                    <div className="bg-gray-50 rounded-t-3xl flex-1 min-h-screen">
-                        <div className="p-6">
-                            {renderContent()}
-                        </div>
-
-                        {/* AI 인사이트 (오늘 탭에만 표시) */}
-                        {activeTab === 'today' && (
-                            <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-md px-6">
-                                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4">
-                                    <div className="flex items-center space-x-2 mb-3">
-                                        <span className="text-xl">🤖</span>
-                                        <span className="font-medium text-purple-900">AI 인사이트</span>
-                                    </div>
-                                    <p className="text-sm text-purple-700 mb-2">
-                                        {habits.length === 0 
-                                            ? "첫 번째 습관을 만들어보세요! 작은 변화가 큰 성과를 만듭니다."
-                                            : totalSuccessRate === 100 
-                                            ? "완벽해요! 모든 습관을 완료했습니다. 🎉"
-                                            : totalSuccessRate >= 50
-                                            ? "좋은 진행상황이에요! 꾸준히 이어가세요."
-                                            : "오늘 더 노력해볼까요? 한 가지씩 차근차근 해보세요."
-                                        }
-                                    </p>
-                                    {habits.length > 0 && (
-                                        <div className="text-xs text-purple-600">
-                                            성공률: {totalSuccessRate}% • 총 {habits.length}개 습관
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* 습관 추가 모달 */}
-                        {showAddForm && (
-                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                                <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
-                                    <h3 className="text-lg font-bold mb-4">새 습관 추가</h3>
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-2">습관명</label>
-                                            <input
-                                                type="text"
-                                                value={newHabit.title}
-                                                onChange={(e) => setNewHabit(prev => ({ ...prev, title: e.target.value }))}
-                                                className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                                                placeholder="예: 매일 30분 운동하기"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-2">카테고리</label>
-                                            <select
-                                                value={newHabit.category}
-                                                onChange={(e) => setNewHabit(prev => ({ ...prev, category: e.target.value }))}
-                                                className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                                            >
-                                                <option value="건강">건강</option>
-                                                <option value="운동">운동</option>
-                                                <option value="학습">학습</option>
-                                                <option value="업무">업무</option>
-                                                <option value="자기계발">자기계발</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-2">아이콘</label>
-                                            <select
-                                                value={newHabit.icon}
-                                                onChange={(e) => setNewHabit(prev => ({ ...prev, icon: e.target.value }))}
-                                                className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                                            >
-                                                <option value="💧">💧 물</option>
-                                                <option value="🏃‍♂️">🏃‍♂️ 운동</option>
-                                                <option value="📚">📚 독서</option>
-                                                <option value="💼">💼 업무</option>
-                                                <option value="🎯">🎯 목표</option>
-                                                <option value="🌱">🌱 성장</option>
-                                                <option value="✨">✨ 변화</option>
-                                                <option value="🔥">🔥 열정</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="flex space-x-3 mt-6">
-                                        <button
-                                            onClick={() => setShowAddForm(false)}
-                                            className="flex-1 px-4 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
-                                        >
-                                            취소
-                                        </button>
-                                        <button
-                                            onClick={addHabit}
-                                            className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-colors"
-                                        >
-                                            추가
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* 추천 습관 모달 */}
-                        {showRecommendations && (
-                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                                <div className="bg-white rounded-2xl w-full max-w-sm" style={{maxHeight: '80vh'}}>
-                                    <div className="flex items-center justify-between p-6 pb-4 border-b border-gray-100">
-                                        <h3 className="text-lg font-bold">추천 습관</h3>
-                                        <button 
-                                            onClick={() => setShowRecommendations(false)}
-                                            className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
-                                        >
-                                            <span className="text-xl">✕</span>
-                                        </button>
-                                    </div>
-                                    
-                                    <div className="overflow-y-auto p-6 pt-4" style={{maxHeight: 'calc(80vh - 80px)'}}>
-                                        <div className="space-y-3">
-                                            {recommendedHabits.map((habit, index) => (
-                                                <div key={index} className="border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition-colors">
-                                                    <div className="flex items-center space-x-3 mb-2">
-                                                        <span className="text-2xl">{habit.icon}</span>
-                                                        <div className="flex-1">
-                                                            <h4 className="font-medium text-gray-900">{habit.title}</h4>
-                                                            <p className="text-sm text-gray-500">{habit.category}</p>
-                                                        </div>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => addRecommendedHabit(habit)}
-                                                        className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
-                                                    >
-                                                        습관 추가하기
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <div className="h-4"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* 날짜별 상세 모달 */}
-                        {showDateModal && selectedDate && (
-                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                                <div className="bg-white rounded-2xl w-full max-w-sm" style={{maxHeight: '80vh'}}>
-                                    <div className="flex items-center justify-between p-6 pb-4 border-b border-gray-100">
-                                        <div>
-                                            <h3 className="text-lg font-bold">
-                                                {selectedDate.date.getMonth() + 1}월 {selectedDate.day}일
-                                            </h3>
-                                            <p className="text-sm text-gray-500">
-                                                성취도: {selectedDate.achievement.completed}/{selectedDate.achievement.total} 
-                                                ({selectedDate.achievement.rate}%)
-                                            </p>
-                                        </div>
-                                        <button 
-                                            onClick={() => setShowDateModal(false)}
-                                            className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
-                                        >
-                                            <span className="text-xl">✕</span>
-                                        </button>
-                                    </div>
-                                    
-                                    <div className="overflow-y-auto p-6 pt-4" style={{maxHeight: 'calc(80vh - 120px)'}}>
-                                        {(() => {
-                                            const targetDate = selectedDate.date;
-                                            const existingHabits = habits.filter(habit => {
-                                                const createdDate = new Date(habit.createdAt);
-                                                return createdDate <= targetDate;
-                                            });
-                                            
-                                            if (existingHabits.length === 0) {
-                                                return (
-                                                    <div className="text-center py-8">
-                                                        <div className="text-4xl mb-3">📝</div>
-                                                        <p className="text-gray-500">이 날에는 등록된 습관이 없었습니다</p>
-                                                    </div>
-                                                );
-                                            }
-                                            
-                                            return (
-                                                <div className="space-y-3">
-                                                    {existingHabits.map(habit => {
-                                                        const isCompleted = habit.completedDates.includes(selectedDate.dateString);
-                                                        
-                                                        return (
-                                                            <div key={habit.id} className="bg-gray-50 rounded-xl p-4">
-                                                                <div className="flex items-center justify-between">
-                                                                    <div className="flex items-center space-x-3 flex-1">
-                                                                        <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${
-                                                                            isCompleted
-                                                                                ? `${habit.color} border-transparent text-white`
-                                                                                : 'border-gray-300 bg-white text-gray-400'
-                                                                        }`}>
-                                                                            {isCompleted ? <CheckCircle2 /> : <Circle />}
-                                                                        </div>
-                                                                        <div className="flex-1">
-                                                                            <h4 className={`font-medium ${isCompleted ? 'line-through opacity-70' : ''}`}>
-                                                                                {habit.title}
-                                                                            </h4>
-                                                                            <p className="text-sm text-gray-500">{habit.category}</p>
-                                                                        </div>
-                                                                    </div>
-                                                                    <span className="text-xl">{habit.icon}</span>
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            );
-                                        })()}
-                                        <div className="h-4"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* 하단 네비게이션 */}
-                        <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md">
-                            <div className="bg-white border-t border-gray-200 px-2 py-2">
-                                <div className="flex justify-around items-center">
-                                    <button 
-                                        onClick={() => setActiveTab('today')}
-                                        className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                                            activeTab === 'today' ? 'text-blue-500 bg-blue-50' : 'text-gray-400 hover:text-gray-600'
-                                        }`}
-                                    >
-                                        <BarChart3 />
-                                        <span className="text-xs font-medium">대시보드</span>
-                                    </button>
-                                    
-                                    <button 
-                                        onClick={() => setActiveTab('habits')}
-                                        className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                                            activeTab === 'habits' ? 'text-blue-500 bg-blue-50' : 'text-gray-400 hover:text-gray-600'
-                                        }`}
-                                    >
-                                        <Target />
-                                        <span className="text-xs font-medium">습관</span>
-                                    </button>
-                                    
-                                    <button 
-                                        onClick={() => setActiveTab('stats')}
-                                        className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                                            activeTab === 'stats' ? 'text-blue-500 bg-blue-50' : 'text-gray-400 hover:text-gray-600'
-                                        }`}
-                                    >
-                                        <TrendingUp />
-                                        <span className="text-xs font-medium">통계</span>
-                                    </button>
-                                    
-                                    <button 
-                                        onClick={() => setActiveTab('calendar')}
-                                        className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                                            activeTab === 'calendar' ? 'text-blue-500 bg-blue-50' : 'text-gray-400 hover:text-gray-600'
-                                        }`}
-                                    >
-                                        <Calendar />
-                                        <span className="text-xs font-medium">달력</span>
-                                    </button>
-                                    
-                                    <button 
-                                        onClick={() => setActiveTab('settings')}
-                                        className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                                            activeTab === 'settings' ? 'text-blue-500 bg-blue-50' : 'text-gray-400 hover:text-gray-600'
-                                        }`}
-                                    >
-                                        <Settings />
-                                        <span className="text-xs font-medium">설정</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        // 앱 렌더링
-        ReactDOM.render(React.createElement(HabitTracker), document.getElementById('root'));
-        
-        // 로딩 화면 제거 (앱 렌더링 후)
-        setTimeout(() => {
-            const loadingElement = document.getElementById('loading');
-            if (loadingElement) {
-                loadingElement.style.opacity = '0';
-                loadingElement.style.transition = 'opacity 0.5s ease';
-                setTimeout(() => {
-                    loadingElement.remove();
-                }, 500);
-            }
-        }, 100);
-    </script>
-</body>
-</html> p-4 text-center">
-                            <div className="text-2xl font-bold text-blue-500">{habits.filter(h => h.completedToday).length}</div>
-                            <div className="text-sm text-gray-600">완료한 습관</div>
-                        </div>
-                        <div className="bg-white rounded-xl p-4 text-center">
-                            <div className="text-2xl font-bold text-orange-500">{Math.max(...habits.map(h => h.streak), 0)}</div>
-                            <div className="text-sm text-gray-600">최고 연속일</div>
-                        </div>
-                    </div>
-
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">오늘 할 습관</h3>
-                    
-                    {habits.length === 0 ? (
-                        <div className="text-center py-8">
-                            <div className="text-4xl mb-3">📝</div>
-                            <p className="text-gray-500 mb-4">아직 등록된 습관이 없습니다</p>
-                            <button 
-                                onClick={() => setActiveTab('habits')}
-                                className="bg-blue-500 text-white px-6 py-2 rounded-xl"
-                            >
-                                습관 만들러 가기
-                            </button>
-                        </div>
+                        </>
                     ) : (
-                        <div className="space-y-3 mb-20">
-                            {habits.map(habit => (
-                                <div key={habit.id} className="bg-white rounded-xl p-4 flex items-center justify-between">
-                                    <div className="flex items-center space-x-3">
-                                        <button
-                                            onClick={() => toggleHabit(habit.id)}
-                                            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
-                                                habit.completedToday
-                                                    ? `${habit.color} border-transparent text-white`
-                                                    : 'border-gray-300 text-gray-400'
-                                            }`}
-                                        >
-                                            {habit.completedToday ? <CheckCircle2 /> : <Circle />}
-                                        </button>
-                                        <div>
-                                            <h4 className={`font-medium ${habit.completedToday ? 'line-through opacity-70' : ''}`}>
-                                                {habit.title}
-                                            </h4>
-                                            <p className="text-sm text-gray-500">🔥 {habit.streak}일 연속</p>
-                                        </div>
-                                    </div>
-                                    <span className="text-xl">{habit.icon}</span>
-                                </div>
-                            ))}
-                        </div>
+                        <button
+                            onClick={() => setShowLoginModal(true)}
+                            className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            로그인 / 회원가입
+                        </button>
                     )}
                 </div>
-            );
+                <div className="bg-white rounded-xl p-4 shadow-md">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">데이터</h3>
+                    <p className="text-gray-600">
+                        데이터는 Canvas 환경의 고유 ID와 사용자 ID를 기반으로 안전하게 저장됩니다.
+                    </p>
+                    {user && (
+                        <p className="text-sm text-gray-500 mt-2 break-all">
+                            사용자 ID: <span className="font-mono">{user.uid}</span>
+                        </p>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 
-            // 습관 탭
-            const renderHabitsTab = () => (
-                <div>
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-bold text-gray-900">습관 관리</h2>
-                        <div className="flex space-x-2">
-                            <button 
-                                onClick={() => setShowRecommendations(true)}
-                                className="bg-gray-100 text-gray-600 px-4 py-2 rounded-xl flex items-center space-x-1 font-medium hover:bg-gray-200 transition-colors"
-                            >
-                                <Trophy />
-                                <span>추천</span>
-                            </button>
-                            <button 
-                                onClick={() => setShowAddForm(true)}
-                                className="bg-blue-500 text-white px-4 py-2 rounded-xl flex items-center space-x-1 font-medium hover:bg-blue-600 transition-colors"
-                            >
-                                <Plus />
-                                <span>추가</span>
-                            </button>
-                        </div>
-                    </div>
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'today':
+                return renderTodayTab();
+            case 'stats':
+                return renderStatsTab();
+            case 'calendar':
+                return renderCalendarTab();
+            case 'settings':
+                return renderSettingsTab();
+            default:
+                return renderTodayTab();
+        }
+    };
 
-                    <div className="space-y-3 pb-20">
-                        {habits.length === 0 ? (
-                            <div className="text-center py-12">
-                                <div className="text-6xl mb-4">🎯</div>
-                                <p className="text-gray-500 mb-6">아직 습관이 없습니다</p>
-                                <div className="space-y-3">
-                                    <button 
-                                        onClick={() => setShowAddForm(true)}
-                                        className="w-full bg-blue-500 text-white px-6 py-3 rounded-xl hover:bg-blue-600 transition-colors"
-                                    >
-                                        직접 습관 만들기
-                                    </button>
-                                    <button 
-                                        onClick={() => setShowRecommendations(true)}
-                                        className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-colors"
-                                    >
-                                        추천 습관 보기
-                                    </button>
-                                </div>
-                            </div>
+    const handleNewHabitChange = (e) => {
+        const { name, value } = e.target;
+        setNewHabit(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleAddHabit = async (e) => {
+        e.preventDefault();
+        if (!newHabit.title) {
+            showMessage('습관 제목을 입력해주세요.');
+            return;
+        }
+
+        const habitToAdd = {
+            ...newHabit,
+            completedDates: [],
+        };
+        const newId = await saveHabit(habitToAdd);
+        if (newId) {
+            setShowAddForm(false);
+            setNewHabit({ title: '', category: '건강', color: 'bg-blue-500', icon: '🎯' });
+            showMessage('새로운 습관이 추가되었습니다!');
+        }
+    };
+
+    const handleLoginChange = (e) => {
+        const { name, value } = e.target;
+        setLoginForm(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSignupChange = (e) => {
+        const { name, value } = e.target;
+        setSignupForm(prev => ({ ...prev, [name]: value }));
+    };
+
+    const signInWithEmail = async (e) => {
+        e.preventDefault();
+        try {
+            await signInWithEmailAndPassword(auth, loginForm.email, loginForm.password);
+            setShowLoginModal(false);
+            showMessage('로그인 성공!');
+        } catch (error) {
+            console.error('Email login failed:', error);
+            showMessage('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
+        }
+    };
+
+    const signUpWithEmail = async (e) => {
+        e.preventDefault();
+        if (signupForm.password !== signupForm.confirmPassword) {
+            showMessage('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+        try {
+            await createUserWithEmailAndPassword(auth, signupForm.email, signupForm.password);
+            setShowLoginModal(false);
+            showMessage('회원가입 성공!');
+        } catch (error) {
+            console.error('Email signup failed:', error);
+            showMessage('회원가입에 실패했습니다.');
+        }
+    };
+
+    const signOutUser = async () => {
+        try {
+            await signOut(auth);
+            showMessage('로그아웃되었습니다.');
+        } catch (error) {
+            console.error('Sign out failed:', error);
+            showMessage('로그아웃에 실패했습니다.');
+        }
+    };
+
+    const renderModal = (title, children) => (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center p-4" onClick={() => setShowLoginModal(false)}>
+            <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl transform transition-transform duration-300 scale-100" onClick={e => e.stopPropagation()}>
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+                    <button onClick={() => { setShowLoginModal(false); setShowAddForm(false); setShowDateModal(false); setShowDeleteModal(false); }} className="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                {children}
+            </div>
+        </div>
+    );
+    
+    if (loading) {
+        return (
+            <div className="fixed inset-0 bg-gray-100 flex items-center justify-center">
+                <div className="loading-spinner"></div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-gray-100">
+            <div className="max-w-xl mx-auto p-4 md:pt-12">
+                <header className="mb-6 flex justify-between items-center">
+                    <h1 className="text-3xl font-extrabold text-gray-900">HabitFlow</h1>
+                    <div className="flex items-center space-x-2 text-sm text-gray-500">
+                        {user ? (
+                            <>
+                                <span className="truncate max-w-[120px]">{user.displayName || user.email || user.uid}</span>
+                            </>
                         ) : (
-                            habits.map(habit => (
-                                <div key={habit.id} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-3 flex-1">
-                                            <button
-                                                onClick={() => toggleHabit(habit.id)}
-                                                className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all ${
-                                                    habit.completedToday
-                                                        ? `${habit.color} border-transparent text-white`
-                                                        : 'border-gray-300 text-gray-400 hover:border-gray-400'
-                                                }`}
-                                            >
-                                                {habit.completedToday ? <CheckCircle2 /> : <Circle />}
-                                            </button>
-                                            
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className={`font-medium text-gray-900 truncate ${habit.completedToday ? 'line-through opacity-70' : ''}`}>
-                                                    {habit.title}
-                                                </h3>
-                                                <div className="flex items-center space-x-4 mt-1">
-                                                    <span className="text-sm text-gray-500">{habit.category}</span>
-                                                    <span className="text-sm text-orange-600">🔥 {habit.streak}일</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="flex items-center space-x-2 ml-2">
-                                            <span className="text-2xl">{habit.icon}</span>
-                                            <button 
-                                                onClick={() => deleteHabit(habit.id)}
-                                                className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                                            >
-                                                <Trash2 />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
+                            <span>로컬 모드</span>
                         )}
+                        <span className="text-blue-600 font-medium">| {today}</span>
                     </div>
-                </div>
-            );
+                </header>
 
-            // 통계 탭
-            const renderStatsTab = () => (
-                <div className="pb-20">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">통계</h2>
-                    
-                    <div className="space-y-4">
-                        <div className="bg-white rounded-xl p-4">
-                            <h4 className="font-medium text-gray-900 mb-2">오늘의 성과</h4>
-                            <p className="text-2xl font-bold text-blue-500">{totalSuccessRate}%</p>
-                            <p className="text-sm text-gray-500">완료율</p>
-                        </div>
-                        
-                        <div className="bg-white rounded-xl p-4">
-                            <h4 className="font-medium text-gray-900 mb-2">총 습관 수</h4>
-                            <p className="text-2xl font-bold text-green-500">{habits.length}</p>
-                            <p className="text-sm text-gray-500">등록된 습관</p>
-                        </div>
-
-                        <div className="bg-white rounded-xl p-4">
-                            <h4 className="font-medium text-gray-900 mb-2">최고 연속 기록</h4>
-                            <p className="text-2xl font-bold text-orange-500">{Math.max(...habits.map(h => h.streak), 0)}일</p>
-                            <p className="text-sm text-gray-500">최장 연속 달성</p>
-                        </div>
-
-                        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4">
-                            <h4 className="font-medium text-gray-900 mb-3">이번 주 성취도</h4>
-                            <div className="text-center">
-                                <div className="text-3xl font-bold text-blue-600 mb-2">{totalSuccessRate}%</div>
-                                <p className="text-sm text-gray-600">평균 완료율</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            // 달력 탭
-            const renderCalendarTab = () => {
-                const calendarDays = [];
-                
-                for (let i = 0; i < firstDay; i++) {
-                    calendarDays.push(<div key={`empty-${i}`} className="h-12"></div>);
-                }
-                
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const isToday = day === currentDate.getDate();
-                    const dateString = new Date(currentYear, currentMonth, day).toDateString();
-                    const achievement = getDateAchievement(dateString);
-                    const colorClass = getAchievementColorClass(achievement.rate);
-                    
-                    calendarDays.push(
-                        <button 
-                            key={day}
-                            onClick={() => handleDateClick(day)}
-                            className={`h-12 flex flex-col items-center justify-center rounded-lg relative transition-all hover:scale-105 ${
-                                isToday 
-                                    ? 'ring-2 ring-blue-500 ring-offset-1 bg-blue-500 text-white font-bold shadow-sm' 
-                                    : `${colorClass} hover:shadow-sm`
-                            }`}
-                        >
-                            <span className="text-sm font-medium">{day}</span>
-                            {!isToday && achievement.total > 0 && (
-                                <div className="flex space-x-0.5 mt-1">
-                                    {habits.slice(0, 4).map((habit, index) => {
-                                        const isCompleted = habit.completedDates.includes(dateString);
-                                        return (
-                                            <div 
-                                                key={habit.id}
-                                                className={`w-1 h-1 rounded-full ${
-                                                    isCompleted 
-                                                        ? achievement.rate === 100 
-                                                            ? 'bg-white' 
-                                                            : 'bg-blue-500'
-                                                        : 'bg-gray-300'
-                                                }`}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                            )}
-                            {isToday && (
-                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full"></div>
-                            )}
+                {renderContent()}
+            </div>
+            
+            {/* Navigation Bar */}
+            <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 z-40">
+                <ul className="flex justify-around p-2">
+                    <li className="flex-1 text-center">
+                        <button onClick={() => setActiveTab('today')} className={`flex flex-col items-center p-2 rounded-lg transition-colors ${activeTab === 'today' ? 'text-blue-600' : 'text-gray-500'}`}>
+                            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                            </svg>
+                            <span className="text-xs mt-1">오늘</span>
                         </button>
-                    );
-                }
-                
-                return (
-                    <div className="pb-20">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-gray-900">습관 달력</h2>
-                            <span className="text-gray-600 font-medium">{currentYear}년 {monthNames[currentMonth]}</span>
+                    </li>
+                    <li className="flex-1 text-center">
+                        <button onClick={() => setActiveTab('stats')} className={`flex flex-col items-center p-2 rounded-lg transition-colors ${activeTab === 'stats' ? 'text-blue-600' : 'text-gray-500'}`}>
+                            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M3 3v18h18M18 17V9M13 17V5M8 17v-3"></path>
+                            </svg>
+                            <span className="text-xs mt-1">통계</span>
+                        </button>
+                    </li>
+                    <li className="flex-1 text-center">
+                        <button onClick={() => setActiveTab('calendar')} className={`flex flex-col items-center p-2 rounded-lg transition-colors ${activeTab === 'calendar' ? 'text-blue-600' : 'text-gray-500'}`}>
+                            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <span className="text-xs mt-1">캘린더</span>
+                        </button>
+                    </li>
+                    <li className="flex-1 text-center">
+                        <button onClick={() => setActiveTab('settings')} className={`flex flex-col items-center p-2 rounded-lg transition-colors ${activeTab === 'settings' ? 'text-blue-600' : 'text-gray-500'}`}>
+                            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001 1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v.07a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path>
+                            </svg>
+                            <span className="text-xs mt-1">설정</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+
+            {/* Modals */}
+            {showLoginModal && renderModal('로그인',
+                <div className="space-y-4">
+                    <form onSubmit={isSignupMode ? signUpWithEmail : signInWithEmail} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">이메일</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={isSignupMode ? signupForm.email : loginForm.email}
+                                onChange={isSignupMode ? handleSignupChange : handleLoginChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            />
                         </div>
-                        
-                        <div className="bg-white rounded-xl p-4 mb-6">
-                            <div className="grid grid-cols-7 gap-1 mb-2">
-                                {['일', '월', '화', '수', '목', '금', '토'].map(day => (
-                                    <div key={day} className="h-10 flex items-center justify-center">
-                                        <span className="text-sm font-medium text-gray-500">{day}</span>
-                                    </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">비밀번호</label>
+                            <input
+                                type="password"
+                                name="password"
+                                value={isSignupMode ? signupForm.password : loginForm.password}
+                                onChange={isSignupMode ? handleSignupChange : handleLoginChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            />
+                        </div>
+                        {isSignupMode && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">비밀번호 확인</label>
+                                <input
+                                    type="password"
+                                    name="confirmPassword"
+                                    value={signupForm.confirmPassword}
+                                    onChange={handleSignupChange}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                />
+                            </div>
+                        )}
+                        <button type="submit" className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            {isSignupMode ? '회원가입' : '로그인'}
+                        </button>
+                    </form>
+                    <div className="flex items-center justify-center">
+                        <span className="text-sm text-gray-500">{isSignupMode ? '계정이 이미 있으신가요?' : '계정이 없으신가요?'}</span>
+                        <button onClick={() => setIsSignupMode(!isSignupMode)} className="ml-2 text-sm font-medium text-blue-600 hover:text-blue-800">
+                            {isSignupMode ? '로그인' : '회원가입'}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {showAddForm && renderModal('새 습관 추가',
+                <form onSubmit={handleAddHabit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">제목</label>
+                        <input
+                            type="text"
+                            name="title"
+                            value={newHabit.title}
+                            onChange={handleNewHabitChange}
+                            placeholder="예: 매일 30분 산책하기"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">카테고리</label>
+                        <select
+                            name="category"
+                            value={newHabit.category}
+                            onChange={handleNewHabitChange}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                        >
+                            <option value="건강">건강</option>
+                            <option value="운동">운동</option>
+                            <option value="학습">학습</option>
+                            <option value="자기계발">자기계발</option>
+                        </select>
+                    </div>
+                    <div className="flex space-x-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">아이콘</label>
+                            <input
+                                type="text"
+                                name="icon"
+                                value={newHabit.icon}
+                                onChange={handleNewHabitChange}
+                                placeholder="🎯"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">색상</label>
+                            <div className="mt-1 grid grid-cols-5 gap-2">
+                                {['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-red-500', 'bg-yellow-500'].map(c => (
+                                    <div
+                                        key={c}
+                                        onClick={() => setNewHabit(prev => ({ ...prev, color: c }))}
+                                        className={`w-8 h-8 rounded-full cursor-pointer transition-all duration-200 ${c} ${newHabit.color === c ? 'ring-2 ring-offset-2 ring-blue-500' : ''}`}
+                                    ></div>
                                 ))}
                             </div>
-                            
-                            <div className="grid grid-cols-7 gap-1">
-                                {calendarDays}
-                            </div>
-                        </div>
-                        
-                        <div className="bg-white rounded-xl p-4">
-                            <h3 className="font-medium text-gray-900 mb-3">성취도 범례</h3>
-                            <div className="flex items-center space-x-2 mb-2">
-                                <div className="flex space-x-1">
-                                    <div className="w-4 h-4 bg-gray-50 rounded border border-gray-200"></div>
-                                    <div className="w-4 h-4 bg-blue-50 rounded"></div>
-                                    <div className="w-4 h-4 bg-blue-100 rounded"></div>
-                                    <div className="w-4 h-4 bg-blue-200 rounded"></div>
-                                    <div className="w-4 h-4 bg-gradient-to-br from-blue-400 to-purple-400 rounded"></div>
-                                </div>
-                                <span className="text-sm text-gray-600">0% → 100%</span>
-                            </div>
                         </div>
                     </div>
-                );
-            };
+                    <button type="submit" className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        추가
+                    </button>
+                </form>
+            )}
+            
+            {showDeleteModal && habitToDelete && renderModal('습관 삭제',
+                <div className="space-y-4 text-center">
+                    <p className="text-gray-700">
+                        "<span className="font-bold">{habitToDelete.title}</span>" 습관을 삭제하시겠습니까?
+                    </p>
+                    <div className="flex justify-center space-x-4">
+                        <button
+                            onClick={() => {
+                                setShowDeleteModal(false);
+                                setHabitToDelete(null);
+                            }}
+                            className="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+                        >
+                            취소
+                        </button>
+                        <button
+                            onClick={() => {
+                                deleteHabit(habitToDelete.id);
+                                setShowDeleteModal(false);
+                                setHabitToDelete(null);
+                            }}
+                            className="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition-colors"
+                        >
+                            삭제
+                        </button>
+                    </div>
+                </div>
+            )}
 
-            // 설정 탭
-            const renderSettingsTab = () => (
-                <div className="pb-20">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">설정</h2>
-                    
-                    <div className="space-y-4">
-                        <div className="bg-white rounded-xl
+            {showDateModal && renderModal(`${selectedDate.toLocaleDateString('ko-KR')}의 기록`,
+                <div className="space-y-4">
+                    {habits.length > 0 ? (
+                        habits.map(habit => {
+                            const isCompleted = habit.completedDates?.includes(selectedDate.toDateString());
+                            return (
+                                <div key={habit.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div className="flex items-center space-x-2">
+                                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-white ${habit.color}`}>{habit.icon}</span>
+                                        <span className="font-medium text-gray-800">{habit.title}</span>
+                                    </div>
+                                    <button
+                                        onClick={() => toggleHabitCompletion(habit.id, selectedDate.toDateString())}
+                                        className={`p-1 rounded-full ${isCompleted ? 'text-green-500' : 'text-gray-400'}`}
+                                    >
+                                        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="transparent"></circle>
+                                            {isCompleted && <path d="M9 12l2 2 4-4" stroke="#48BB78" strokeWidth="2" fill="none" />}
+                                        </svg>
+                                    </button>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <p className="text-center text-gray-500">이날 기록된 습관이 없습니다.</p>
+                    )}
+                </div>
+            )}
+            
+            {/* Snackbar */}
+            {showSnackbar && (
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-xl shadow-lg transition-all duration-300 animate-slide-up z-50">
+                    {snackbarMessage}
+                </div>
+            )}
+            
+            <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+                body {
+                    font-family: 'Inter', sans-serif;
+                }
+                .loading-spinner {
+                    width: 40px;
+                    height: 40px;
+                    border: 4px solid #f3f3f3;
+                    border-top: 4px solid #3b82f6;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                @keyframes slide-up {
+                    from { transform: translateY(100%); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+                .animate-slide-up {
+                    animation: slide-up 0.5s ease-out forwards;
+                }
+            `}</style>
+        </div>
+    );
+}
