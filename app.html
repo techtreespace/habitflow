@@ -54,6 +54,16 @@
             outline: 2px solid #3b82f6;
             outline-offset: 2px;
         }
+
+        /* Animation for completed habits */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-down {
+            animation: slideDown 0.3s ease-out;
+        }
     </style>
 </head>
 <body>
@@ -484,60 +494,114 @@
             // =================================================================
             
             // Today Tab (Dashboard)
-            const renderTodayTab = () => (
-                <div className="pb-40"> {/* Increased padding to prevent overlap */}
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">오늘의 습관</h2>
-                    
-                    {habits.length === 0 ? (
-                        <button 
-                            onClick={() => setShowAddForm(true)} 
-                            className="w-full text-center py-10 text-gray-500 rounded-xl hover:bg-gray-100 transition-colors"
-                            aria-label="첫 번째 습관 추가하기"
-                        >
-                            <div className="text-5xl mb-3">✨</div>
-                            <p>첫 번째 습관을 만들어보세요!</p>
-                        </button>
-                    ) : (
-                        <div className="space-y-4 mb-6">
-                            {habits.map(habit => (
-                                <div key={habit.id} className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-3 flex-1">
-                                            <button 
-                                                onClick={() => toggleHabit(habit.id)}
-                                                className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${
-                                                    habit.completedDates.includes(today) 
-                                                        ? `${habit.color} border-transparent text-white`
-                                                        : 'border-gray-300 bg-white text-gray-400'
-                                                }`}
-                                                aria-label={habit.completedDates.includes(today) ? `${habit.title} 완료 취소` : `${habit.title} 완료하기`}
-                                            >
-                                                {habit.completedDates.includes(today) ? <CheckCircle2 /> : <Circle />}
-                                            </button>
-                                            <div className="flex-1">
-                                                <h4 className={`font-medium ${habit.completedDates.includes(today) ? 'line-through opacity-70' : ''}`}>
-                                                    {habit.title}
-                                                </h4>
-                                                <p className="text-sm text-gray-500">{habit.category}</p>
+            const renderTodayTab = () => {
+                // 완료된 습관과 미완료 습관 분리
+                const incompleteHabits = habits.filter(habit => !habit.completedDates.includes(today));
+                const completedHabits = habits.filter(habit => habit.completedDates.includes(today));
+                
+                return (
+                    <div className="pb-40"> {/* Increased padding to prevent overlap */}
+                        <h2 className="text-xl font-bold text-gray-900 mb-4">오늘의 습관</h2>
+                        
+                        {habits.length === 0 ? (
+                            <button 
+                                onClick={() => setShowAddForm(true)} 
+                                className="w-full text-center py-10 text-gray-500 rounded-xl hover:bg-gray-100 transition-colors"
+                                aria-label="첫 번째 습관 추가하기"
+                            >
+                                <div className="text-5xl mb-3">✨</div>
+                                <p>첫 번째 습관을 만들어보세요!</p>
+                            </button>
+                        ) : (
+                            <div className="space-y-4 mb-6">
+                                {/* 미완료 습관 */}
+                                {incompleteHabits.length > 0 && (
+                                    <>
+                                        <h3 className="text-md font-medium text-gray-700">진행 중인 습관</h3>
+                                        {incompleteHabits.map(habit => (
+                                            <div key={habit.id} className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow slide-down">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center space-x-3 flex-1">
+                                                        <button 
+                                                            onClick={() => toggleHabit(habit.id)}
+                                                            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${
+                                                                habit.completedDates.includes(today) 
+                                                                    ? `${habit.color} border-transparent text-white`
+                                                                    : 'border-gray-300 bg-white text-gray-400'
+                                                            }`}
+                                                            aria-label={habit.completedDates.includes(today) ? `${habit.title} 완료 취소` : `${habit.title} 완료하기`}
+                                                        >
+                                                            {habit.completedDates.includes(today) ? <CheckCircle2 /> : <Circle />}
+                                                        </button>
+                                                        <div className="flex-1">
+                                                            <h4 className={`font-medium ${habit.completedDates.includes(today) ? 'line-through opacity-70' : ''}`}>
+                                                                {habit.title}
+                                                            </h4>
+                                                            <p className="text-sm text-gray-500">{habit.category}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+                                                    <span className="text-sm text-gray-600">연속 달성: {habit.streak}일</span>
+                                                    <button 
+                                                        onClick={() => toggleHabit(habit.id)}
+                                                        className="px-4 py-1.5 rounded-full text-sm font-medium transition-colors"
+                                                        style={{ backgroundColor: habit.completedDates.includes(today) ? '#f3f4f6' : '#2563eb', color: habit.completedDates.includes(today) ? '#4b5563' : '#fff' }}
+                                                    >
+                                                        {habit.completedDates.includes(today) ? '완료 취소' : '오늘 완료'}
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
-                                        <span className="text-sm text-gray-600">연속 달성: {habit.streak}일</span>
-                                        <button 
-                                            onClick={() => toggleHabit(habit.id)}
-                                            className="px-4 py-1.5 rounded-full text-sm font-medium transition-colors"
-                                            style={{ backgroundColor: habit.completedDates.includes(today) ? '#f3f4f6' : '#2563eb', color: habit.completedDates.includes(today) ? '#4b5563' : '#fff' }}
-                                        >
-                                            {habit.completedDates.includes(today) ? '완료 취소' : '오늘 완료'}
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            );
+                                        ))}
+                                    </>
+                                )}
+                                
+                                {/* 완료된 습관 */}
+                                {completedHabits.length > 0 && (
+                                    <>
+                                        <h3 className="text-md font-medium text-gray-700 mt-6">완료된 습관</h3>
+                                        {completedHabits.map(habit => (
+                                            <div key={habit.id} className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow slide-down">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center space-x-3 flex-1">
+                                                        <button 
+                                                            onClick={() => toggleHabit(habit.id)}
+                                                            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${
+                                                                habit.completedDates.includes(today) 
+                                                                    ? `${habit.color} border-transparent text-white`
+                                                                    : 'border-gray-300 bg-white text-gray-400'
+                                                            }`}
+                                                            aria-label={habit.completedDates.includes(today) ? `${habit.title} 완료 취소` : `${habit.title} 완료하기`}
+                                                        >
+                                                            {habit.completedDates.includes(today) ? <CheckCircle2 /> : <Circle />}
+                                                        </button>
+                                                        <div className="flex-1">
+                                                            <h4 className={`font-medium ${habit.completedDates.includes(today) ? 'line-through opacity-70' : ''}`}>
+                                                                {habit.title}
+                                                            </h4>
+                                                            <p className="text-sm text-gray-500">{habit.category}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+                                                    <span className="text-sm text-gray-600">연속 달성: {habit.streak}일</span>
+                                                    <button 
+                                                        onClick={() => toggleHabit(habit.id)}
+                                                        className="px-4 py-1.5 rounded-full text-sm font-medium transition-colors"
+                                                        style={{ backgroundColor: habit.completedDates.includes(today) ? '#f3f4f6' : '#2563eb', color: habit.completedDates.includes(today) ? '#4b5563' : '#fff' }}
+                                                    >
+                                                        {habit.completedDates.includes(today) ? '완료 취소' : '오늘 완료'}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                );
+            };
 
             // Habits Tab
             const renderHabitsTab = () => (
@@ -708,187 +772,132 @@
                 <div className="pb-20">
                     <h2 className="text-xl font-bold text-gray-900 mb-6">설정</h2>
                     
-                    <div className="space-y-4">
-                        <div className="bg-white rounded-xl p-4 shadow-sm">
-                            <h3 className="font-medium text-gray-900 mb-4">프로필</h3>
-                            <div className="flex items-center space-x-4 mb-4">
-                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span className="text-2xl">👤</span>
-                                </div>
-                                <div>
-                                    {isEditingName ? (
-                                        <div className="flex items-center space-x-2">
-                                            <input
-                                                type="text"
-                                                id="userNameInput"
-                                                ref={nameInputRef}
-                                                value={userName}
-                                                onChange={handleNameChange}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') saveName();
-                                                    if (e.key === 'Escape') setIsEditingName(false);
-                                                }}
-                                                className="p-1 border border-gray-300 rounded text-gray-900 text-sm focus:outline-none focus:border-blue-500"
-                                                aria-label="사용자 이름 입력"
-                                            />
-                                            <button 
-                                                onClick={saveName} 
-                                                className="text-blue-500 text-sm font-medium"
-                                            >
-                                                저장
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center space-x-2">
-                                            <p className="font-medium text-gray-900">{userName}님</p>
-                                            <button 
-                                                onClick={() => setIsEditingName(true)} 
-                                                className="text-blue-500 text-sm font-medium"
-                                                aria-label="이름 편집"
-                                            >
-                                                편집
-                                            </button>
-                                        </div>
-                                    )}
-                                    <p className="text-sm text-gray-500">로컬 사용자</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
+                        <h3 className="font-medium text-gray-900 mb-4">프로필</h3>
                         
-                        <div className="bg-white rounded-xl p-4 shadow-sm">
-                            <h3 className="font-medium text-gray-900 mb-4">알림</h3>
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-gray-700">습관 리마인더</span>
-                                    {/* Actual toggle functionality would require additional logic */}
-                                    <div 
-                                        className="w-12 h-6 bg-blue-500 rounded-full relative cursor-pointer"
-                                        onClick={() => handleShowAlert('이 기능은 아직 구현 중입니다.')}
-                                        aria-label="습관 리마인더 토글"
-                                    >
-                                        <div className="absolute top-1 right-1 w-4 h-4 bg-white rounded-full"></div>
+                        <div className="flex items-center space-x-3 mb-4">
+                            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                                <User />
+                            </div>
+                            <div className="flex-1">
+                                {isEditingName ? (
+                                    <div className="flex items-center">
+                                        <input
+                                            ref={nameInputRef}
+                                            type="text"
+                                            value={userName}
+                                            onChange={handleNameChange}
+                                            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                                            placeholder="이름을 입력하세요"
+                                            maxLength="20"
+                                        />
+                                        <button
+                                            onClick={saveName}
+                                            className="ml-2 bg-blue-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors"
+                                        >
+                                            저장
+                                        </button>
                                     </div>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-gray-700">주간 리포트</span>
-                                    <div 
-                                        className="w-12 h-6 bg-gray-300 rounded-full relative cursor-pointer"
-                                        onClick={() => handleShowAlert('이 기능은 아직 구현 중입니다.')}
-                                        aria-label="주간 리포트 토글"
-                                    >
-                                        <div className="absolute top-1 left-1 w-4 h-4 bg-white rounded-full"></div>
+                                ) : (
+                                    <div className="flex items-center">
+                                        <p className="font-medium text-gray-900">{userName}</p>
+                                        <button
+                                            onClick={() => setIsEditingName(true)}
+                                            className="ml-2 text-blue-500 text-sm hover:text-blue-700 transition-colors"
+                                        >
+                                            변경
+                                        </button>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </div>
-                        
-                        <div className="bg-white rounded-xl p-4 shadow-sm">
-                            <h3 className="font-medium text-gray-900 mb-4">데이터 관리</h3>
-                            <div className="space-y-3">
-                                <button 
-                                    className="w-full text-left text-gray-700 hover:text-blue-600 transition-colors"
-                                    onClick={() => {
-                                        const dataStr = JSON.stringify(habits, null, 2);
-                                        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                                        const exportFileDefaultName = 'habit-data.json';
-                                        
-                                        const linkElement = document.createElement('a');
-                                        linkElement.setAttribute('href', dataUri);
-                                        linkElement.setAttribute('download', exportFileDefaultName);
-                                        linkElement.click();
-                                        handleShowAlert('습관 데이터가 다운로드되었습니다.');
-                                    }}
-                                >
-                                    데이터 내보내기
-                                </button>
-                                <button 
-                                    className="w-full text-left text-red-600 hover:text-red-800 transition-colors"
-                                    onClick={() => setShowDeleteModal(true)}
-                                >
-                                    모든 데이터 삭제
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div className="bg-white rounded-xl p-4 shadow-sm">
-                            <h3 className="font-medium text-gray-900 mb-4">정보</h3>
-                            <p className="text-sm text-gray-500">
-                                버전 1.0.0<br />
-                                모든 데이터는 기기 내에 저장됩니다.
-                            </p>
-                        </div>
+                    </div>
+                    
+                    <div className="bg-white rounded-xl p-4 shadow-sm">
+                        <h3 className="font-medium text-gray-900 mb-4">데이터 관리</h3>
+                        <button
+                            onClick={() => {
+                                if (window.confirm('모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                                    clearLocalStorage();
+                                    setHabits([]);
+                                    handleShowAlert('모든 데이터가 삭제되었습니다.');
+                                }
+                            }}
+                            className="w-full text-left py-2 text-red-600 hover:text-red-800 transition-colors"
+                        >
+                            모든 데이터 삭제
+                        </button>
                     </div>
                 </div>
             );
 
             // =================================================================
-            // Main Render
+            // Main UI Rendering
             // =================================================================
             return (
                 <div className="min-h-screen bg-gray-50 text-gray-900">
-                    {/* Loading Screen */}
-                    {loading && (
-                        <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
-                            <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4 animate-pulse">
-                                <span className="text-2xl">✨</span>
+                    {/* Header */}
+                    <header className="sticky top-0 z-10 bg-white shadow-sm px-4 py-3">
+                        <div className="flex items-center justify-between">
+                            <h1 className="text-xl font-bold text-blue-600">HabitFlow</h1>
+                            <div className="flex items-center space-x-2">
+                                <span className="text-sm text-gray-600">{new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}</span>
                             </div>
-                            <h2 className="text-xl font-medium text-gray-900">HabitFlow</h2>
-                            <p className="text-gray-500 mt-1">로딩 중...</p>
                         </div>
-                    )}
+                    </header>
 
                     {/* Main Content */}
-                    <div className="max-w-md mx-auto px-4 pt-6 pb-24">
-                        {/* Header */}
-                        <header className="flex justify-between items-center mb-6">
-                            <div>
-                                <h1 className="text-2xl font-bold text-gray-900">HabitFlow</h1>
-                                <p className="text-sm text-gray-500">{new Date().toLocaleDateString('ko-KR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                            </div>
-                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                <User />
-                            </div>
-                        </header>
-
-                        {/* Tab Content */}
-                        <main>
-                            {activeTab === 'today' && renderTodayTab()}
-                            {activeTab === 'habits' && renderHabitsTab()}
-                            {activeTab === 'stats' && renderStatsTab()}
-                            {activeTab === 'calendar' && renderCalendarTab()}
-                            {activeTab === 'settings' && renderSettingsTab()}
-                        </main>
-                    </div>
+                    <main className="px-4 pt-4">
+                        {activeTab === 'today' && renderTodayTab()}
+                        {activeTab === 'habits' && renderHabitsTab()}
+                        {activeTab === 'stats' && renderStatsTab()}
+                        {activeTab === 'calendar' && renderCalendarTab()}
+                        {activeTab === 'settings' && renderSettingsTab()}
+                    </main>
 
                     {/* Bottom Navigation */}
-                    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3">
-                        <div className="grid grid-cols-5 gap-2 max-w-md mx-auto">
-                            {[
-                                { id: 'today', icon: <CheckCircle2 />, label: '오늘' },
-                                { id: 'habits', icon: <Target />, label: '습관' },
-                                { id: 'stats', icon: <TrendingUp />, label: '통계' },
-                                { id: 'calendar', icon: <Calendar />, label: '달력' },
-                                { id: 'settings', icon: <Settings />, label: '설정' }
-                            ].map(tab => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`flex flex-col items-center py-2 rounded-lg ${activeTab === tab.id ? 'text-blue-600 bg-blue-50' : 'text-gray-500'}`}
-                                    aria-label={tab.label}
-                                >
-                                    <span className="text-lg">{tab.icon}</span>
-                                    <span className="text-xs mt-1">{tab.label}</span>
-                                </button>
-                            ))}
-                        </div>
+                    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex justify-between items-center">
+                        <button 
+                            onClick={() => setActiveTab('today')} 
+                            className={`flex flex-col items-center px-3 py-2 rounded-lg ${activeTab === 'today' ? 'text-blue-600 bg-blue-50' : 'text-gray-500'}`}
+                            aria-label="오늘"
+                        >
+                            <Target />
+                            <span className="text-xs mt-1">오늘</span>
+                        </button>
+                        <button 
+                            onClick={() => setActiveTab('habits')} 
+                            className={`flex flex-col items-center px-3 py-2 rounded-lg ${activeTab === 'habits' ? 'text-blue-600 bg-blue-50' : 'text-gray-500'}`}
+                            aria-label="습관"
+                        >
+                            <TrendingUp />
+                            <span className="text-xs mt-1">습관</span>
+                        </button>
+                        <button 
+                            onClick={() => setActiveTab('stats')} 
+                            className={`flex flex-col items-center px-3 py-2 rounded-lg ${activeTab === 'stats' ? 'text-blue-600 bg-blue-50' : 'text-gray-500'}`}
+                            aria-label="통계"
+                        >
+                            <BarChart3 />
+                            <span className="text-xs mt-1">통계</span>
+                        </button>
+                        <button 
+                            onClick={() => setActiveTab('calendar')} 
+                            className={`flex flex-col items-center px-3 py-2 rounded-lg ${activeTab === 'calendar' ? 'text-blue-600 bg-blue-50' : 'text-gray-500'}`}
+                            aria-label="달력"
+                        >
+                            <Calendar />
+                            <span className="text-xs mt-1">달력</span>
+                        </button>
+                        <button 
+                            onClick={() => setActiveTab('settings')} 
+                            className={`flex flex-col items-center px-3 py-2 rounded-lg ${activeTab === 'settings' ? 'text-blue-600 bg-blue-50' : 'text-gray-500'}`}
+                            aria-label="설정"
+                        >
+                            <Settings />
+                            <span className="text-xs mt-1">설정</span>
+                        </button>
                     </nav>
-
-                    {/* Alert Toast */}
-                    {showAlert && (
-                        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300">
-                            {alertMessage}
-                        </div>
-                    )}
 
                     {/* Add Habit Modal */}
                     {showAddForm && (
@@ -897,11 +906,9 @@
                                 <h3 className="text-lg font-bold text-gray-900 mb-4">새 습관 추가</h3>
                                 
                                 {duplicateCheck.isDuplicate ? (
-                                    <div className="space-y-4">
-                                        <p className="text-gray-700">
-                                            이미 '<span className="font-medium">{duplicateCheck.duplicateTitle}</span>' 습관이 존재합니다.
-                                        </p>
-                                        <div className="flex space-x-3">
+                                    <div className="mb-4">
+                                        <p className="text-red-600 mb-3">이미 "{duplicateCheck.duplicateTitle}" 습관이 존재합니다.</p>
+                                        <div className="flex space-x-2">
                                             <button 
                                                 onClick={() => setDuplicateCheck({ isDuplicate: false, duplicateTitle: '' })}
                                                 className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
@@ -909,58 +916,49 @@
                                                 다른 이름 사용
                                             </button>
                                             <button 
-                                                onClick={() => {
-                                                    setShowAddForm(false);
-                                                    setDuplicateCheck({ isDuplicate: false, duplicateTitle: '' });
-                                                }}
+                                                onClick={addHabitConfirmed}
                                                 className="flex-1 bg-blue-500 text-white py-3 rounded-xl font-medium hover:bg-blue-600 transition-colors"
                                             >
-                                                확인
+                                                그래도 추가
                                             </button>
                                         </div>
                                     </div>
                                 ) : (
                                     <>
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label htmlFor="habitTitle" className="block text-sm font-medium text-gray-700 mb-1">습관 이름</label>
-                                                <input
-                                                    type="text"
-                                                    id="habitTitle"
-                                                    value={newHabit.title}
-                                                    onChange={(e) => setNewHabit({...newHabit, title: e.target.value})}
-                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                    placeholder="예: 아침 6시 기상"
-                                                    aria-label="습관 이름 입력"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label htmlFor="habitCategory" className="block text-sm font-medium text-gray-700 mb-1">카테고리</label>
-                                                <select
-                                                    id="habitCategory"
-                                                    value={newHabit.category}
-                                                    onChange={(e) => setNewHabit({...newHabit, category: e.target.value})}
-                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                    aria-label="습관 카테고리 선택"
-                                                >
-                                                    <option value="건강">건강</option>
-                                                    <option value="운동">운동</option>
-                                                    <option value="학습">학습</option>
-                                                    <option value="자기계발">자기계발</option>
-                                                    <option value="생활">생활</option>
-                                                    <option value="기타">기타</option>
-                                                </select>
-                                            </div>
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">습관 이름</label>
+                                            <input
+                                                type="text"
+                                                value={newHabit.title}
+                                                onChange={(e) => setNewHabit({...newHabit, title: e.target.value})}
+                                                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                                placeholder="예: 아침 6시 기상"
+                                            />
                                         </div>
-                                        <div className="flex space-x-3 mt-6">
-                                            <button 
-                                                onClick={() => setShowAddForm(false)} 
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">카테고리</label>
+                                            <select
+                                                value={newHabit.category}
+                                                onChange={(e) => setNewHabit({...newHabit, category: e.target.value})}
+                                                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                            >
+                                                <option value="건강">건강</option>
+                                                <option value="운동">운동</option>
+                                                <option value="학습">학습</option>
+                                                <option value="생활">생활</option>
+                                                <option value="자기계발">자기계발</option>
+                                                <option value="기타">기타</option>
+                                            </select>
+                                        </div>
+                                        <div className="flex space-x-3">
+                                            <button
+                                                onClick={() => setShowAddForm(false)}
                                                 className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
                                             >
                                                 취소
                                             </button>
-                                            <button 
-                                                onClick={handleAddHabit} 
+                                            <button
+                                                onClick={handleAddHabit}
                                                 className="flex-1 bg-blue-500 text-white py-3 rounded-xl font-medium hover:bg-blue-600 transition-colors"
                                             >
                                                 추가
@@ -972,29 +970,31 @@
                         </div>
                     )}
 
-                    {/* Recommended Habits Modal */}
+                    {/* Recommendations Modal */}
                     {showRecommendations && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                            <div className="bg-white rounded-xl p-5 w-full max-w-md">
+                            <div className="bg-white rounded-xl p-5 w-full max-w-md max-h-[80vh] overflow-y-auto">
                                 <h3 className="text-lg font-bold text-gray-900 mb-4">추천 습관</h3>
-                                <div className="space-y-3 mb-6">
+                                <div className="space-y-3">
                                     {recommendedHabits.map((habit, index) => (
-                                        <button 
+                                        <button
                                             key={index}
                                             onClick={() => addRecommendedHabit(habit)}
-                                            className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-3"
+                                            className="w-full text-left bg-white border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition-colors"
                                         >
-                                            <span className="text-xl">{habit.icon}</span>
-                                            <div>
-                                                <p className="font-medium text-gray-900">{habit.title}</p>
-                                                <p className="text-sm text-gray-500">{habit.category}</p>
+                                            <div className="flex items-center space-x-3">
+                                                <span className="text-2xl">{habit.icon}</span>
+                                                <div>
+                                                    <h4 className="font-medium text-gray-900">{habit.title}</h4>
+                                                    <p className="text-sm text-gray-500">{habit.category}</p>
+                                                </div>
                                             </div>
                                         </button>
                                     ))}
                                 </div>
-                                <button 
-                                    onClick={() => setShowRecommendations(false)} 
-                                    className="w-full bg-gray-200 text-gray-800 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
+                                <button
+                                    onClick={() => setShowRecommendations(false)}
+                                    className="w-full mt-4 bg-gray-200 text-gray-800 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
                                 >
                                     닫기
                                 </button>
@@ -1007,30 +1007,30 @@
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                             <div className="bg-white rounded-xl p-5 w-full max-w-md">
                                 <h3 className="text-lg font-bold text-gray-900 mb-4">
-                                    {selectedDate.date.toLocaleDateString('ko-KR', { 
-                                        year: 'numeric', 
-                                        month: 'long', 
+                                    {selectedDate.date.toLocaleDateString('ko-KR', {
+                                        year: 'numeric',
+                                        month: 'long',
                                         day: 'numeric',
                                         weekday: 'long'
                                     })}
                                 </h3>
                                 
-                                <div className="bg-blue-50 rounded-lg p-4 mb-4">
-                                    <h4 className="font-medium text-gray-900 mb-2">성취도</h4>
-                                    <p className="text-3xl font-bold text-blue-600 mb-2">{selectedDate.achievement.rate}%</p>
-                                    <div className="w-full bg-blue-100 rounded-full h-2">
-                                        <div 
-                                            className="bg-blue-600 h-2 rounded-full" 
-                                            style={{ width: `${selectedDate.achievement.rate}%` }}
-                                        ></div>
+                                <div className="mb-4">
+                                    <h4 className="font-medium text-gray-700 mb-2">성취도</h4>
+                                    <div className="flex items-center space-x-3">
+                                        <div className={`w-16 h-16 rounded-full flex items-center justify-center ${getAchievementColorClass(selectedDate.achievement.rate)}`}>
+                                            <span className="text-xl font-bold">{selectedDate.achievement.rate}%</span>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-600">
+                                                {selectedDate.achievement.completed} / {selectedDate.achievement.total} 습관 완료
+                                            </p>
+                                        </div>
                                     </div>
-                                    <p className="text-sm text-gray-600 mt-2">
-                                        {selectedDate.achievement.completed} / {selectedDate.achievement.total} 습관 완료
-                                    </p>
                                 </div>
                                 
-                                <button 
-                                    onClick={() => setShowDateModal(false)} 
+                                <button
+                                    onClick={() => setShowDateModal(false)}
                                     className="w-full bg-gray-200 text-gray-800 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
                                 >
                                     닫기
@@ -1039,39 +1039,25 @@
                         </div>
                     )}
 
-                    {/* Delete Confirmation Modal */}
-                    {showDeleteModal && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                            <div className="bg-white rounded-xl p-5 w-full max-w-md">
-                                <h3 className="text-lg font-bold text-gray-900 mb-4">모든 데이터 삭제</h3>
-                                <p className="text-gray-700 mb-6">정말로 모든 습관 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
-                                <div className="flex space-x-3">
-                                    <button 
-                                        onClick={() => setShowDeleteModal(false)} 
-                                        className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
-                                    >
-                                        취소
-                                    </button>
-                                    <button 
-                                        onClick={() => {
-                                            clearLocalStorage();
-                                            setHabits([]);
-                                            setShowDeleteModal(false);
-                                            handleShowAlert('모든 데이터가 삭제되었습니다.');
-                                        }} 
-                                        className="flex-1 bg-red-500 text-white py-3 rounded-xl font-medium hover:bg-red-600 transition-colors"
-                                    >
-                                        삭제
-                                    </button>
-                                </div>
-                            </div>
+                    {/* Alert Message */}
+                    {showAlert && (
+                        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg z-50">
+                            {alertMessage}
+                        </div>
+                    )}
+
+                    {/* Loading Screen */}
+                    {loading && (
+                        <div className="fixed inset-0 bg-white flex flex-col items-center justify-center z-50">
+                            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                            <p className="text-gray-600">습관을 불러오는 중...</p>
                         </div>
                     )}
                 </div>
             );
         };
 
-        // Render the app
+        // Render the application
         root.render(<HabitTracker />);
     </script>
 </body>
