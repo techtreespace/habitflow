@@ -9,10 +9,10 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- Firebase SDK v9 (최신 버전) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <style>
         body {
             margin: 0;
@@ -83,11 +83,22 @@
             measurementId: "G-FHQPMRBX50"
         };
 
-        // Firebase 초기화
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const firestore = firebase.firestore();
-        const googleProvider = new firebase.auth.GoogleAuthProvider();
+        // Firebase 초기화 (에러 핸들링 추가)
+        let auth, firestore, googleProvider;
+        
+        try {
+            firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            firestore = firebase.firestore();
+            googleProvider = new firebase.auth.GoogleAuthProvider();
+            console.log('Firebase 초기화 성공');
+        } catch (error) {
+            console.error('Firebase 초기화 실패:', error);
+            // Firebase 없이도 앱이 작동하도록 폴백
+            auth = null;
+            firestore = null;
+            googleProvider = null;
+        }
 
         const { useState, useEffect } = React;
         
@@ -193,6 +204,22 @@
 
             // Firebase 인증 상태 감지
             useEffect(() => {
+                if (!auth) {
+                    // Firebase가 없으면 로그인 없이 로컬 모드로 실행
+                    setUser({ uid: 'local-user', displayName: '로컬 사용자' });
+                    setLoading(false);
+                    // 로컬 스토리지에서 습관 데이터 로드
+                    const savedHabits = localStorage.getItem('habitflow-habits');
+                    if (savedHabits) {
+                        try {
+                            setHabits(JSON.parse(savedHabits));
+                        } catch (e) {
+                            console.error('로컬 데이터 로드 실패:', e);
+                        }
+                    }
+                    return;
+                }
+                
                 const unsubscribe = auth.onAuthStateChanged((user) => {
                     setUser(user);
                     setLoading(false);
@@ -207,6 +234,7 @@
 
             // 사용자 습관 데이터 로드
             const loadUserHabits = async (userId) => {
+                if (!firestore) return;
                 try {
                     const habitsRef = firestore.collection('users').doc(userId).collection('habits');
                     const snapshot = await habitsRef.get();
@@ -220,24 +248,45 @@
                 }
             };
 
-            // 습관 데이터 저장
+            // 습관 데이터 저장 (Firebase 또는 로컬)
             const saveHabitToFirestore = async (habit) => {
                 if (!user) return;
+                
+                if (!firestore || user.uid === 'local-user') {
+                    // 로컬 스토리지에 저장
+                    const currentHabits = habits.filter(h => h.id !== habit.id);
+                    const updatedHabits = [...currentHabits, habit];
+                    localStorage.setItem('habitflow-habits', JSON.stringify(updatedHabits));
+                    return habit.id || Date.now().toString();
+                }
+                
                 try {
                     const habitsRef = firestore.collection('users').doc(user.uid).collection('habits');
                     if (habit.id && typeof habit.id === 'string') {
                         await habitsRef.doc(habit.id).set(habit);
+                        return habit.id;
                     } else {
                         const docRef = await habitsRef.add(habit);
                         return docRef.id;
                     }
                 } catch (error) {
                     console.error('습관 저장 실패:', error);
+                    // Firebase 실패 시 로컬 저장으로 폴백
+                    const habitId = habit.id || Date.now().toString();
+                    const updatedHabit = { ...habit, id: habitId };
+                    const currentHabits = habits.filter(h => h.id !== habitId);
+                    const updatedHabits = [...currentHabits, updatedHabit];
+                    localStorage.setItem('habitflow-habits', JSON.stringify(updatedHabits));
+                    return habitId;
                 }
             };
 
             // 구글 로그인
             const signInWithGoogle = async () => {
+                if (!auth || !googleProvider) {
+                    alert('Firebase 인증을 사용할 수 없습니다. 로컬 모드로 계속 사용하세요.');
+                    return;
+                }
                 try {
                     await auth.signInWithPopup(googleProvider);
                     setShowLoginModal(false);
@@ -250,6 +299,10 @@
             // 이메일 로그인
             const signInWithEmail = async (e) => {
                 e.preventDefault();
+                if (!auth) {
+                    alert('Firebase 인증을 사용할 수 없습니다. 로컬 모드로 계속 사용하세요.');
+                    return;
+                }
                 try {
                     await auth.signInWithEmailAndPassword(loginForm.email, loginForm.password);
                     setShowLoginModal(false);
@@ -263,6 +316,10 @@
             // 이메일 회원가입
             const signUpWithEmail = async (e) => {
                 e.preventDefault();
+                if (!auth) {
+                    alert('Firebase 인증을 사용할 수 없습니다. 로컬 모드로 계속 사용하세요.');
+                    return;
+                }
                 if (signupForm.password !== signupForm.confirmPassword) {
                     alert('비밀번호가 일치하지 않습니다.');
                     return;
@@ -279,6 +336,7 @@
 
             // 로그아웃
             const signOut = async () => {
+                if (!auth) return;
                 try {
                     await auth.signOut();
                 } catch (error) {
@@ -316,7 +374,8 @@
                 );
             }
 
-            if (!user) {
+            // Firebase가 없거나 로컬 모드인 경우 바로 앱 실행
+            if (!user && auth) {
                 return (
                     <div className="fixed inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 flex items-center justify-center p-4">
                         <div className="bg-white rounded-2xl p-8 w-full max-w-sm text-center">
