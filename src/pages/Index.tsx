@@ -66,10 +66,8 @@ const Index = () => {
 
   const renderTab = () => {
     switch (activeTab) {
-      case "stats":
-        return <StatsPage refreshKey={refreshKey} />;
-      case "calendar":
-        return <CalendarPage refreshKey={refreshKey} />;
+      case "analytics":
+        return <AnalyticsPage refreshKey={refreshKey} />;
       case "community":
         return <CommunityPage />;
       case "profile":
