@@ -111,4 +111,11 @@
   .streak-badge {
     @apply bg-streak-light text-streak;
   }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
