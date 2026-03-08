@@ -139,7 +139,7 @@ const Index = () => {
         <div key={activeTab}>{renderTab()}</div>
       </div>
 
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} onAdd={() => setShowAdd(true)} />
+      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       <AddHabitDialog open={showAdd} onClose={() => setShowAdd(false)} onAdded={refresh} />
 
       <AnimatePresence>
