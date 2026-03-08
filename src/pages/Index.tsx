@@ -162,6 +162,11 @@ const Index = () => {
           <div className="flex items-center gap-2 text-muted-foreground">
             <CalendarDays className="w-4 h-4" />
             <p className="text-sm font-medium">{monthDay}</p>
+            {weather.loaded && (
+              <span className="text-sm font-medium ml-1">
+                {weather.emoji} {weather.temperature}°
+              </span>
+            )}
           </div>
         </motion.div>
 
