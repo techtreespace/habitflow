@@ -134,28 +134,73 @@ export default function ProfilePage({ onLockScreen }: ProfilePageProps) {
         </div>
       </div>
 
-      {/* Badges section */}
+      {/* Per-habit Badges */}
       <div className="bg-card rounded-2xl shadow-sm overflow-hidden">
         <div className="flex items-center gap-2 px-4 pt-4 pb-2">
           <Award className="w-4 h-4 text-accent" />
-          <h3 className="text-sm font-semibold text-muted-foreground">배지 컬렉션</h3>
+          <h3 className="text-sm font-semibold text-muted-foreground">습관 배지</h3>
         </div>
-        <div className="px-4 pb-4 grid grid-cols-3 gap-2">
-          {ALL_BADGES.map((badge) => {
-            const earned = earnedBadgeTypes.includes(badge.type);
+
+        {/* Master badge */}
+        {(() => {
+          const master = getEarnedMasterBadge();
+          return master ? (
+            <div className="px-4 pb-2">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-accent/10 to-primary/10 border border-accent/20">
+                <span className="text-xl">{master.emoji}</span>
+                <div>
+                  <p className="text-xs font-bold text-accent">{master.label}</p>
+                  <p className="text-[10px] text-muted-foreground">{master.description}</p>
+                </div>
+              </div>
+            </div>
+          ) : null;
+        })()}
+
+        {/* Per-habit badges */}
+        <div className="px-4 pb-4 space-y-2">
+          {getAllHabitBadges().map((hb) => {
+            const progress = hb.nextTier
+              ? Math.min(100, Math.round(((hb.streak - hb.tier.minStreak) / (hb.nextTier.minStreak - hb.tier.minStreak)) * 100))
+              : 100;
             return (
-              <div
-                key={badge.type}
-                className={`rounded-xl p-3 text-center transition-all ${
-                  earned ? "bg-primary/8" : "bg-muted/50 opacity-40"
-                }`}
-              >
-                <span className="text-2xl block mb-1">{badge.emoji}</span>
-                <p className="text-[10px] font-semibold">{badge.label}</p>
-                <p className="text-[9px] text-muted-foreground">{badge.description}</p>
+              <div key={hb.habit.id} className="flex items-center gap-3 py-2">
+                <span className="text-xl w-8 text-center">{hb.tier.emoji}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-xs font-semibold truncate">{hb.habit.emoji} {hb.habit.name}</span>
+                    <span className={`text-[10px] font-bold ${hb.tier.color}`}>{hb.tier.label}</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  <p className="text-[9px] text-muted-foreground mt-0.5">
+                    {hb.streak}일 연속
+                    {hb.nextTier && ` · 다음: ${hb.nextTier.emoji} ${hb.nextTier.label} (${hb.nextTier.minStreak}일)`}
+                    {!hb.nextTier && " · 최고 등급 달성! 🎉"}
+                  </p>
+                </div>
               </div>
             );
           })}
+          {getAllHabitBadges().length === 0 && (
+            <p className="text-xs text-muted-foreground/60 text-center py-4">습관을 추가하면 배지를 모을 수 있어요</p>
+          )}
+        </div>
+
+        {/* Tier guide */}
+        <div className="px-4 pb-4">
+          <p className="text-[10px] text-muted-foreground mb-1.5 font-medium">등급 안내</p>
+          <div className="flex gap-1.5 flex-wrap">
+            {HABIT_TIERS.map((t) => (
+              <span key={t.tier} className="text-[10px] px-2 py-0.5 rounded-md bg-muted/50">
+                {t.emoji} {t.label} ({t.minStreak}일+)
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
