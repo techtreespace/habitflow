@@ -141,17 +141,9 @@ const Index = () => {
         </motion.div>
 
         {/* Tab content */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.15 }}
-          >
-            {renderTab()}
-          </motion.div>
-        </AnimatePresence>
+        <div key={activeTab}>
+          {renderTab()}
+        </div>
       </div>
 
       {/* Bottom navigation with integrated FAB */}
