@@ -23,30 +23,29 @@ export default function CommunityPage() {
       {/* Groups - browsable for all */}
       <div>
         <h3 className="text-sm font-semibold text-muted-foreground mb-3">인기 습관 그룹</h3>
-        <div className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5 scrollbar-hide">
+        <div className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5 snap-x snap-mandatory no-scrollbar">
           {GROUPS.map((group, i) => (
             <motion.div
               key={group.name}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="bg-card rounded-2xl p-4 shadow-sm min-w-[160px] shrink-0"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.04 }}
+              className="bg-card rounded-xl p-3.5 shadow-sm min-w-[140px] max-w-[140px] shrink-0 snap-start"
             >
-              <span className="text-3xl block mb-2">{group.emoji}</span>
-              <p className="text-sm font-semibold truncate">{group.name}</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">{group.desc}</p>
-              <div className="flex items-center gap-1 mt-2">
-                <Users className="w-3 h-3 text-muted-foreground" />
-                <span className="text-[11px] text-muted-foreground">{group.members.toLocaleString()}명</span>
+              <span className="text-2xl block mb-1.5">{group.emoji}</span>
+              <p className="text-xs font-bold truncate">{group.name}</p>
+              <div className="flex items-center gap-1 mt-1">
+                <Users className="w-2.5 h-2.5 text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground">{group.members.toLocaleString()}명</span>
               </div>
               <button
-                className={`mt-3 w-full py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                className={`mt-2 w-full py-1 rounded-lg text-[11px] font-semibold transition-colors ${
                   group.active
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-primary/10 text-primary"
                     : "bg-muted text-muted-foreground"
                 }`}
               >
-                {group.active ? "참여하기" : "곧 오픈"}
+                {group.active ? "참여" : "곧 오픈"}
               </button>
             </motion.div>
           ))}
