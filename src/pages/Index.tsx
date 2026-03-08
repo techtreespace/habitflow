@@ -75,11 +75,22 @@ const Index = () => {
       default:
         return (
           <>
+            {/* Add habit button - subtle, in section header */}
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm font-semibold text-muted-foreground">오늘의 습관</p>
+              <button
+                onClick={() => setShowAdd(true)}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" /> 습관 추가
+              </button>
+            </div>
+
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="mb-6"
+              className="mb-5"
               key={refreshKey}
             >
               <StatsBar refreshKey={refreshKey} />
@@ -88,20 +99,35 @@ const Index = () => {
             <div className="space-y-3">
               <AnimatePresence mode="popLayout">
                 {todayHabits.length > 0 ? (
-                  todayHabits.map((habit) => (
-                    <div key={habit.id} onClick={() => setSelectedHabit(habit)}>
-                      <HabitCard habit={habit} date={today} onToggle={refresh} onDelete={handleDelete} />
+                  todayHabits.map((habit, i) => (
+                    <div key={habit.id}>
+                      <div onClick={() => setSelectedHabit(habit)}>
+                        <HabitCard habit={habit} date={today} onToggle={refresh} onDelete={handleDelete} />
+                      </div>
+                      {/* Ad after 2nd habit */}
+                      {i === 1 && todayHabits.length > 2 && (
+                        <div className="mt-3">
+                          <AdBanner variant="inline" />
+                        </div>
+                      )}
                     </div>
                   ))
                 ) : (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
                     <span className="text-5xl mb-4 block">🌱</span>
                     <h2 className="text-lg font-bold mb-2">좋은 습관을 시작하세요</h2>
-                    <p className="text-muted-foreground text-sm">아래 + 버튼을 눌러 첫 번째 습관을 만들어보세요</p>
+                    <p className="text-muted-foreground text-sm mb-4">위 버튼을 눌러 첫 번째 습관을 만들어보세요</p>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Card-style ad after habit list */}
+            {todayHabits.length > 0 && (
+              <div className="mt-5">
+                <AdBanner variant="card" />
+              </div>
+            )}
 
             {habits.length > todayHabits.length && (
               <div className="mt-8">
