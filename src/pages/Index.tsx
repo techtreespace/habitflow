@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Leaf, CalendarDays } from "lucide-react";
 import { getHabits, deleteHabit, Habit } from "@/lib/habits";
+import { getProfile, isScreenLocked, setScreenLocked } from "@/lib/profile";
 import HabitCard from "@/components/HabitCard";
 import AddHabitDialog from "@/components/AddHabitDialog";
 import StatsBar from "@/components/StatsBar";
@@ -10,6 +11,8 @@ import BottomNav, { TabType } from "@/components/BottomNav";
 import StatsPage from "@/components/StatsPage";
 import CalendarPage from "@/components/CalendarPage";
 import DiscoverPage from "@/components/DiscoverPage";
+import ProfilePage from "@/components/ProfilePage";
+import LockScreen from "@/components/LockScreen";
 import { useNotifications } from "@/hooks/useNotifications";
 import { toast } from "sonner";
 
@@ -18,6 +21,11 @@ const Index = () => {
   const [showAdd, setShowAdd] = useState(false);
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("today");
+  const [locked, setLocked] = useState(() => {
+    const profile = getProfile();
+    return profile.screenLockEnabled && isScreenLocked();
+  });
+
   const habits = getHabits();
   const today = new Date();
   const dayOfWeek = today.getDay();
@@ -33,6 +41,15 @@ const Index = () => {
       });
     }
   }, [habits, requestPermission]);
+
+  const handleLockScreen = () => {
+    setScreenLocked(true);
+    setLocked(true);
+  };
+
+  if (locked) {
+    return <LockScreen onUnlock={() => setLocked(false)} />;
+  }
 
   const todayHabits = habits.filter((h) => h.activeDays.includes(dayOfWeek));
 
@@ -52,10 +69,11 @@ const Index = () => {
         return <CalendarPage refreshKey={refreshKey} />;
       case "discover":
         return <DiscoverPage onAdded={refresh} />;
+      case "profile":
+        return <ProfilePage onLockScreen={handleLockScreen} />;
       default:
         return (
           <>
-            {/* Stats summary */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -66,37 +84,24 @@ const Index = () => {
               <StatsBar refreshKey={refreshKey} />
             </motion.div>
 
-            {/* Habit List */}
             <div className="space-y-3">
               <AnimatePresence mode="popLayout">
                 {todayHabits.length > 0 ? (
                   todayHabits.map((habit) => (
                     <div key={habit.id} onClick={() => setSelectedHabit(habit)}>
-                      <HabitCard
-                        habit={habit}
-                        date={today}
-                        onToggle={refresh}
-                        onDelete={handleDelete}
-                      />
+                      <HabitCard habit={habit} date={today} onToggle={refresh} onDelete={handleDelete} />
                     </div>
                   ))
                 ) : (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-center py-16"
-                  >
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
                     <span className="text-5xl mb-4 block">🌱</span>
                     <h2 className="text-lg font-bold mb-2">좋은 습관을 시작하세요</h2>
-                    <p className="text-muted-foreground text-sm">
-                      아래 + 버튼을 눌러 첫 번째 습관을 만들어보세요
-                    </p>
+                    <p className="text-muted-foreground text-sm">아래 + 버튼을 눌러 첫 번째 습관을 만들어보세요</p>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
-            {/* Other habits */}
             {habits.length > todayHabits.length && (
               <div className="mt-8">
                 <p className="text-sm font-medium text-muted-foreground mb-3">다른 습관</p>
@@ -105,12 +110,7 @@ const Index = () => {
                     .filter((h) => !h.activeDays.includes(dayOfWeek))
                     .map((habit) => (
                       <div key={habit.id} onClick={() => setSelectedHabit(habit)} className="opacity-50">
-                        <HabitCard
-                          habit={habit}
-                          date={today}
-                          onToggle={refresh}
-                          onDelete={handleDelete}
-                        />
+                        <HabitCard habit={habit} date={today} onToggle={refresh} onDelete={handleDelete} />
                       </div>
                     ))}
                 </div>
@@ -124,12 +124,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-md mx-auto px-5 pt-12 pb-24">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
-        >
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <div className="flex items-center gap-2 mb-1">
             <Leaf className="w-6 h-6 text-primary" />
             <h1 className="text-2xl font-extrabold tracking-tight">HabitFlow</h1>
@@ -140,26 +135,15 @@ const Index = () => {
           </div>
         </motion.div>
 
-        {/* Tab content */}
-        <div key={activeTab}>
-          {renderTab()}
-        </div>
+        <div key={activeTab}>{renderTab()}</div>
       </div>
 
-      {/* Bottom navigation with integrated FAB */}
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} onAdd={() => setShowAdd(true)} />
-
-      {/* Add dialog */}
       <AddHabitDialog open={showAdd} onClose={() => setShowAdd(false)} onAdded={refresh} />
 
-      {/* Detail view */}
       <AnimatePresence>
         {selectedHabit && (
-          <HabitDetail
-            habit={selectedHabit}
-            onClose={() => setSelectedHabit(null)}
-            refreshKey={refreshKey}
-          />
+          <HabitDetail habit={selectedHabit} onClose={() => setSelectedHabit(null)} refreshKey={refreshKey} />
         )}
       </AnimatePresence>
     </div>
