@@ -6,7 +6,7 @@ import {
   AVATAR_EMOJIS,
   UserProfile,
 } from "@/lib/profile";
-import { getProStatus, ALL_BADGES, getEarnedBadges, PRO_FEATURES } from "@/lib/membership";
+import { getProStatus, ALL_BADGES, getEarnedBadges, PRO_FEATURES, getAllHabitBadges, getEarnedMasterBadge, HABIT_TIERS } from "@/lib/membership";
 import { getHabits, getStreak } from "@/lib/habits";
 import { ProBadgeInline } from "@/components/BadgeIcon";
 import {
