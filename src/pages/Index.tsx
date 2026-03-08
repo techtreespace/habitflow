@@ -14,7 +14,9 @@ import CommunityPage from "@/components/CommunityPage";
 import AdBanner from "@/components/AdBanner";
 import ProfilePage from "@/components/ProfilePage";
 import LockScreen from "@/components/LockScreen";
+import TodoSection from "@/components/TodoSection";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useWeather } from "@/hooks/useWeather";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -33,6 +35,7 @@ const Index = () => {
 
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), []);
   const { requestPermission } = useNotifications(refreshKey);
+  const weather = useWeather();
 
   useEffect(() => {
     const hasReminder = habits.some((h) => h.reminderTime);
@@ -129,6 +132,8 @@ const Index = () => {
               </div>
             )}
 
+            <TodoSection refreshKey={refreshKey} />
+
             {habits.length > todayHabits.length && (
               <div className="mt-8">
                 <p className="text-sm font-medium text-muted-foreground mb-3">다른 습관</p>
@@ -159,6 +164,11 @@ const Index = () => {
           <div className="flex items-center gap-2 text-muted-foreground">
             <CalendarDays className="w-4 h-4" />
             <p className="text-sm font-medium">{monthDay}</p>
+            {weather.loaded && (
+              <span className="text-sm font-medium ml-1">
+                {weather.emoji} {weather.temperature}°
+              </span>
+            )}
           </div>
         </motion.div>
 
