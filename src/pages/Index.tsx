@@ -14,7 +14,9 @@ import CommunityPage from "@/components/CommunityPage";
 import AdBanner from "@/components/AdBanner";
 import ProfilePage from "@/components/ProfilePage";
 import LockScreen from "@/components/LockScreen";
+import TodoSection from "@/components/TodoSection";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useWeather } from "@/hooks/useWeather";
 import { toast } from "sonner";
 
 const Index = () => {
