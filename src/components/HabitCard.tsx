@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Check, Flame, Trash2, Bell } from "lucide-react";
 import { Habit, getStreak, isHabitDone, toggleHabitLog, formatDate } from "@/lib/habits";
+import { getHabitTier } from "@/lib/membership";
 import { useState } from "react";
 
 interface HabitCardProps {
