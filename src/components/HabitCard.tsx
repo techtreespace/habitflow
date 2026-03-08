@@ -15,6 +15,7 @@ export default function HabitCard({ habit, date, onToggle, onDelete }: HabitCard
   const dateStr = formatDate(date);
   const done = isHabitDone(habit.id, dateStr);
   const streak = getStreak(habit.id);
+  const tier = getHabitTier(streak);
   const [showDelete, setShowDelete] = useState(false);
 
   const handleToggle = () => {
