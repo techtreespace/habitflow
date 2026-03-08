@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Leaf, CalendarDays, Plus } from "lucide-react";
+import { Leaf, CalendarDays } from "lucide-react";
 import { getHabits, deleteHabit, Habit } from "@/lib/habits";
 import { getProfile, isScreenLocked, setScreenLocked } from "@/lib/profile";
 import HabitCard from "@/components/HabitCard";
@@ -14,6 +14,7 @@ import AdBanner from "@/components/AdBanner";
 import ProfilePage from "@/components/ProfilePage";
 import LockScreen from "@/components/LockScreen";
 import TodoSection from "@/components/TodoSection";
+import TodayTabs from "@/components/TodayTabs";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useWeather } from "@/hooks/useWeather";
 import { toast } from "sonner";
@@ -75,17 +76,7 @@ const Index = () => {
       default:
         return (
           <>
-            {/* Add habit button - subtle, in section header */}
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-sm font-semibold text-muted-foreground">오늘의 습관</p>
-              <button
-                onClick={() => setShowAdd(true)}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" /> 습관 추가
-              </button>
-            </div>
-
+            {/* Compact stats */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -96,49 +87,31 @@ const Index = () => {
               <StatsBar refreshKey={refreshKey} />
             </motion.div>
 
-            <div className="space-y-3">
-              <AnimatePresence mode="popLayout">
-                {todayHabits.length > 0 ? (
-                  todayHabits.map((habit, i) => (
-                    <div key={habit.id}>
-                      <div onClick={() => setSelectedHabit(habit)}>
-                        <HabitCard habit={habit} date={today} onToggle={refresh} onDelete={handleDelete} />
-                      </div>
-                      {/* Ad after 2nd habit */}
-                      {i === 1 && todayHabits.length > 2 && (
-                        <div className="mt-3">
-                          <AdBanner variant="inline" />
-                        </div>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
-                    <span className="text-5xl mb-4 block">🌱</span>
-                    <h2 className="text-lg font-bold mb-2">좋은 습관을 시작하세요</h2>
-                    <p className="text-muted-foreground text-sm mb-4">위 버튼을 눌러 첫 번째 습관을 만들어보세요</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+            {/* Habits + Todos unified section */}
+            <TodayTabs
+              todayHabits={todayHabits}
+              today={today}
+              refresh={refresh}
+              handleDelete={handleDelete}
+              setSelectedHabit={setSelectedHabit}
+              setShowAdd={setShowAdd}
+              refreshKey={refreshKey}
+            />
+
+            {/* Single ad at the bottom */}
+            <div className="mt-5">
+              <AdBanner variant="inline" />
             </div>
 
-            {/* Card-style ad after habit list */}
-            {todayHabits.length > 0 && (
-              <div className="mt-5">
-                <AdBanner variant="card" />
-              </div>
-            )}
-
-            <TodoSection refreshKey={refreshKey} />
-
+            {/* Other habits (not today) */}
             {habits.length > todayHabits.length && (
-              <div className="mt-8">
-                <p className="text-sm font-medium text-muted-foreground mb-3">다른 습관</p>
-                <div className="space-y-3">
+              <div className="mt-6">
+                <p className="text-xs font-medium text-muted-foreground mb-2">다른 요일 습관</p>
+                <div className="space-y-2 opacity-40">
                   {habits
                     .filter((h) => !h.activeDays.includes(dayOfWeek))
                     .map((habit) => (
-                      <div key={habit.id} onClick={() => setSelectedHabit(habit)} className="opacity-50">
+                      <div key={habit.id} onClick={() => setSelectedHabit(habit)}>
                         <HabitCard habit={habit} date={today} onToggle={refresh} onDelete={handleDelete} />
                       </div>
                     ))}

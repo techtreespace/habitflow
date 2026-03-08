@@ -51,7 +51,7 @@ export default function TodoSection({ refreshKey }: TodoSectionProps) {
   };
 
   return (
-    <div className="mt-6">
+    <div>
       {/* Header with date navigation */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-1.5">
