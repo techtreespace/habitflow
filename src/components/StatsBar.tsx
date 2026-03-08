@@ -57,21 +57,23 @@ export default function StatsBar({ refreshKey }: StatsBarProps) {
   if (stats.todayTotal === 0) return null;
 
   return (
-    <div className="grid grid-cols-3 gap-3">
-      <div className="bg-card rounded-2xl p-4 text-center shadow-sm">
-        <CheckCircle2 className="w-5 h-5 mx-auto mb-1 text-success" />
-        <p className="text-2xl font-bold">{stats.todayDone}/{stats.todayTotal}</p>
-        <p className="text-xs text-muted-foreground">오늘</p>
+    <div className="flex items-center gap-2 bg-card rounded-xl px-3 py-2.5 shadow-sm">
+      <div className="flex items-center gap-1.5 flex-1">
+        <CheckCircle2 className="w-4 h-4 text-success shrink-0" />
+        <span className="text-sm font-bold">{stats.todayDone}/{stats.todayTotal}</span>
+        <span className="text-[10px] text-muted-foreground">오늘</span>
       </div>
-      <div className="bg-card rounded-2xl p-4 text-center shadow-sm">
-        <Flame className="w-5 h-5 mx-auto mb-1 text-streak" />
-        <p className="text-2xl font-bold">{stats.maxStreak}</p>
-        <p className="text-xs text-muted-foreground">최대 연속</p>
+      <div className="w-px h-4 bg-border" />
+      <div className="flex items-center gap-1.5 flex-1">
+        <Flame className="w-4 h-4 text-streak shrink-0" />
+        <span className="text-sm font-bold">{stats.maxStreak}</span>
+        <span className="text-[10px] text-muted-foreground">연속</span>
       </div>
-      <div className="bg-card rounded-2xl p-4 text-center shadow-sm">
-        <TrendingUp className="w-5 h-5 mx-auto mb-1 text-primary" />
-        <p className="text-2xl font-bold">{stats.weekRate}%</p>
-        <p className="text-xs text-muted-foreground">주간 달성</p>
+      <div className="w-px h-4 bg-border" />
+      <div className="flex items-center gap-1.5 flex-1">
+        <TrendingUp className="w-4 h-4 text-primary shrink-0" />
+        <span className="text-sm font-bold">{stats.weekRate}%</span>
+        <span className="text-[10px] text-muted-foreground">주간</span>
       </div>
     </div>
   );
