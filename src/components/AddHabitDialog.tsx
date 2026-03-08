@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Bell, BellOff } from "lucide-react";
 import { addHabit, EMOJI_OPTIONS } from "@/lib/habits";
 
 interface AddHabitDialogProps {
@@ -15,6 +15,8 @@ export default function AddHabitDialog({ open, onClose, onAdded }: AddHabitDialo
   const [name, setName] = useState("");
   const [emoji, setEmoji] = useState("🏃");
   const [activeDays, setActiveDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
+  const [reminderEnabled, setReminderEnabled] = useState(false);
+  const [reminderTime, setReminderTime] = useState("08:00");
 
   const toggleDay = (day: number) => {
     setActiveDays((prev) =>
@@ -24,10 +26,18 @@ export default function AddHabitDialog({ open, onClose, onAdded }: AddHabitDialo
 
   const handleSubmit = () => {
     if (!name.trim()) return;
-    addHabit({ name: name.trim(), emoji, color: "primary", activeDays });
+    addHabit({
+      name: name.trim(),
+      emoji,
+      color: "primary",
+      activeDays,
+      reminderTime: reminderEnabled ? reminderTime : undefined,
+    });
     setName("");
     setEmoji("🏃");
     setActiveDays([0, 1, 2, 3, 4, 5, 6]);
+    setReminderEnabled(false);
+    setReminderTime("08:00");
     onAdded();
     onClose();
   };
@@ -44,7 +54,7 @@ export default function AddHabitDialog({ open, onClose, onAdded }: AddHabitDialo
             onClick={onClose}
           />
           <motion.div
-            className="fixed inset-x-4 bottom-4 z-50 bg-card rounded-2xl p-6 shadow-xl max-w-md mx-auto"
+            className="fixed inset-x-4 bottom-4 z-50 bg-card rounded-2xl p-6 shadow-xl max-w-md mx-auto max-h-[85vh] overflow-y-auto"
             initial={{ y: 300, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 300, opacity: 0 }}
@@ -108,6 +118,47 @@ export default function AddHabitDialog({ open, onClose, onAdded }: AddHabitDialo
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Reminder */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium text-muted-foreground">알림 설정</label>
+                  <button
+                    onClick={() => setReminderEnabled(!reminderEnabled)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${
+                      reminderEnabled
+                        ? "bg-primary/15 text-primary"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {reminderEnabled ? (
+                      <><Bell className="w-3.5 h-3.5" /> 켜짐</>
+                    ) : (
+                      <><BellOff className="w-3.5 h-3.5" /> 꺼짐</>
+                    )}
+                  </button>
+                </div>
+                <AnimatePresence>
+                  {reminderEnabled && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <input
+                        type="time"
+                        value={reminderTime}
+                        onChange={(e) => setReminderTime(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl bg-muted border-none outline-none text-foreground focus:ring-2 focus:ring-primary transition-all"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1.5">
+                        설정한 시간에 브라우저 알림을 받습니다 (앱이 열려있을 때)
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               <motion.button

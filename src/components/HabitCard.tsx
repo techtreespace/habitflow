@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Check, Flame, Trash2 } from "lucide-react";
+import { Check, Flame, Trash2, Bell } from "lucide-react";
 import { Habit, getStreak, isHabitDone, toggleHabitLog, formatDate } from "@/lib/habits";
 import { useState } from "react";
 
@@ -57,12 +57,20 @@ export default function HabitCard({ habit, date, onToggle, onDelete }: HabitCard
           <p className={`font-semibold text-base truncate ${done ? "line-through opacity-60" : ""}`}>
             {habit.name}
           </p>
-          {streak > 0 && (
-            <div className="flex items-center gap-1 mt-0.5">
-              <Flame className="w-3.5 h-3.5 text-streak" />
-              <span className="text-xs font-medium text-streak">{streak}일 연속</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2 mt-0.5">
+            {streak > 0 && (
+              <div className="flex items-center gap-1">
+                <Flame className="w-3.5 h-3.5 text-streak" />
+                <span className="text-xs font-medium text-streak">{streak}일 연속</span>
+              </div>
+            )}
+            {habit.reminderTime && (
+              <div className="flex items-center gap-0.5">
+                <Bell className="w-3 h-3 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">{habit.reminderTime}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Emoji badge */}
