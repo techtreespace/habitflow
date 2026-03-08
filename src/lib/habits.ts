@@ -6,6 +6,8 @@ export interface Habit {
   createdAt: string;
   // days of week: 0=Sun, 1=Mon, ... 6=Sat
   activeDays: number[];
+  // HH:mm format, e.g. "08:00"
+  reminderTime?: string;
 }
 
 export interface HabitLog {
