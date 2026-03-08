@@ -35,6 +35,7 @@ const Index = () => {
 
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), []);
   const { requestPermission } = useNotifications(refreshKey);
+  const weather = useWeather();
 
   useEffect(() => {
     const hasReminder = habits.some((h) => h.reminderTime);
