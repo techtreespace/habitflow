@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Leaf, CalendarDays } from "lucide-react";
+import { Leaf, CalendarDays, Plus } from "lucide-react";
 import { getHabits, deleteHabit, Habit } from "@/lib/habits";
 import { getProfile, isScreenLocked, setScreenLocked } from "@/lib/profile";
 import HabitCard from "@/components/HabitCard";
