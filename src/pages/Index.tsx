@@ -132,6 +132,8 @@ const Index = () => {
               </div>
             )}
 
+            <TodoSection refreshKey={refreshKey} />
+
             {habits.length > todayHabits.length && (
               <div className="mt-8">
                 <p className="text-sm font-medium text-muted-foreground mb-3">다른 습관</p>
