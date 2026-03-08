@@ -1,11 +1,13 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Leaf, CalendarDays } from "lucide-react";
+import { Plus, Leaf, CalendarDays, Bell } from "lucide-react";
 import { getHabits, deleteHabit, formatDate, Habit } from "@/lib/habits";
 import HabitCard from "@/components/HabitCard";
 import AddHabitDialog from "@/components/AddHabitDialog";
 import StatsBar from "@/components/StatsBar";
 import HabitDetail from "@/components/HabitDetail";
+import { useNotifications } from "@/hooks/useNotifications";
+import { toast } from "sonner";
 
 const Index = () => {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -16,6 +18,17 @@ const Index = () => {
   const dayOfWeek = today.getDay();
 
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), []);
+  const { requestPermission } = useNotifications(refreshKey);
+
+  // Ask for notification permission on first habit with reminder
+  useEffect(() => {
+    const hasReminder = habits.some((h) => h.reminderTime);
+    if (hasReminder && "Notification" in window && Notification.permission === "default") {
+      requestPermission().then((granted) => {
+        if (granted) toast.success("알림이 활성화되었습니다! 🔔");
+      });
+    }
+  }, [habits, requestPermission]);
 
   const todayHabits = habits.filter((h) => h.activeDays.includes(dayOfWeek));
 
