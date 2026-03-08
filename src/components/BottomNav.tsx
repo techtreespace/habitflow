@@ -1,6 +1,6 @@
-import { Home, BarChart3, CalendarDays, Users, User } from "lucide-react";
+import { Home, BarChart3, Users, User } from "lucide-react";
 
-export type TabType = "today" | "stats" | "calendar" | "community" | "profile";
+export type TabType = "today" | "analytics" | "community" | "profile";
 
 interface BottomNavProps {
   activeTab: TabType;
@@ -9,9 +9,8 @@ interface BottomNavProps {
 
 const tabs: { id: TabType; label: string; icon: typeof Home }[] = [
   { id: "today", label: "오늘", icon: Home },
-  { id: "stats", label: "통계", icon: BarChart3 },
+  { id: "analytics", label: "분석", icon: BarChart3 },
   { id: "community", label: "커뮤니티", icon: Users },
-  { id: "calendar", label: "캘린더", icon: CalendarDays },
   { id: "profile", label: "MY", icon: User },
 ];
 
