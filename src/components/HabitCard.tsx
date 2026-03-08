@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Check, Flame, Trash2, Bell } from "lucide-react";
 import { Habit, getStreak, isHabitDone, toggleHabitLog, formatDate } from "@/lib/habits";
+import { getHabitTier } from "@/lib/membership";
 import { useState } from "react";
 
 interface HabitCardProps {
@@ -14,6 +15,7 @@ export default function HabitCard({ habit, date, onToggle, onDelete }: HabitCard
   const dateStr = formatDate(date);
   const done = isHabitDone(habit.id, dateStr);
   const streak = getStreak(habit.id);
+  const tier = getHabitTier(streak);
   const [showDelete, setShowDelete] = useState(false);
 
   const handleToggle = () => {
@@ -73,8 +75,8 @@ export default function HabitCard({ habit, date, onToggle, onDelete }: HabitCard
           </div>
         </div>
 
-        {/* Emoji badge */}
-        <span className="text-lg">{habit.emoji}</span>
+        {/* Tier badge */}
+        <span className="text-base" title={`${tier.label} (${streak}일 연속)`}>{tier.emoji}</span>
       </motion.div>
 
       {/* Delete overlay */}
