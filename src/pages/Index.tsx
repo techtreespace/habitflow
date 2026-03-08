@@ -68,8 +68,8 @@ const Index = () => {
         return <StatsPage refreshKey={refreshKey} />;
       case "calendar":
         return <CalendarPage refreshKey={refreshKey} />;
-      case "discover":
-        return <DiscoverPage onAdded={refresh} />;
+      case "community":
+        return <CommunityPage />;
       case "profile":
         return <ProfilePage onLockScreen={handleLockScreen} />;
       default:
