@@ -82,17 +82,17 @@ export default function HabitCard({ habit, date, onToggle, onDelete }: HabitCard
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute inset-0 bg-destructive/90 rounded-2xl flex items-center justify-center gap-4"
+          className="absolute inset-0 bg-destructive/90 rounded-xl flex items-center justify-center gap-3"
         >
           <button
             onClick={() => onDelete(habit.id)}
-            className="flex items-center gap-2 text-destructive-foreground font-medium px-4 py-2 rounded-xl bg-destructive-foreground/20"
+            className="flex items-center gap-1.5 text-destructive-foreground text-sm font-medium px-3 py-1.5 rounded-lg bg-destructive-foreground/20"
           >
-            <Trash2 className="w-4 h-4" /> 삭제
+            <Trash2 className="w-3.5 h-3.5" /> 삭제
           </button>
           <button
             onClick={() => setShowDelete(false)}
-            className="text-destructive-foreground/80 font-medium px-4 py-2 rounded-xl"
+            className="text-destructive-foreground/80 text-sm font-medium px-3 py-1.5 rounded-lg"
           >
             취소
           </button>
