@@ -75,8 +75,8 @@ export default function HabitCard({ habit, date, onToggle, onDelete }: HabitCard
           </div>
         </div>
 
-        {/* Emoji badge */}
-        <span className="text-lg">{habit.emoji}</span>
+        {/* Tier badge */}
+        <span className="text-base" title={`${tier.label} (${streak}일 연속)`}>{tier.emoji}</span>
       </motion.div>
 
       {/* Delete overlay */}
