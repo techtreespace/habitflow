@@ -41,12 +41,14 @@ const Index = () => {
   const weather = useWeather();
 
   useEffect(() => {
-    const hasReminder = habits.some((h) => h.reminderTime);
-    if (hasReminder && "Notification" in window && Notification.permission === "default") {
-      requestPermission().then((granted) => {
-        if (granted) toast.success("알림이 활성화되었습니다! 🔔");
-      });
-    }
+    try {
+      const hasReminder = habits.some((h) => h.reminderTime);
+      if (hasReminder && typeof Notification !== "undefined" && Notification.permission === "default") {
+        requestPermission().then((granted) => {
+          if (granted) toast.success("알림이 활성화되었습니다! 🔔");
+        });
+      }
+    } catch {}
   }, [habits, requestPermission]);
 
   const handleLockScreen = () => {
