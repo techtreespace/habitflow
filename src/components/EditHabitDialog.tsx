@@ -96,13 +96,23 @@ export default function EditHabitDialog({ open, habit, onClose, onUpdated }: Edi
               {/* Name */}
               <div>
                 <label className="text-sm font-medium text-muted-foreground mb-2 block">습관 이름</label>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="예: 30분 운동하기"
-                  className="w-full px-4 py-3 rounded-xl bg-muted border-none outline-none text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary transition-all"
-                  onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                />
+                <div className="relative">
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="예: 30분 운동하기"
+                    className="w-full px-4 py-3 pr-12 rounded-xl bg-muted border-none outline-none text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary transition-all"
+                    onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                  />
+                  {name && (
+                    <button
+                      onClick={() => setName("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <XCircle className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Active days */}
