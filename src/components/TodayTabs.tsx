@@ -23,6 +23,7 @@ export default function TodayTabs({
   today,
   refresh,
   handleDelete,
+  handleEdit,
   setSelectedHabit,
   setShowAdd,
   refreshKey,
