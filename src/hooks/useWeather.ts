@@ -24,13 +24,17 @@ export function useWeather() {
 
   useEffect(() => {
     // Try cached first (valid for 30 min)
-    const cached = localStorage.getItem("habitflow_weather");
-    if (cached) {
-      const { data, timestamp } = JSON.parse(cached);
-      if (Date.now() - timestamp < 30 * 60 * 1000) {
-        setWeather(data);
-        return;
+    try {
+      const cached = localStorage.getItem("habitflow_weather");
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < 30 * 60 * 1000) {
+          setWeather(data);
+          return;
+        }
       }
+    } catch {
+      // ignore cache errors
     }
 
     navigator.geolocation?.getCurrentPosition(
