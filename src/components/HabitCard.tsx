@@ -100,7 +100,8 @@ export default function HabitCard({ habit, date, onToggle, onDelete, onEdit }: H
         >
           {onEdit && (
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 onEdit(habit);
                 setShowDelete(false);
               }}
