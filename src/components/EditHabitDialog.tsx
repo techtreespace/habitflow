@@ -37,8 +37,7 @@ export default function EditHabitDialog({ open, habit, onClose, onUpdated }: Edi
     onClose();
   };
 
-  // Reset form when habit changes
-  useState(() => {
+  useEffect(() => {
     if (habit) {
       setName(habit.name);
       setEmoji(habit.emoji);
@@ -46,7 +45,7 @@ export default function EditHabitDialog({ open, habit, onClose, onUpdated }: Edi
       setReminderEnabled(!!habit.reminderTime);
       setReminderTime(habit.reminderTime || "08:00");
     }
-  });
+  }, [habit]);
 
   return (
     <AnimatePresence>
