@@ -38,14 +38,14 @@ export default function EditHabitDialog({ open, habit, onClose, onUpdated }: Edi
   };
 
   useEffect(() => {
-    if (habit) {
+    if (open && habit) {
       setName(habit.name);
       setEmoji(habit.emoji);
       setActiveDays(habit.activeDays);
       setReminderEnabled(!!habit.reminderTime);
       setReminderTime(habit.reminderTime || "08:00");
     }
-  }, [habit]);
+  }, [open, habit]);
 
   return (
     <AnimatePresence>
