@@ -152,7 +152,6 @@ export const PRO_FEATURES = {
   community: "커뮤니티 전체 기능 (글쓰기, 좋아요, 댓글)",
   profileCustom: "프로필 꾸미기 (아바타 프레임, 배경, 닉네임 색상)",
   advancedStats: "고급 통계 & AI 분석",
-  adFree: "광고 제거",
   cloudSync: "클라우드 동기화 & 백업",
   badges: "Pro 배지 & 활동 배지 표시",
 } as const;

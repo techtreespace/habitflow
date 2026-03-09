@@ -432,7 +432,7 @@ export default function ProfilePage({ onLockScreen }: ProfilePageProps) {
               {proStatus.isPro ? "Pro 멤버십 관리" : "Pro 업그레이드"}
             </p>
             <p className="text-xs text-muted-foreground">
-              {proStatus.isPro ? "현재 Pro 멤버입니다 👑" : "커뮤니티, 꾸미기, AI 분석, 광고 제거"}
+              {proStatus.isPro ? "현재 Pro 멤버입니다 👑" : "커뮤니티, 꾸미기, AI 분석"}
             </p>
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground" />
