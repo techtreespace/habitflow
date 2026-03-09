@@ -19,21 +19,37 @@ const HABITS_KEY = "habitflow_habits";
 const LOGS_KEY = "habitflow_logs";
 
 export function getHabits(): Habit[] {
-  const raw = localStorage.getItem(HABITS_KEY);
-  return raw ? JSON.parse(raw) : [];
+  try {
+    const raw = localStorage.getItem(HABITS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
 }
 
 export function saveHabits(habits: Habit[]) {
-  localStorage.setItem(HABITS_KEY, JSON.stringify(habits));
+  try {
+    localStorage.setItem(HABITS_KEY, JSON.stringify(habits));
+  } catch {
+    // ignore
+  }
 }
 
 export function getLogs(): HabitLog {
-  const raw = localStorage.getItem(LOGS_KEY);
-  return raw ? JSON.parse(raw) : {};
+  try {
+    const raw = localStorage.getItem(LOGS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
 }
 
 export function saveLogs(logs: HabitLog) {
-  localStorage.setItem(LOGS_KEY, JSON.stringify(logs));
+  try {
+    localStorage.setItem(LOGS_KEY, JSON.stringify(logs));
+  } catch {
+    // ignore
+  }
 }
 
 export function logKey(habitId: string, date: string): string {

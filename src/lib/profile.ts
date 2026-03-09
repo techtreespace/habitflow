@@ -18,20 +18,36 @@ const DEFAULT_PROFILE: UserProfile = {
 };
 
 export function getProfile(): UserProfile {
-  const raw = localStorage.getItem(PROFILE_KEY);
-  return raw ? { ...DEFAULT_PROFILE, ...JSON.parse(raw) } : DEFAULT_PROFILE;
+  try {
+    const raw = localStorage.getItem(PROFILE_KEY);
+    return raw ? { ...DEFAULT_PROFILE, ...JSON.parse(raw) } : DEFAULT_PROFILE;
+  } catch {
+    return DEFAULT_PROFILE;
+  }
 }
 
 export function saveProfile(profile: UserProfile) {
-  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  try {
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  } catch {
+    // ignore
+  }
 }
 
 export function isScreenLocked(): boolean {
-  return localStorage.getItem(LOCK_STATE_KEY) === "true";
+  try {
+    return localStorage.getItem(LOCK_STATE_KEY) === "true";
+  } catch {
+    return false;
+  }
 }
 
 export function setScreenLocked(locked: boolean) {
-  localStorage.setItem(LOCK_STATE_KEY, locked ? "true" : "false");
+  try {
+    localStorage.setItem(LOCK_STATE_KEY, locked ? "true" : "false");
+  } catch {
+    // ignore
+  }
 }
 
 export const AVATAR_EMOJIS = [
