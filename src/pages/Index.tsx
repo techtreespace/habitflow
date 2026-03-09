@@ -23,6 +23,8 @@ import { toast } from "sonner";
 const Index = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [showAdd, setShowAdd] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("today");
   const [locked, setLocked] = useState(() => {
