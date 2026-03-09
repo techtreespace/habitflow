@@ -5,6 +5,7 @@ import { getHabits, deleteHabit, Habit } from "@/lib/habits";
 import { getProfile, isScreenLocked, setScreenLocked } from "@/lib/profile";
 import HabitCard from "@/components/HabitCard";
 import AddHabitDialog from "@/components/AddHabitDialog";
+import EditHabitDialog from "@/components/EditHabitDialog";
 import StatsBar from "@/components/StatsBar";
 import HabitDetail from "@/components/HabitDetail";
 import BottomNav, { TabType } from "@/components/BottomNav";
@@ -22,6 +23,8 @@ import { toast } from "sonner";
 const Index = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [showAdd, setShowAdd] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("today");
   const [locked, setLocked] = useState(() => {
@@ -62,6 +65,11 @@ const Index = () => {
     refresh();
   };
 
+  const handleEdit = (habit: Habit) => {
+    setEditingHabit(habit);
+    setShowEdit(true);
+  };
+
   const dayNames = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
   const monthDay = `${today.getMonth() + 1}월 ${today.getDate()}일 ${dayNames[dayOfWeek]}`;
 
@@ -93,6 +101,7 @@ const Index = () => {
               today={today}
               refresh={refresh}
               handleDelete={handleDelete}
+              handleEdit={handleEdit}
               setSelectedHabit={setSelectedHabit}
               setShowAdd={setShowAdd}
               refreshKey={refreshKey}
@@ -147,6 +156,15 @@ const Index = () => {
 
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       <AddHabitDialog open={showAdd} onClose={() => setShowAdd(false)} onAdded={refresh} />
+      <EditHabitDialog 
+        open={showEdit} 
+        habit={editingHabit} 
+        onClose={() => {
+          setShowEdit(false);
+          setEditingHabit(null);
+        }} 
+        onUpdated={refresh} 
+      />
 
       <AnimatePresence>
         {selectedHabit && (

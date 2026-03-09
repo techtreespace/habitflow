@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Check, Flame, Trash2, Bell } from "lucide-react";
+import { Check, Flame, Trash2, Bell, Settings } from "lucide-react";
 import { Habit, getStreak, isHabitDone, toggleHabitLog, formatDate } from "@/lib/habits";
 import { getHabitTier } from "@/lib/membership";
 import { useState } from "react";
@@ -9,9 +9,10 @@ interface HabitCardProps {
   date: Date;
   onToggle: () => void;
   onDelete: (id: string) => void;
+  onEdit?: (habit: Habit) => void;
 }
 
-export default function HabitCard({ habit, date, onToggle, onDelete }: HabitCardProps) {
+export default function HabitCard({ habit, date, onToggle, onDelete, onEdit }: HabitCardProps) {
   const dateStr = formatDate(date);
   const done = isHabitDone(habit.id, dateStr);
   const streak = getStreak(habit.id);
@@ -75,26 +76,48 @@ export default function HabitCard({ habit, date, onToggle, onDelete }: HabitCard
           </div>
         </div>
 
-        {/* Tier badge */}
-        <span className="text-base" title={`${tier.label} (${streak}일 연속)`}>{tier.emoji}</span>
+        {/* Tier badge and settings */}
+        <div className="flex items-center gap-2">
+          <span className="text-base" title={`${tier.label} (${streak}일 연속)`}>{tier.emoji}</span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowDelete(!showDelete);
+            }}
+            className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors opacity-60 hover:opacity-100"
+          >
+            <Settings className="w-4 h-4" />
+          </button>
+        </div>
       </motion.div>
 
-      {/* Delete overlay */}
+      {/* Action overlay */}
       {showDelete && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute inset-0 bg-destructive/90 rounded-xl flex items-center justify-center gap-3"
+          className="absolute inset-0 bg-card/95 backdrop-blur-sm rounded-xl flex items-center justify-center gap-3 border"
         >
+          {onEdit && (
+            <button
+              onClick={() => {
+                onEdit(habit);
+                setShowDelete(false);
+              }}
+              className="flex items-center gap-1.5 text-primary text-sm font-medium px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
+            >
+              <Settings className="w-3.5 h-3.5" /> 수정
+            </button>
+          )}
           <button
             onClick={() => onDelete(habit.id)}
-            className="flex items-center gap-1.5 text-destructive-foreground text-sm font-medium px-3 py-1.5 rounded-lg bg-destructive-foreground/20"
+            className="flex items-center gap-1.5 text-destructive text-sm font-medium px-3 py-1.5 rounded-lg bg-destructive/10 hover:bg-destructive/20 transition-colors"
           >
             <Trash2 className="w-3.5 h-3.5" /> 삭제
           </button>
           <button
             onClick={() => setShowDelete(false)}
-            className="text-destructive-foreground/80 text-sm font-medium px-3 py-1.5 rounded-lg"
+            className="text-muted-foreground text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-muted transition-colors"
           >
             취소
           </button>

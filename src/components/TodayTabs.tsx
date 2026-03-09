@@ -12,6 +12,7 @@ interface TodayTabsProps {
   today: Date;
   refresh: () => void;
   handleDelete: (id: string) => void;
+  handleEdit: (habit: Habit) => void;
   setSelectedHabit: (habit: Habit) => void;
   setShowAdd: (show: boolean) => void;
   refreshKey: number;
@@ -22,6 +23,7 @@ export default function TodayTabs({
   today,
   refresh,
   handleDelete,
+  handleEdit,
   setSelectedHabit,
   setShowAdd,
   refreshKey,
@@ -78,7 +80,7 @@ export default function TodayTabs({
               <div className="space-y-2">
                 {todayHabits.map((habit) => (
                   <div key={habit.id} onClick={() => setSelectedHabit(habit)}>
-                    <HabitCard habit={habit} date={today} onToggle={refresh} onDelete={handleDelete} />
+                    <HabitCard habit={habit} date={today} onToggle={refresh} onDelete={handleDelete} onEdit={handleEdit} />
                   </div>
                 ))}
               </div>
