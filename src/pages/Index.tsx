@@ -101,6 +101,7 @@ const Index = () => {
               today={today}
               refresh={refresh}
               handleDelete={handleDelete}
+              handleEdit={handleEdit}
               setSelectedHabit={setSelectedHabit}
               setShowAdd={setShowAdd}
               refreshKey={refreshKey}
