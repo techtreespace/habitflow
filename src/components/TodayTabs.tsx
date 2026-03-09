@@ -12,6 +12,7 @@ interface TodayTabsProps {
   today: Date;
   refresh: () => void;
   handleDelete: (id: string) => void;
+  handleEdit: (habit: Habit) => void;
   setSelectedHabit: (habit: Habit) => void;
   setShowAdd: (show: boolean) => void;
   refreshKey: number;
