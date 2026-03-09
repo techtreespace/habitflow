@@ -65,6 +65,11 @@ const Index = () => {
     refresh();
   };
 
+  const handleEdit = (habit: Habit) => {
+    setEditingHabit(habit);
+    setShowEdit(true);
+  };
+
   const dayNames = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
   const monthDay = `${today.getMonth() + 1}월 ${today.getDate()}일 ${dayNames[dayOfWeek]}`;
 
