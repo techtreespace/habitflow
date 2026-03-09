@@ -5,6 +5,7 @@ import { getHabits, deleteHabit, Habit } from "@/lib/habits";
 import { getProfile, isScreenLocked, setScreenLocked } from "@/lib/profile";
 import HabitCard from "@/components/HabitCard";
 import AddHabitDialog from "@/components/AddHabitDialog";
+import EditHabitDialog from "@/components/EditHabitDialog";
 import StatsBar from "@/components/StatsBar";
 import HabitDetail from "@/components/HabitDetail";
 import BottomNav, { TabType } from "@/components/BottomNav";
