@@ -24,7 +24,7 @@ export function useNotifications(refreshKey: number) {
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
 
-    if (Notification.permission !== "granted") return;
+    try { if (typeof Notification === "undefined" || Notification.permission !== "granted") return; } catch { return; }
 
     const habits = getHabits();
     const now = new Date();
