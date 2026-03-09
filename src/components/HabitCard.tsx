@@ -100,7 +100,8 @@ export default function HabitCard({ habit, date, onToggle, onDelete, onEdit }: H
         >
           {onEdit && (
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 onEdit(habit);
                 setShowDelete(false);
               }}
@@ -110,7 +111,10 @@ export default function HabitCard({ habit, date, onToggle, onDelete, onEdit }: H
             </button>
           )}
           <button
-            onClick={() => onDelete(habit.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(habit.id);
+            }}
             className="flex items-center gap-1.5 text-destructive text-sm font-medium px-3 py-1.5 rounded-lg bg-destructive/10 hover:bg-destructive/20 transition-colors"
           >
             <Trash2 className="w-3.5 h-3.5" /> 삭제
