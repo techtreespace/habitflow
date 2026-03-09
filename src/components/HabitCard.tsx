@@ -12,7 +12,7 @@ interface HabitCardProps {
   onEdit?: (habit: Habit) => void;
 }
 
-export default function HabitCard({ habit, date, onToggle, onDelete }: HabitCardProps) {
+export default function HabitCard({ habit, date, onToggle, onDelete, onEdit }: HabitCardProps) {
   const dateStr = formatDate(date);
   const done = isHabitDone(habit.id, dateStr);
   const streak = getStreak(habit.id);
