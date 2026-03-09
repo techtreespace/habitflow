@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Save, X, Bell, BellOff } from "lucide-react";
+import { Save, X, Bell, BellOff, XCircle } from "lucide-react";
 import { updateHabit, EMOJI_OPTIONS, Habit } from "@/lib/habits";
 
 interface EditHabitDialogProps {
