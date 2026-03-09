@@ -50,7 +50,11 @@ export function useWeather() {
             weatherCode: json.current_weather.weathercode,
           };
           setWeather(data);
-          localStorage.setItem("habitflow_weather", JSON.stringify({ data, timestamp: Date.now() }));
+          try {
+            localStorage.setItem("habitflow_weather", JSON.stringify({ data, timestamp: Date.now() }));
+          } catch {
+            // ignore storage errors
+          }
         } catch {
           // silently fail
         }
