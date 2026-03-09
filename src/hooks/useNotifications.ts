@@ -7,12 +7,16 @@ export function useNotifications(refreshKey: number) {
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const requestPermission = useCallback(async () => {
-    if (!("Notification" in window)) return false;
-    if (Notification.permission === "granted") return true;
-    if (Notification.permission === "denied") return false;
-    const result = await Notification.requestPermission();
-    localStorage.setItem(NOTIFICATION_PERMISSION_KEY, result);
-    return result === "granted";
+    try {
+      if (typeof Notification === "undefined") return false;
+      if (Notification.permission === "granted") return true;
+      if (Notification.permission === "denied") return false;
+      const result = await Notification.requestPermission();
+      try { localStorage.setItem(NOTIFICATION_PERMISSION_KEY, result); } catch {}
+      return result === "granted";
+    } catch {
+      return false;
+    }
   }, []);
 
   const scheduleNotifications = useCallback(() => {
