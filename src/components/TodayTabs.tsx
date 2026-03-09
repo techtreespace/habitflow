@@ -80,7 +80,7 @@ export default function TodayTabs({
               <div className="space-y-2">
                 {todayHabits.map((habit) => (
                   <div key={habit.id} onClick={() => setSelectedHabit(habit)}>
-                    <HabitCard habit={habit} date={today} onToggle={refresh} onDelete={handleDelete} />
+                    <HabitCard habit={habit} date={today} onToggle={refresh} onDelete={handleDelete} onEdit={handleEdit} />
                   </div>
                 ))}
               </div>

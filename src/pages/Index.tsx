@@ -156,6 +156,15 @@ const Index = () => {
 
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       <AddHabitDialog open={showAdd} onClose={() => setShowAdd(false)} onAdded={refresh} />
+      <EditHabitDialog 
+        open={showEdit} 
+        habit={editingHabit} 
+        onClose={() => {
+          setShowEdit(false);
+          setEditingHabit(null);
+        }} 
+        onUpdated={refresh} 
+      />
 
       <AnimatePresence>
         {selectedHabit && (
